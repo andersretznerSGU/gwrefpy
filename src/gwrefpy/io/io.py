@@ -6,6 +6,7 @@ import logging
 # Configure logging
 logger = logging.getLogger(__name__)
 
+
 def save(filename, data, overwrite=False, **kwargs):
     """
     Save an object to a file.
@@ -28,7 +29,7 @@ def save(filename, data, overwrite=False, **kwargs):
     ext = os.path.splitext(filename)[1]
     if ext == "":
         filename += ".gwref"
-    elif ext not in ['.gwref']:
+    elif ext not in [".gwref"]:
         raise ValueError(f"Unsupported file extension: {ext}. Expected '.gwref'.")
     filename = path.splitext(filename)[0] + ext
 
@@ -40,10 +41,11 @@ def save(filename, data, overwrite=False, **kwargs):
         )
         return
 
-    with open(filename, 'w') as file:
+    with open(filename, "w") as file:
         json.dump(data, file, indent=4)
 
     return f"Object saved to {filename}"
+
 
 def load(filename):
     """
@@ -60,10 +62,10 @@ def load(filename):
         The loaded object.
     """
     ext = path.splitext(filename)[1]
-    if ext not in ['.gwref']:
+    if ext not in [".gwref"]:
         raise ValueError(f"Unsupported file extension: {ext}. Expected '.gwref'.")
 
-    with open(filename, 'r') as file:
+    with open(filename, "r") as file:
         data = json.load(file)
 
     return data

@@ -1,6 +1,7 @@
 import scipy.stats as stats
 import pandas as pd
 
+
 class WellBase:
     """
     Base class for a well in a groundwater model.
@@ -26,15 +27,16 @@ class WellBase:
         self.name = name
 
         # Time and measurement attributes
-        self.time = pd.Series(dtype='float64')  # Time series, can be datetime or float
-        self.measurements = pd.Series(dtype='float64')  # Measurement series, can be any numeric type
+        self.time = pd.Series(dtype="float64")  # Time series, can be datetime or float
+        self.measurements = pd.Series(
+            dtype="float64"
+        )  # Measurement series, can be any numeric type
 
         # Plotting attributes
         self.plot_color = None
         self.plot_marker = None
         self.plot_ls = None
         self.plot_label = None
-
 
     def __repr__(self):
         return f"WellBase(name={self.name})"
@@ -80,4 +82,4 @@ class WellBase:
         float
             The float representation of the datetime.
         """
-        return self.time.timestamp() if hasattr(self.time, 'timestamp') else self.time
+        return self.time.timestamp() if hasattr(self.time, "timestamp") else self.time
