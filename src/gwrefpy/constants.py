@@ -1,5 +1,3 @@
-
-
 # Dict of default colors
 DEFAULT_COLORS = {
     "red": "#FF0000",

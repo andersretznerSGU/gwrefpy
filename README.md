@@ -40,17 +40,6 @@ Uninstall the package:
 pip uninstall gwrefpy
 ```
 
-### Development Installation
-
-For development work, clone the repository and install using `uv`:
-
-```bash
-git clone https://github.com/your-username/gwrefpy.git
-cd gwrefpy
-uv sync
-uv pip install -e .
-```
-
 ## Requirements
 
 - Python ≥ 3.11
@@ -87,10 +76,22 @@ uv run python -m pytest tests/
 
 ## Development
 
-### Building the Package
+### Development Installation
+
+For development work, clone the repository and install using `uv`:
 
 ```bash
-uv build
+git clone https://github.com/your-username/gwrefpy.git
+cd gwrefpy
+uv sync
+uv pip install -e .
+```
+
+Lint and format with `ruff` (included as dev dependency):
+
+```bash
+uv run ruff check
+uv run ruff format
 ```
 
 ### Contributing
