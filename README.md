@@ -3,7 +3,29 @@
 </p>
 
 # gwrefpy
+
 En python-implementering av Akvifärs referensmetod för att studera förändrade grundvattenförhållanden.
+
+## Development
+
+This project uses `uv` as the package manager. To set up the development environment:
+
+```bash
+# Install dependencies
+uv sync
+
+# Run tests
+uv run python -m pytest tests/
+
+# Run linter
+uv run ruff check .
+
+# Format code
+uv run ruff format .
+
+# Check formatting without making changes
+uv run ruff format --check .
+```
 
 # Referenser
 
