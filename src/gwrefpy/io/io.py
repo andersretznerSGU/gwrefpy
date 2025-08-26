@@ -16,6 +16,8 @@ def save(filename, data, overwrite=False, **kwargs):
         The name of the file where the object will be saved.
     data : dict
         The data to save, typically a dictionary containing the object and its metadata.
+    overwrite : bool, optional
+        If True, overwrite the file if it already exists. Default is False.
     **kwargs : dict
         Additional keyword arguments that may be used for saving options.
 
