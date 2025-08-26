@@ -1,7 +1,7 @@
-import os
-from os import path
 import json
 import logging
+import os
+from os import path
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -37,7 +37,8 @@ def save(filename, data, overwrite=False, **kwargs):
     if os.path.exists(f"{filename}") and not overwrite:
         # If the file exists and overwrite is False, log a warning and return
         logger.warning(
-            f"The file {filename} already exists. To overwrite the existing file set the argument 'overwrite' to True."
+            f"The file {filename} already exists. To overwrite the existing file"
+            f" set the argument 'overwrite' to True."
         )
         return
 
@@ -65,7 +66,7 @@ def load(filename):
     if ext not in [".gwref"]:
         raise ValueError(f"Unsupported file extension: {ext}. Expected '.gwref'.")
 
-    with open(filename, "r") as file:
+    with open(filename) as file:
         data = json.load(file)
 
     return data
