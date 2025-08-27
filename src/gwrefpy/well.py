@@ -1,5 +1,5 @@
-import scipy.stats as stats
 import pandas as pd
+import scipy.stats as stats
 import logging
 
 logger = logging.getLogger(__name__)
@@ -82,6 +82,7 @@ class WellBase:
                     f"{self.__class__.__name__} has no attribute '{key}'"
                 )
 
+
     def __repr__(self):
         return f"WellBase(name={self.name})"
 
@@ -102,7 +103,8 @@ class WellBase:
         Returns
         -------
         linreg : LinregressResult
-            An object containing the slope, intercept, r-value, p-value, and standard error of the regression line.
+            An object containing the slope, intercept, r-value, p-value,
+            and standard error of the regression line.
         """
         if len(self.time) != len(self.measurements):
             raise ValueError("x and y must have the same length")

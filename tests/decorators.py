@@ -26,11 +26,14 @@ def timed(iters=1):
             end_time = time.time()
             if iters > 1:
                 print(
-                    f"Function {func.__name__} took {(end_time - start_time) / iters:.4f} seconds on average over {iters} iterations."
+                    f"Function {func.__name__} took"
+                    f" {(end_time - start_time) / iters:.4f}"
+                    f" seconds on average over {iters} iterations."
                 )
             else:
                 print(
-                    f"Function {func.__name__} took {end_time - start_time:.4f} seconds."
+                    f"Function {func.__name__} took"
+                    f" {end_time - start_time:.4f} seconds."
                 )
             return result
 
