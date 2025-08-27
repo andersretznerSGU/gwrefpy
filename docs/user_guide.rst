@@ -22,3 +22,8 @@ To get started with gwrefpy, you can follow these steps:
     .. code-block:: python
 
          processed_data = gwrefpy.process_data(data)
+
+.. toctree::
+    :maxdepth: 1
+
+    plotting
