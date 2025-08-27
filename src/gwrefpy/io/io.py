@@ -68,7 +68,7 @@ def load(filename):
     if ext not in [".gwref"]:
         raise ValueError(f"Unsupported file extension: {ext}. Expected '.gwref'.")
 
-    with open(filename, "r") as file:
+    with open(filename) as file:
         data = json.load(file)
 
     return data

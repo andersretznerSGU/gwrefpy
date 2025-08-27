@@ -1,6 +1,7 @@
+import logging
+
 import pandas as pd
 import scipy.stats as stats
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -22,21 +23,16 @@ class WellBase:
             The groundwater model to which the well belongs.
 
         """
-        if not isinstance(name, str):
-            logger.error("Name must be a string.")
-            raise TypeError("Name must be a string.")
-
-        if not name:
-            logger.error("Name cannot be an empty string.")
-            raise ValueError("Name cannot be an empty string.")
 
         # Initialize attributes
+        self._name = None
         self.name = name  # This will call the setter
         self.model = model  # Reference to the groundwater model
         model.add_well(self)  # Add this well to the model's list of wells
 
         # Time and measurement attributes
-        self.time = pd.Series(dtype="float64")  # Time series, can be datetime or float
+        self.time = pd.Series(dtype="datetime")  # Time series, as datetime
+        self._time = pd.Series(dtype="float64")  # Internal time series as float
         self.measurements = pd.Series(
             dtype="float64"
         )  # Measurement series, can be any numeric type
@@ -46,6 +42,14 @@ class WellBase:
         self.marker = None
         self.ls = None
         self.ms = None
+
+        # Geographic attributes
+        self.latitude = None
+        self.longitude = None
+        self.elevation = None
+        self.depth = None
+        self.screen_top = None
+        self.screen_bottom = None
 
     @property
     def name(self):
@@ -70,7 +74,8 @@ class WellBase:
         Parameters
         ----------
         **kwargs : dict
-            The attributes to set. The keys should be the names of the attributes and the values should be the new values.
+            The attributes to set. The keys should be the names of the attributes and
+            the values should be the new values.
 
         """
         for key, value in kwargs.items():
@@ -81,7 +86,6 @@ class WellBase:
                 raise AttributeError(
                     f"{self.__class__.__name__} has no attribute '{key}'"
                 )
-
 
     def __repr__(self):
         return f"WellBase(name={self.name})"
@@ -114,21 +118,22 @@ class WellBase:
 
         return linreg
 
-    def _datetime_to_float(self):
+    @staticmethod
+    def _datetime_to_float(date_time):
         """
         Convert a datetime object to a float representation.
 
         Parameters
         ----------
-        self : WellBase
-            The WellBase object containing the datetime to convert.
+        date_time : datetime
+            The datetime object to convert.
 
         Returns
         -------
         float
             The float representation of the datetime.
         """
-        return self.time.timestamp() if hasattr(self.time, "timestamp") else self.time
+        return date_time.timestamp() if hasattr(date_time, "timestamp") else date_time
 
     def add_well_data(self, time, measurements):
         """
