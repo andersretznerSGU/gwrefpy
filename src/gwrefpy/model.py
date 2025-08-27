@@ -1,5 +1,7 @@
+import logging
 from src.gwrefpy.well import WellBase
 
+logger = logging.getLogger(__name__)
 
 class Model:
     def __init__(self, name: str, version: str):
@@ -25,8 +27,10 @@ class Model:
         if isinstance(well, list):
             for w in well:
                 self._add_well(w)
+            logger.info(f"Added {len(well)} wells to model '{self.name}'.")
         else:
             self._add_well(well)
+            logger.info(f"Added one well to model '{self.name}'.")
 
     def _add_well(self, well):
         """
@@ -50,7 +54,10 @@ class Model:
             This method modifies the model in place.
         """
         if not isinstance(well, WellBase):
+            logger.error("Only WellBase instances can be added to the model.")
             raise TypeError("Only WellBase instances can be added to the model.")
         if well in self.wells:
+            logger.error(f"Well '{well.name}' is already in the model.")
             raise ValueError(f"Well '{well.name}' is already in the model.")
         self.wells.append(well)
+        logger.debug(f"Well '{well.name}' added to model '{self.name}'.")

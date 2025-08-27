@@ -39,17 +39,19 @@ class WellBase:
 
         # Plotting attributes
         self.color = None
+        self.alpha = 1.0
+        self.linestyle = None
+        self.linewidth = None
         self.marker = None
-        self.ls = None
-        self.ms = None
+        self.markerstyle = None
 
         # Geographic attributes
         self.latitude = None
         self.longitude = None
         self.elevation = None
-        self.depth = None
-        self.screen_top = None
-        self.screen_bottom = None
+
+        # Well attributes
+        self.well_attribute = {}
 
     @property
     def name(self):

@@ -5,14 +5,7 @@ The gwrefpy package has several plotting capabilities to visualize groundwaer da
 
 Setting plotting style
 ----------------------
-You can set the indivudual plotting syles of each well object by assigning the plotting attributes to that object. The available attributes are:
-- color
-- linestyle
-- linewidth
-- label
-- alpha
-- marker
-- markersize
+You can set the indivudual plotting syles of each well object by assigning the plotting attributes to that object. The available attributes are: ``color``, ``linestyle``, ``linewidth``, ``label``, ``alpha``, ``marker``, and ``markersize``
 
 .. code-block:: python
 
