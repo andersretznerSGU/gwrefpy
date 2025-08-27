@@ -1,2 +1,1 @@
-from .io import save, load
-
+from .io import (save as save, load as load)

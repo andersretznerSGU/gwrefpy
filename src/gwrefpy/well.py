@@ -4,6 +4,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 class WellBase:
     """
     Base class for a well in a groundwater model.
@@ -30,13 +31,15 @@ class WellBase:
             raise ValueError("Name cannot be an empty string.")
 
         # Initialize attributes
-        self.name = name        # This will call the setter
-        self.model = model      # Reference to the groundwater model
-        model.add_well(self)    # Add this well to the model's list of wells
+        self.name = name  # This will call the setter
+        self.model = model  # Reference to the groundwater model
+        model.add_well(self)  # Add this well to the model's list of wells
 
         # Time and measurement attributes
-        self.time = pd.Series(dtype='float64')  # Time series, can be datetime or float
-        self.measurements = pd.Series(dtype='float64')  # Measurement series, can be any numeric type
+        self.time = pd.Series(dtype="float64")  # Time series, can be datetime or float
+        self.measurements = pd.Series(
+            dtype="float64"
+        )  # Measurement series, can be any numeric type
 
         # Plotting attributes
         self.color = None
@@ -75,8 +78,9 @@ class WellBase:
                 setattr(self, key, value)
             else:
                 logger.warning(f"{self.__class__.__name__} has no attribute '{key}'")
-                raise AttributeError(f"{self.__class__.__name__} has no attribute '{key}'")
-
+                raise AttributeError(
+                    f"{self.__class__.__name__} has no attribute '{key}'"
+                )
 
     def __repr__(self):
         return f"WellBase(name={self.name})"
@@ -122,7 +126,7 @@ class WellBase:
         float
             The float representation of the datetime.
         """
-        return self.time.timestamp() if hasattr(self.time, 'timestamp') else self.time
+        return self.time.timestamp() if hasattr(self.time, "timestamp") else self.time
 
     def add_well_data(self, time, measurements):
         """

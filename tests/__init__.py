@@ -1,1 +1,1 @@
-from .decorators import timed, print_return
+from .decorators import (timed as timed, print_return as print_return)
