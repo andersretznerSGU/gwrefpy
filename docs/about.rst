@@ -13,5 +13,5 @@ Release Information
 Contributors
 ------------
 - **Anders Retzner** - SGU
-- [Erik Toller](https://github.com/eriktoller) - WSP
+- **Erik Toller** (https://github.com/eriktoller) - WSP
 - **Tobias Erlström** - Sweco

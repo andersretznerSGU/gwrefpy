@@ -26,13 +26,13 @@ Uninstall the package:
     pip uninstall gwrefpy
 
 
-.. # toctree::
-.. # :maxdepth: 1
-.. # :titlesonly:
-.. # :hidden:
-.. # :caption: Contents:
-..
-.. # user_guide
-.. # apidocs
-.. # about
-.. # index
+.. toctree::
+    :maxdepth: 1
+    :titlesonly:
+    :hidden:
+    :caption: Contents:
+
+    user_guide
+    apidocs
+    about
+    index

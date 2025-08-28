@@ -1,14 +1,24 @@
+"""
+Model
+-----
+A class representing a groundwater model that can contain multiple wells.
+
+"""
 import logging
 from src.gwrefpy.well import WellBase
+from src.gwrefpy.io.io import save, load
 
 logger = logging.getLogger(__name__)
 
 class Model:
-    def __init__(self, name: str, version: str):
+    def __init__(self, name: str):
         self.name = name
-        self.version = version
 
+        # Well attributes
         self.wells = []
+
+        # Model attributes
+        self.model_attribute = {}
 
     def add_well(self, well):
         """
@@ -61,3 +71,42 @@ class Model:
             raise ValueError(f"Well '{well.name}' is already in the model.")
         self.wells.append(well)
         logger.debug(f"Well '{well.name}' added to model '{self.name}'.")
+
+    def save(self, filepath, overwrite=False):
+        """
+        Save the model to a file.
+
+        Parameters
+        ----------
+        filepath : str
+            The path to the file where the model will be saved.
+
+        Returns
+        -------
+        None
+            This method saves the model to a file.
+        """
+        # Convert model to dict before saving
+        # Placeholder for actual conversion logic
+        # model_dict = self.to_dict()
+
+        # Save the model dictionary to a file
+        save(self, filepath, overwrite=overwrite)
+        logger.info(f"Model '{self.name}' saved to '{filepath}'.")
+
+    def load(self, filepath):
+        """
+        Load the model from a file.
+
+        Parameters
+        ----------
+        filepath : str
+            The path to the file from which the model will be loaded.
+
+        Returns
+        -------
+        None
+            This method loads the model from a file.
+        """
+        # Placeholder for load logic
+        logger.info(f"Model '{self.name}' loaded from '{filepath}'.")

@@ -3,8 +3,8 @@ Constants
 
 This module contains the constants used in gwrefpy.
 
-.. automodule:: gwrefpy.constants
+.. automodule:: src.gwrefpy.constants
    :members:
-   :special-members: __init__, __str__
+   :special-members: __init__
    :undoc-members:
    :show-inheritance:

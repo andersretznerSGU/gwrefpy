@@ -1,3 +1,9 @@
+"""
+IO
+==
+
+Input/output functions for saving and loading objects.
+"""
 import json
 import logging
 import os
@@ -14,7 +20,7 @@ def save(filename, data, overwrite=False, **kwargs):
     Parameters
     ----------
     filename : str
-        The name of the file where the object will be saved.
+        The name of the file where the object will be saved. Can include the .gwref extension or not. Can include a path.
     data : dict
         The data to save, typically a dictionary containing the object and its metadata.
     overwrite : bool, optional
@@ -32,6 +38,7 @@ def save(filename, data, overwrite=False, **kwargs):
     if ext == "":
         filename += ".gwref"
     elif ext not in [".gwref"]:
+        logger.error(f"Unsupported file extension: {ext}. Expected '.gwref'.")
         raise ValueError(f"Unsupported file extension: {ext}. Expected '.gwref'.")
     filename = path.splitext(filename)[0] + ext
 
@@ -46,8 +53,8 @@ def save(filename, data, overwrite=False, **kwargs):
 
     with open(filename, "w") as file:
         json.dump(data, file, indent=4)
-
-    return f"Object saved to {filename}"
+    logger.info(f"Object saved to {filename}")
+    return
 
 
 def load(filename):
@@ -65,10 +72,14 @@ def load(filename):
         The loaded object.
     """
     ext = path.splitext(filename)[1]
-    if ext not in [".gwref"]:
+    if ext == "":
+        filename += ".gwref"
+    elif ext not in [".gwref"]:
+        logger.error(f"Unsupported file extension: {ext}. Expected '.gwref'.")
         raise ValueError(f"Unsupported file extension: {ext}. Expected '.gwref'.")
 
     with open(filename) as file:
         data = json.load(file)
 
+    logger.info(f"Object loaded from {filename}")
     return data

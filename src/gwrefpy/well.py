@@ -1,5 +1,13 @@
-import logging
+"""
+Well Module
+-----------
 
+This module contains classes for managing wells in a groundwater model.
+It includes a base class `WellBase` and two derived classes `ReferenceWell`
+and `ObservationWell`.
+"""
+
+import logging
 import pandas as pd
 import scipy.stats as stats
 
@@ -31,7 +39,7 @@ class WellBase:
         model.add_well(self)  # Add this well to the model's list of wells
 
         # Time and measurement attributes
-        self.time = pd.Series(dtype="datetime")  # Time series, as datetime
+        self.time = pd.Series(dtype="datetime64[ns]")  # Time series, as datetime
         self._time = pd.Series(dtype="float64")  # Internal time series as float
         self.measurements = pd.Series(
             dtype="float64"
@@ -41,8 +49,9 @@ class WellBase:
         self.color = None
         self.alpha = 1.0
         self.linestyle = None
-        self.linewidth = None
+        self.linewidth = 1.0
         self.marker = None
+        self.markersize = 6
         self.markerstyle = None
 
         # Geographic attributes
@@ -164,7 +173,7 @@ class ReferenceWell(WellBase):
     Class for a reference well in a groundwater model.
     """
 
-    def __init__(self, name):
+    def __init__(self, name, model):
         """
         Initialize a ReferenceWell object.
 
@@ -174,7 +183,7 @@ class ReferenceWell(WellBase):
             The name of the reference well.
 
         """
-        super().__init__(name)
+        super().__init__(name, model)
 
 
 class ObservationWell(WellBase):
@@ -182,7 +191,7 @@ class ObservationWell(WellBase):
     Class for an observation well in a groundwater model.
     """
 
-    def __init__(self, name):
+    def __init__(self, name, model):
         """
         Initialize an ObservationWell object.
 
@@ -192,4 +201,4 @@ class ObservationWell(WellBase):
             The name of the observation well.
 
         """
-        super().__init__(name)
+        super().__init__(name, model)
