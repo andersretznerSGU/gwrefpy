@@ -94,7 +94,7 @@ class Well:
                 )
 
     def __repr__(self):
-        return f"WellBase(name={self.name})"
+        return f"Well(name={self.name})"
 
     def __str__(self):
         return f"Well: {self.name}"
