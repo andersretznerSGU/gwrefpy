@@ -22,6 +22,25 @@ class Model:
         # Model attributes
         self.model_attribute = {}
 
+    def __str__(self):
+        """String representation of the Model object."""
+        return f"Model(name={self.name}, wells={len(self.wells)})"
+
+    @property
+    def obs_wells(self):
+        """List of observation wells in the model."""
+        return [well for well in self.wells if not well.is_reference]
+
+    @property
+    def ref_wells(self):
+        """List of reference wells in the model."""
+        return [well for well in self.wells if well.is_reference]
+
+    @property
+    def well_names(self):
+        """List of all well names in the model."""
+        return [well.name for well in self.wells]
+
     def add_well(self, well):
         """
         Add a well or a list of wells to the model.
@@ -65,39 +84,104 @@ class Model:
         None
             This method modifies the model in place.
         """
+
+        # Check if the well is an instance of Well
         if not isinstance(well, Well):
-            logger.error("Only WellBase instances can be added to the model.")
-            raise TypeError("Only WellBase instances can be added to the model.")
+            logger.error("Only Well instances can be added to the model.")
+            raise TypeError("Only Well instances can be added to the model.")
+
+        # Check if the well is already in the model
         if well in self.wells:
             logger.error(f"Well '{well.name}' is already in the model.")
             raise ValueError(f"Well '{well.name}' is already in the model.")
+
+        # Check if the well name already exists in the model
+        if well.name in self.well_names:
+            logger.error(f"Well name '{well.name}' already exists in the model.")
+            raise ValueError(f"Well name '{well.name}' already exists in the model.")
+
+        # Add the well to the model
         self.wells.append(well)
-        # TODO: add model also to well
+        well.model.append(self)
         logger.debug(f"Well '{well.name}' added to model '{self.name}'.")
 
-    def save(self, filepath, overwrite=False):
+    def to_dict(self):
+        """
+        Convert the model to a dictionary representation.
+
+        Returns
+        -------
+        dict
+            A dictionary representation of the model.
+        """
+        # Create a dictionary representation of the model
+        model_dict = {
+            "name": self.name,
+            "wells": [well.name for well in self.wells],
+            "model_attribute": self.model_attribute,
+        }
+
+        # Create a dictionary representation of each well
+        wells_dict = {}
+        for well in self.wells:
+            wells_dict[well.name] = well.to_dict()
+        model_dict["wells_dict"] = wells_dict
+
+        return model_dict
+
+    def unpack_dict(self, data):
+        """
+        Unpack a dictionary representation of the model and set the model's attributes.
+
+        Parameters
+        ----------
+        data : dict
+            A dictionary representation of the model.
+
+        Returns
+        -------
+        None
+            This method modifies the model in place.
+        """
+        self.name = data.get("name", self.name)
+        self.model_attribute = data.get("model_attribute", self.model_attribute)
+
+        # Unpack wells
+        wells_dict = data.get("wells_dict", {})
+        for well_name, is_reference, well_data in wells_dict.items():
+            well = Well(name=well_name, is_reference=is_reference)
+            well.unpack_dict(well_data)
+            self.add_well(well)
+
+    def save_project(self, filename=None, overwrite=False):
         """
         Save the model to a file.
 
         Parameters
         ----------
-        filepath : str
-            The path to the file where the model will be saved.
+        filename : str or None, optional
+            The name of the file where the model will be saved. The path can be included.
+        overwrite : bool, optional
+            Whether to overwrite the file if it already exists (default is False).
 
         Returns
         -------
         None
             This method saves the model to a file.
         """
-        # Convert model to dict before saving
-        # Placeholder for actual conversion logic
-        # model_dict = self.to_dict()
+
+        # Convert the model to a dictionary
+        model_dict = self.to_dict()
+
+        # Set default filename if not provided
+        if filename is None:
+            filename = f"{self.name}.gwref"
 
         # Save the model dictionary to a file
-        save(self, filepath, overwrite=overwrite)
-        logger.info(f"Model '{self.name}' saved to '{filepath}'.")
+        save(filename, model_dict, overwrite=overwrite)
+        logger.info(f"Model '{self.name}' saved to '{filename}'.")
 
-    def load(self, filepath):
+    def open_project(self, filepath):
         """
         Load the model from a file.
 
@@ -112,4 +196,5 @@ class Model:
             This method loads the model from a file.
         """
         # Placeholder for load logic
+        data = load(filepath)
         logger.info(f"Model '{self.name}' loaded from '{filepath}'.")
