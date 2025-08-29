@@ -7,9 +7,9 @@ A class representing a groundwater model that can contain multiple wells.
 
 import logging
 
-from gwrefpy.io.io import load, save
-from gwrefpy.methods.linregressfit import linregressfit
-from gwrefpy.well import Well
+from .io.io import load, save
+from .methods.linregressfit import linregressfit
+from .well import Well
 
 logger = logging.getLogger(__name__)
 
@@ -240,7 +240,6 @@ class Model:
         model_dict = {
             "name": self.name,
             "wells": [well.name for well in self.wells],
-            "model_attribute": self.model_attribute,
         }
 
         # Create a dictionary representation of each well
@@ -266,7 +265,6 @@ class Model:
             This method modifies the model in place.
         """
         self.name = data.get("name", self.name)
-        self.model_attribute = data.get("model_attribute", self.model_attribute)
 
         # Unpack wells
         wells_dict = data.get("wells_dict", {})
@@ -319,4 +317,5 @@ class Model:
         """
         # Placeholder for load logic
         data = load(filepath)
+        self.unpack_dict(data)
         logger.info(f"Model '{self.name}' loaded from '{filepath}'.")

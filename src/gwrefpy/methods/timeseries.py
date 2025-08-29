@@ -1,3 +1,5 @@
+import pandas as pd
+
 def adjust_timeseries(
     ref_timeseries,
     obs_timeseries,

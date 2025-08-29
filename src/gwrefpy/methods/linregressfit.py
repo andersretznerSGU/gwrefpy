@@ -78,7 +78,7 @@ def linregressfit(
         return stderr
 
     # Align the time series to ensure they cover the same time period
-    ref_timeseries, obs_timeseries = adjust_timeseries(
+    ref_timeseries, obs_timeseries, n = adjust_timeseries(
         ref_well.timeseries,
         obs_well.timeseries,
         time_equivalent,
@@ -86,7 +86,6 @@ def linregressfit(
         calibration_period_end,
     )
 
-    n = len(ref_timeseries)
     linreg = _get_linear_regression(ref_timeseries, obs_timeseries)
 
     stderr = compute_residual_std_error(

@@ -35,7 +35,7 @@ def save(filename, data, overwrite=False):
     # Check the filename extension
     ext = os.path.splitext(filename)[1]
     if ext == "":
-        filename += ".gwref"
+        ext = ".gwref"
     elif ext not in [".gwref"]:
         logger.error(f"Unsupported file extension: {ext}. Expected '.gwref'.")
         raise ValueError(f"Unsupported file extension: {ext}. Expected '.gwref'.")
