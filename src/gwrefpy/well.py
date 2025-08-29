@@ -1,12 +1,3 @@
-"""
-Well Module
------------
-
-This module contains classes for managing wells in a groundwater model.
-It includes a base class `WellBase` and two derived classes `ReferenceWell`
-and `ObservationWell`.
-"""
-
 import logging
 
 import pandas as pd
@@ -28,9 +19,10 @@ class Well:
         name : str
             The name of the well.
         is_reference : bool
-            Indicates if the well is a reference well (True) or an observation well (False).
-        model : Model
-            The groundwater model to which the well belongs.
+            Indicates if the well is a reference well (True) or an observation
+             well (False).
+        model : Model | None
+            Supply a Model instance to associate the well with a groundwater model.
 
         """
 
