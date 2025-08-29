@@ -1,8 +1,8 @@
 import numpy as np
 import scipy as sp
 
-from src.gwrefpy.fitresults import FitResultData
-from src.gwrefpy.methods.timeseries import adjust_timeseries
+from gwrefpy.fitresults import FitResultData
+from gwrefpy.methods.timeseries import adjust_timeseries
 
 
 def linregressfit(
