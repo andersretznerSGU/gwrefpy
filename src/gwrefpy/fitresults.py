@@ -1,6 +1,18 @@
 class FitResultData:
     def __init__(
-        self, ref_well, obs_well, rmse, n, fit_method, t_a, stderr, pred_const
+        self,
+        ref_well,
+        obs_well,
+        rmse,
+        n,
+        fit_method,
+        t_a,
+        stderr,
+        pred_const,
+        p,
+        time_equivalent,
+        calibration_period_start,
+        calibration_period_end,
     ):
         """
         Initialize a FitResultData object to store the results of a fit between
@@ -23,6 +35,14 @@ class FitResultData:
             The standard error of the regression.
         pred_const : float
             The prediction constant for the confidence interval.
+        p : float
+            The confidence level used in the fit.
+        time_equivalent : float
+            The time equivalent value.
+        calibration_period_start : datetime
+            The start date of the calibration period.
+        calibration_period_end : datetime
+            The end date of the calibration period.
         """
         self.ref_well = ref_well
         self.obs_well = obs_well
@@ -32,6 +52,10 @@ class FitResultData:
         self.t_a = t_a
         self.stderr = stderr
         self.pred_const = pred_const
+        self.p = p
+        self.time_equivalent = time_equivalent
+        self.calibration_period_start = calibration_period_start
+        self.calibration_period_end = calibration_period_end
 
     def __str__(self):
         return (

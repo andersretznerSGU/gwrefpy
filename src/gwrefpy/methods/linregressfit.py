@@ -1,10 +1,18 @@
 import numpy as np
 import scipy as sp
 
-from gwrefpy.fitresults import FitResultData
+from src.gwrefpy.fitresults import FitResultData
+from src.gwrefpy.methods.timeseries import adjust_timeseries
 
 
-def linregressfit(ref_well, obs_well, p=0.95):
+def linregressfit(
+    ref_well,
+    obs_well,
+    time_equivalent,
+    calibration_period_start,
+    calibration_period_end,
+    p=0.95,
+):
     """
     Perform linear regression fit between reference and observation well time series.
 
@@ -14,6 +22,10 @@ def linregressfit(ref_well, obs_well, p=0.95):
         The reference well object containing the time series data.
     obs_well : Well
         The observation well object containing the time series data.
+    ref_timeseries : pd.Series
+        A pandas Series with a datetime index and numerical values for the reference well.
+    obs_timeseries : pd.Series
+        A pandas Series with a datetime index and numerical values for the observation well.
     p : float, optional
         The confidence level for the prediction interval (default is 0.95).
 
@@ -65,12 +77,20 @@ def linregressfit(ref_well, obs_well, p=0.95):
 
         return stderr
 
-    n = len(ref_well.timeseries)
+    # Align the time series to ensure they cover the same time period
+    ref_timeseries, obs_timeseries = adjust_timeseries(
+        ref_well.timeseries,
+        obs_well.timeseries,
+        time_equivalent,
+        calibration_period_start,
+        calibration_period_end,
+    )
 
-    linreg = _get_linear_regression(ref_well.timeseries, obs_well.timeseries)
+    n = len(ref_timeseries)
+    linreg = _get_linear_regression(ref_timeseries, obs_timeseries)
 
     stderr = compute_residual_std_error(
-        ref_well.timeseries, obs_well.timeseries, linreg.slope, linreg.intercept, n
+        ref_timeseries, obs_timeseries, linreg.slope, linreg.intercept, n
     )
 
     pred_const, t_a = _get_gwrefs_stats(p, n, stderr)
@@ -85,5 +105,9 @@ def linregressfit(ref_well, obs_well, p=0.95):
         t_a=t_a,
         stderr=stderr,
         pred_const=pred_const,
+        p=p,
+        time_equivalent=time_equivalent,
+        calibration_period_start=calibration_period_start,
+        calibration_period_end=calibration_period_end,
     )
     return fit_result

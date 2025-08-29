@@ -1,9 +1,9 @@
 from pathlib import Path
-from gwrefpy import Model, Well
 
 import pandas as pd
 import pytest
 
+from gwrefpy import Model, Well
 
 THIS_DIR = Path(__file__).resolve().parent
 TEST_PATH = THIS_DIR / "test_lagga2.csv"

@@ -4,12 +4,12 @@ Model
 A class representing a groundwater model that can contain multiple wells.
 
 """
+
 import logging
 
+from gwrefpy.io.io import load, save
 from gwrefpy.methods.linregressfit import linregressfit
 from gwrefpy.well import Well
-from gwrefpy.io.io import save, load
-
 
 logger = logging.getLogger(__name__)
 
@@ -166,6 +166,10 @@ class Model:
         logger.debug(
             f"Internal fitting logic for model '{self.name}' with reference well '{ref_well.name}' and observation well '{obs_well.name}'."
         )
+
+        # Validate and adjust wells
+        ref_timeseries = ref_well.timeseries
+        obs_timeseries = obs_well.timeseries
 
         fit = None
         if method == "linearregression":
