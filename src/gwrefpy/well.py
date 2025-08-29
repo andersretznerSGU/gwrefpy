@@ -19,7 +19,7 @@ class WellBase:
     Base class for a well in a groundwater model.
     """
 
-    def __init__(self, name, model):
+    def __init__(self, name, is_reference, model=None):
         """
         Initialize a WellBase object.
 
@@ -27,6 +27,8 @@ class WellBase:
         ----------
         name : str
             The name of the well.
+        is_reference : bool
+            Indicates if the well is a reference well (True) or an observation well (False).
         model : Model
             The groundwater model to which the well belongs.
 
@@ -35,15 +37,15 @@ class WellBase:
         # Initialize attributes
         self._name = None
         self.name = name  # This will call the setter
-        self.model = model  # Reference to the groundwater model
-        model.add_well(self)  # Add this well to the model's list of wells
+        self.is_reference = is_reference
+        self.model = []
+        if model is not None:
+            self.model.append(model)  # Reference to the groundwater model # Todo: allow multiple models? with for loop
+            model.add_well(self)  # Add this well to the model's list of wells
+
 
         # Time and measurement attributes
-        self.time = pd.Series(dtype="datetime64[ns]")  # Time series, as datetime
-        self._time = pd.Series(dtype="float64")  # Internal time series as float
-        self.measurements = pd.Series(
-            dtype="float64"
-        )  # Measurement series, can be any numeric type
+        self.timeseries = None
 
         # Plotting attributes
         self.color = None
@@ -104,30 +106,6 @@ class WellBase:
     def __str__(self):
         return f"Well: {self.name}"
 
-    def _get_linear_regression(self, **kwargs):
-        """
-        Perform linear regression on the given data points.
-
-        Parameters
-        ----------
-        x : array-like
-            The independent variable data points.
-        y : array-like
-            The dependent variable data points.
-
-        Returns
-        -------
-        linreg : LinregressResult
-            An object containing the slope, intercept, r-value, p-value,
-            and standard error of the regression line.
-        """
-        if len(self.time) != len(self.measurements):
-            raise ValueError("x and y must have the same length")
-
-        # Calculate the slope and intercept using scipy's linregress
-        linreg = stats.linregress(self.time, self.measurements, **kwargs)
-
-        return linreg
 
     @staticmethod
     def _datetime_to_float(date_time):
@@ -146,59 +124,14 @@ class WellBase:
         """
         return date_time.timestamp() if hasattr(date_time, "timestamp") else date_time
 
-    def add_well_data(self, time, measurements):
+    def add_timeseries(self, timeseries):
         """
         Add time and measurement data to the well.
 
         Parameters
         ----------
-        time : array-like
-            The time data points.
-        measurements : array-like
-            The measurement data points.
+
 
         """
-        if len(time) != len(measurements):
-            logger.warning("Time and measurements must have the same length")
-            raise ValueError("Time and measurements must have the same length")
-
-        logger.info(f"Adding {len(time)} data points to well '{self.name}'")
-
-        self.time = pd.Series(time)
-        self.measurements = pd.Series(measurements)
-
-
-class ReferenceWell(WellBase):
-    """
-    Class for a reference well in a groundwater model.
-    """
-
-    def __init__(self, name, model):
-        """
-        Initialize a ReferenceWell object.
-
-        Parameters
-        ----------
-        name : str
-            The name of the reference well.
-
-        """
-        super().__init__(name, model)
-
-
-class ObservationWell(WellBase):
-    """
-    Class for an observation well in a groundwater model.
-    """
-
-    def __init__(self, name, model):
-        """
-        Initialize an ObservationWell object.
-
-        Parameters
-        ----------
-        name : str
-            The name of the observation well.
-
-        """
-        super().__init__(name, model)
+        _validatre_timeseries(self, timeseries)
+        self.timeseries = timeseries

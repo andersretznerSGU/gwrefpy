@@ -10,6 +10,7 @@ from src.gwrefpy.io.io import save, load
 
 logger = logging.getLogger(__name__)
 
+
 class Model:
     def __init__(self, name: str):
         self.name = name
@@ -70,6 +71,7 @@ class Model:
             logger.error(f"Well '{well.name}' is already in the model.")
             raise ValueError(f"Well '{well.name}' is already in the model.")
         self.wells.append(well)
+        #TODO: add model also to well
         logger.debug(f"Well '{well.name}' added to model '{self.name}'.")
 
     def save(self, filepath, overwrite=False):
