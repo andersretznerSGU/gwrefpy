@@ -84,10 +84,6 @@ class Model:
         None
             This method modifies the model in place.
         """
-        # Check if the well name already exists in the model
-        if well.name in self.well_names:
-            logger.error(f"Well name '{well.name}' already exists in the model.")
-            raise ValueError(f"Well name '{well.name}' already exists in the model.")
 
         # Check if the well is an instance of Well
         if not isinstance(well, Well):
@@ -98,6 +94,11 @@ class Model:
         if well in self.wells:
             logger.error(f"Well '{well.name}' is already in the model.")
             raise ValueError(f"Well '{well.name}' is already in the model.")
+
+        # Check if the well name already exists in the model
+        if well.name in self.well_names:
+            logger.error(f"Well name '{well.name}' already exists in the model.")
+            raise ValueError(f"Well name '{well.name}' already exists in the model.")
 
         # Add the well to the model
         self.wells.append(well)
