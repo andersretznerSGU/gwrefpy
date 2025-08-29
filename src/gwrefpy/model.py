@@ -19,12 +19,17 @@ class Model:
         # Well attributes
         self.wells = []
 
+        # Fit attributes
+        self.fits = []
+
         # Model attributes
         self.model_attribute = {}
 
     def __str__(self):
         """String representation of the Model object."""
         return f"Model(name={self.name}, wells={len(self.wells)})"
+
+    # ============================== Well Management Methods ==============================
 
     @property
     def obs_wells(self):
@@ -104,6 +109,105 @@ class Model:
         self.wells.append(well)
         well.model.append(self)
         logger.debug(f"Well '{well.name}' added to model '{self.name}'.")
+
+    # ============================== Load and Save Methods ==============================
+
+    def fit(self, ref_well, obs_well):
+        """
+        Fit the model using a reference well and an observation well.
+
+        Parameters
+        ----------
+        ref_well : Well
+            The reference well to use for fitting.
+        obs_well : Well
+            The observation well to use for fitting.
+
+        Returns
+        -------
+        None
+            This method modifies the model in place.
+        """
+        # Placeholder for fit logic
+        logger.info(f"Fitting model '{self.name}' using reference well '{ref_well.name}' and observation well '{obs_well.name}'.")
+
+    def _fit(self, ref_well, obs_well):
+        """
+        The internal method to perform the fitting.
+
+        Parameters
+        ----------
+        ref_well : Well
+            The reference well to use for fitting.
+        obs_well : Well
+            The observation well to use for fitting.
+
+        Returns
+        -------
+        None
+            This method modifies the model in place.
+        """
+        # Check that the ref_well is a reference well
+        if not ref_well.is_reference:
+            logger.error(f"The well '{ref_well.name}' is not a reference well.")
+            raise ValueError(f"The well '{ref_well.name}' is not a reference well.")
+
+        # Check that the obs_well is an observation well
+        if obs_well.is_reference:
+            logger.error(f"The well '{obs_well.name}' is not an observation well.")
+            raise ValueError(f"The well '{obs_well.name}' is not an observation well.")
+
+        # Placeholder for internal fit logic
+        logger.debug(
+            f"Internal fitting logic for model '{self.name}' with reference well '{ref_well.name}' and observation well '{obs_well.name}'.")
+        #fit = FitResults(ref_well, obs_well)
+        fit = 'h'
+        self.fits.append(fit)
+        logger.info(f"Fit completed for model '{self.name}'.")
+
+    def best_fit(self, ref_well=None, obs_well=None):
+        """
+        Find the best fit for the model using the provided wells.
+
+        Parameters
+        ----------
+        ref_well : Well or list of Well or None, optional
+            The reference well to use for fitting (default is None).
+        obs_well : Well or list of Well or None, optional
+            The observation well to use for fitting (default is None).
+
+        Returns
+        -------
+        None
+            This method modifies the model in place.
+        """
+        # Placeholder for best fit logic
+        logger.info(f"Finding best fit for model '{self.name}'.")
+
+    def _best_fit(self, ref_well=None, obs_well=None):
+        """
+        The internal method to find the best fit.
+
+        Parameters
+        ----------
+        ref_well : Well or list of Well or None, optional
+            The reference well to use for fitting (default is None).
+        obs_well : Well or list of Well or None, optional
+            The observation well to use for fitting (default is None).
+
+        Returns
+        -------
+        None
+            This method modifies the model in place.
+        """
+        # Placeholder for internal best fit logic
+        logger.debug(f"Internal best fit logic for model '{self.name}'.")
+        #best_fit = BestFitResults(ref_well, obs_well)
+        best_fit = 'h'
+        self.fits.append(best_fit)
+        logger.info(f"Best fit completed for model '{self.name}'.")
+
+    # ============================== Load and Save Methods ==============================
 
     def to_dict(self):
         """
