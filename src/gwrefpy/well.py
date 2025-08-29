@@ -193,13 +193,11 @@ class Well:
         data : dict
             A dictionary containing the well's attributes.
         """
-        self.name = data.get("name", self.name)
-        self.is_reference = data.get("is_reference", self.is_reference)
 
         timeseries_dict = data.get("timeseries", None)
         if timeseries_dict is not None:
             # Convert float timestamps back to DatetimeIndex
-            datetime_index = pd.Index([float_to_datetime(ts) for ts in timeseries_dict.keys()])
+            datetime_index = pd.Index([float_to_datetime(float(ts)) for ts in timeseries_dict.keys()])
             values = list(timeseries_dict.values())
             self.timeseries = pd.Series(values, index=datetime_index)
 

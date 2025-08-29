@@ -268,9 +268,10 @@ class Model:
 
         # Unpack wells
         wells_dict = data.get("wells_dict", {})
-        for well_name, is_reference, well_data in wells_dict.items():
-            well = Well(name=well_name, is_reference=is_reference)
-            well.unpack_dict(well_data)
+        for w in wells_dict.items():
+            well_obj = w[1]
+            well = Well(name=well_obj["name"], is_reference=well_obj["is_reference"])
+            well.unpack_dict(well_obj)
             self.add_well(well)
 
     def save_project(self, filename=None, overwrite=False):

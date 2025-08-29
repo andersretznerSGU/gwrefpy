@@ -30,4 +30,4 @@ def float_to_datetime(float_time):
     datetime
         The corresponding datetime object.
     """
-    return pd.to_datetime(float_time, unit='s')
+    return pd.to_datetime(float_time)
