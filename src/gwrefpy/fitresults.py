@@ -1,7 +1,7 @@
-
-
 class FitResultData:
-    def __init__(self, ref_well, obs_well, rmse, n, fit_method, t_a, stderr, pred_const):
+    def __init__(
+        self, ref_well, obs_well, rmse, n, fit_method, t_a, stderr, pred_const
+    ):
         """
         Initialize a FitResultData object to store the results of a fit between
 
@@ -33,11 +33,14 @@ class FitResultData:
         self.stderr = stderr
         self.pred_const = pred_const
 
-
     def __str__(self):
-        return (f"FitResultData(ref_well={self.ref_well}, obs_well={self.obs_well}, "
-                f"rmse={self.rmse:.4f}, n={self.n}, fit_method={self.fit_method})")
+        return (
+            f"FitResultData(ref_well={self.ref_well}, obs_well={self.obs_well}, "
+            f"rmse={self.rmse:.4f}, n={self.n}, fit_method={self.fit_method})"
+        )
 
     def __repr__(self):
-        return (f"FitResultData(ref_well={self.ref_well}, obs_well={self.obs_well}, "
-                f"rmse={self.rmse:.4f}, n={self.n}, fit_method={self.fit_method})")
+        return (
+            f"FitResultData(ref_well={self.ref_well}, obs_well={self.obs_well}, "
+            f"rmse={self.rmse:.4f}, n={self.n}, fit_method={self.fit_method})"
+        )

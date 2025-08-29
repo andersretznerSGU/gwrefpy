@@ -1,6 +1,7 @@
 import numpy as np
 import scipy as sp
-from src.gwrefpy.fitresults import FitResultData
+
+from gwrefpy.fitresults import FitResultData
 
 
 def linregressfit(ref_well, obs_well, p=0.95):
@@ -48,16 +49,17 @@ def linregressfit(ref_well, obs_well, p=0.95):
         return -sp.stats.t.ppf(probability, degrees_freedom)
 
     def _get_gwrefs_stats(p, n, stderr):
-
         ta = _t_inv((1 - p) / 2, n - 1)
-        pc = ta * stderr * np.sqrt(1+1/n)
+        pc = ta * stderr * np.sqrt(1 + 1 / n)
         return pc, ta
 
-    def stdfelxy(x, y, a, b, n):
+    def compute_residual_std_error(x, y, a, b, n):
         y_pred = a * x + b
         residuals = y - y_pred
 
-        stderr = np.sum(residuals ** 2) -  np.sum(residuals * (x - np.mean(x))) ** 2 / np.sum((x - np.mean(x)) ** 2)
+        stderr = np.sum(residuals**2) - np.sum(
+            residuals * (x - np.mean(x))
+        ) ** 2 / np.sum((x - np.mean(x)) ** 2)
         stderr *= 1 / (n - 2)
         stderr = np.sqrt(stderr)
 
@@ -67,7 +69,9 @@ def linregressfit(ref_well, obs_well, p=0.95):
 
     linreg = _get_linear_regression(ref_well.timeseries, obs_well.timeseries)
 
-    stderr = stdfelxy(ref_well.timeseries, obs_well.timeseries, linreg.slope, linreg.intercept, n)
+    stderr = compute_residual_std_error(
+        ref_well.timeseries, obs_well.timeseries, linreg.slope, linreg.intercept, n
+    )
 
     pred_const, t_a = _get_gwrefs_stats(p, n, stderr)
 
@@ -80,6 +84,6 @@ def linregressfit(ref_well, obs_well, p=0.95):
         fit_method=linreg,
         t_a=t_a,
         stderr=stderr,
-        pred_const=pred_const
+        pred_const=pred_const,
     )
     return fit_result

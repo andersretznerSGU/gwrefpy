@@ -4,12 +4,12 @@ Model
 A class representing a groundwater model that can contain multiple wells.
 
 """
-
 import logging
 
-from src.gwrefpy.methods.linregressfit import linregressfit
-from src.gwrefpy.well import Well
-from src.gwrefpy.io.io import save, load
+from gwrefpy.methods.linregressfit import linregressfit
+from gwrefpy.well import Well
+from gwrefpy.io.io import save, load
+
 
 logger = logging.getLogger(__name__)
 
@@ -128,9 +128,11 @@ class Model:
             This method modifies the model in place.
         """
         self._fit(ref_well, obs_well)
-        logger.info(f"Fitting model '{self.name}' using reference well '{ref_well.name}' and observation well '{obs_well.name}'.")
+        logger.info(
+            f"Fitting model '{self.name}' using reference well '{ref_well.name}' and observation well '{obs_well.name}'."
+        )
 
-    def _fit(self, ref_well, obs_well, p=0.95, method='linearregression'):
+    def _fit(self, ref_well, obs_well, p=0.95, method="linearregression"):
         """
         The internal method to perform the fitting.
 
@@ -162,10 +164,11 @@ class Model:
 
         # Placeholder for internal fit logic
         logger.debug(
-            f"Internal fitting logic for model '{self.name}' with reference well '{ref_well.name}' and observation well '{obs_well.name}'.")
+            f"Internal fitting logic for model '{self.name}' with reference well '{ref_well.name}' and observation well '{obs_well.name}'."
+        )
 
         fit = None
-        if method == 'linearregression':
+        if method == "linearregression":
             logger.debug("Using linear regression method for fitting.")
             fit = linregressfit(ref_well, obs_well, p=p)
 
@@ -213,8 +216,8 @@ class Model:
         """
         # Placeholder for internal best fit logic
         logger.debug(f"Internal best fit logic for model '{self.name}'.")
-        #best_fit = BestFitResults(ref_well, obs_well)
-        best_fit = 'h'
+        # best_fit = BestFitResults(ref_well, obs_well)
+        best_fit = "h"
         self.fits.append(best_fit)
         logger.info(f"Best fit completed for model '{self.name}'.")
 
