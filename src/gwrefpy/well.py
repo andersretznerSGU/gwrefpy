@@ -8,8 +8,8 @@ and `ObservationWell`.
 """
 
 import logging
+
 import pandas as pd
-import scipy.stats as stats
 
 logger = logging.getLogger(__name__)
 
@@ -124,14 +124,50 @@ class Well:
         """
         return date_time.timestamp() if hasattr(date_time, "timestamp") else date_time
 
-    def add_timeseries(self, timeseries):
+    def add_timeseries(self, timeseries: pd.Series):
         """
-        Add time and measurement data to the well.
+        Add a timeseries to the well. This will be validated by `_validate_timeseries`.
 
         Parameters
         ----------
-
+        timeseries : pd.Series
+            A pandas Series containing the time series data to add.
 
         """
-        _validatre_timeseries(self, timeseries)
+        self._validate_timeseries(timeseries)
         self.timeseries = timeseries
+
+    def _validate_timeseries(self, timeseries: pd.Series):
+        """
+        Validate the timeseries data and data types.
+
+        Parameters
+        ----------
+        timeseries : pd.Series
+            The timeseries data to validate.
+
+        Raises
+        ------
+        TypeError
+            If the data types are invalid.
+        ValueError
+            If the timeseries is not valid.
+        """
+        # Check basic structure
+        if not isinstance(timeseries, pd.Series):
+            raise TypeError("Timeseries must be a pandas Series.")
+        if timeseries.empty:
+            raise ValueError("Timeseries cannot be empty.")
+
+        # Check index is DatetimeIndex with pandas.Timestamps
+        if not isinstance(timeseries.index, pd.DatetimeIndex):
+            raise TypeError(
+                f"Timeseries index must be pandas.DatetimeIndex, "
+                f"got {type(timeseries.index)}"
+            )
+
+        # Check values are float dtype
+        if not pd.api.types.is_float_dtype(timeseries.values):
+            raise TypeError(
+                f"Timeseries values must be float dtype, got {timeseries.values.dtype}"
+            )

@@ -3,7 +3,7 @@ from src.gwrefpy.well import Well
 
 
 def test_datetime_to_float():
-    well = Well("Test Well", model=Model("Test Model"))
+    well = Well("Test Well", model=Model("Test Model"), is_reference=True)
 
     import datetime
 
@@ -15,23 +15,23 @@ def test_datetime_to_float():
 
 def test_well_name():
     model = Model("Test Model")
-    well = Well("Test Well", model=model)
+    well = Well("Test Well", model=model, is_reference=True)
     assert well.name == "Test Well"
 
     try:
-        Well("", model=model)
+        Well("", model=model, is_reference=True)
     except ValueError as e:
         assert str(e) == "Name cannot be an empty string."
 
     try:
-        Well(123, model=model)
+        Well(123, model=model, is_reference=True)
     except TypeError as e:
         assert str(e) == "Name must be a string."
 
 
 def test_set_kwargs():
     model = Model("Test Model")
-    well = Well("Test Well", model=model)
+    well = Well("Test Well", model=model, is_reference=True)
 
     well.set_kwargs(color="red", alpha=0.5, latitude=45.0, longitude=-120.0)
     assert well.color == "red"
@@ -42,4 +42,9 @@ def test_set_kwargs():
     try:
         well.set_kwargs(invalid_attr=123)
     except AttributeError as e:
-        assert str(e) == "WellBase has no attribute 'invalid_attr'"
+        assert str(e) == "Well has no attribute 'invalid_attr'"
+
+
+def test_well_with_valid_timeseries(timeseries):
+    well = Well("Test Well", is_reference=True)
+    well.add_timeseries(timeseries)
