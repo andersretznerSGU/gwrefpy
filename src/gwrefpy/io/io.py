@@ -4,6 +4,7 @@ IO
 
 Input/output functions for saving and loading objects.
 """
+
 import json
 import logging
 import os
@@ -13,7 +14,7 @@ from os import path
 logger = logging.getLogger(__name__)
 
 
-def save(filename, data, overwrite=False, **kwargs):
+def save(filename, data, overwrite=False):
     """
     Save an object to a file.
 
@@ -25,8 +26,6 @@ def save(filename, data, overwrite=False, **kwargs):
         The data to save, typically a dictionary containing the object and its metadata.
     overwrite : bool, optional
         If True, overwrite the file if it already exists. Default is False.
-    **kwargs : dict
-        Additional keyword arguments that may be used for saving options.
 
     Returns
     -------

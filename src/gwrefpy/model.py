@@ -4,11 +4,13 @@ Model
 A class representing a groundwater model that can contain multiple wells.
 
 """
+
 import logging
-from src.gwrefpy.well import WellBase
+from src.gwrefpy.well import Well
 from src.gwrefpy.io.io import save, load
 
 logger = logging.getLogger(__name__)
+
 
 class Model:
     def __init__(self, name: str):
@@ -17,8 +19,32 @@ class Model:
         # Well attributes
         self.wells = []
 
+        # Fit attributes
+        self.fits = []
+
         # Model attributes
         self.model_attribute = {}
+
+    def __str__(self):
+        """String representation of the Model object."""
+        return f"Model(name={self.name}, wells={len(self.wells)})"
+
+    # ============================== Well Management Methods ==============================
+
+    @property
+    def obs_wells(self):
+        """List of observation wells in the model."""
+        return [well for well in self.wells if not well.is_reference]
+
+    @property
+    def ref_wells(self):
+        """List of reference wells in the model."""
+        return [well for well in self.wells if well.is_reference]
+
+    @property
+    def well_names(self):
+        """List of all well names in the model."""
+        return [well.name for well in self.wells]
 
     def add_well(self, well):
         """
@@ -26,7 +52,7 @@ class Model:
 
         Parameters
         ----------
-        well : WellBase or list of WellBase
+        well : Well or list of WellBase
             The well or list of wells to add to the model.
 
         Returns
@@ -48,7 +74,7 @@ class Model:
 
         Parameters
         ----------
-        well : WellBase
+        well : Well
             The well to add to the model.
 
         Raises
@@ -63,38 +89,203 @@ class Model:
         None
             This method modifies the model in place.
         """
-        if not isinstance(well, WellBase):
-            logger.error("Only WellBase instances can be added to the model.")
-            raise TypeError("Only WellBase instances can be added to the model.")
+
+        # Check if the well is an instance of Well
+        if not isinstance(well, Well):
+            logger.error("Only Well instances can be added to the model.")
+            raise TypeError("Only Well instances can be added to the model.")
+
+        # Check if the well is already in the model
         if well in self.wells:
             logger.error(f"Well '{well.name}' is already in the model.")
             raise ValueError(f"Well '{well.name}' is already in the model.")
+
+        # Check if the well name already exists in the model
+        if well.name in self.well_names:
+            logger.error(f"Well name '{well.name}' already exists in the model.")
+            raise ValueError(f"Well name '{well.name}' already exists in the model.")
+
+        # Add the well to the model
         self.wells.append(well)
+        well.model.append(self)
         logger.debug(f"Well '{well.name}' added to model '{self.name}'.")
 
-    def save(self, filepath, overwrite=False):
+    # ============================== Load and Save Methods ==============================
+
+    def fit(self, ref_well, obs_well):
+        """
+        Fit the model using a reference well and an observation well.
+
+        Parameters
+        ----------
+        ref_well : Well
+            The reference well to use for fitting.
+        obs_well : Well
+            The observation well to use for fitting.
+
+        Returns
+        -------
+        None
+            This method modifies the model in place.
+        """
+        # Placeholder for fit logic
+        logger.info(f"Fitting model '{self.name}' using reference well '{ref_well.name}' and observation well '{obs_well.name}'.")
+
+    def _fit(self, ref_well, obs_well):
+        """
+        The internal method to perform the fitting.
+
+        Parameters
+        ----------
+        ref_well : Well
+            The reference well to use for fitting.
+        obs_well : Well
+            The observation well to use for fitting.
+
+        Returns
+        -------
+        None
+            This method modifies the model in place.
+        """
+        # Check that the ref_well is a reference well
+        if not ref_well.is_reference:
+            logger.error(f"The well '{ref_well.name}' is not a reference well.")
+            raise ValueError(f"The well '{ref_well.name}' is not a reference well.")
+
+        # Check that the obs_well is an observation well
+        if obs_well.is_reference:
+            logger.error(f"The well '{obs_well.name}' is not an observation well.")
+            raise ValueError(f"The well '{obs_well.name}' is not an observation well.")
+
+        # Placeholder for internal fit logic
+        logger.debug(
+            f"Internal fitting logic for model '{self.name}' with reference well '{ref_well.name}' and observation well '{obs_well.name}'.")
+        #fit = FitResults(ref_well, obs_well)
+        fit = 'h'
+        self.fits.append(fit)
+        logger.info(f"Fit completed for model '{self.name}'.")
+
+    def best_fit(self, ref_well=None, obs_well=None):
+        """
+        Find the best fit for the model using the provided wells.
+
+        Parameters
+        ----------
+        ref_well : Well or list of Well or None, optional
+            The reference well to use for fitting (default is None).
+        obs_well : Well or list of Well or None, optional
+            The observation well to use for fitting (default is None).
+
+        Returns
+        -------
+        None
+            This method modifies the model in place.
+        """
+        # Placeholder for best fit logic
+        logger.info(f"Finding best fit for model '{self.name}'.")
+
+    def _best_fit(self, ref_well=None, obs_well=None):
+        """
+        The internal method to find the best fit.
+
+        Parameters
+        ----------
+        ref_well : Well or list of Well or None, optional
+            The reference well to use for fitting (default is None).
+        obs_well : Well or list of Well or None, optional
+            The observation well to use for fitting (default is None).
+
+        Returns
+        -------
+        None
+            This method modifies the model in place.
+        """
+        # Placeholder for internal best fit logic
+        logger.debug(f"Internal best fit logic for model '{self.name}'.")
+        #best_fit = BestFitResults(ref_well, obs_well)
+        best_fit = 'h'
+        self.fits.append(best_fit)
+        logger.info(f"Best fit completed for model '{self.name}'.")
+
+    # ============================== Load and Save Methods ==============================
+
+    def to_dict(self):
+        """
+        Convert the model to a dictionary representation.
+
+        Returns
+        -------
+        dict
+            A dictionary representation of the model.
+        """
+        # Create a dictionary representation of the model
+        model_dict = {
+            "name": self.name,
+            "wells": [well.name for well in self.wells],
+            "model_attribute": self.model_attribute,
+        }
+
+        # Create a dictionary representation of each well
+        wells_dict = {}
+        for well in self.wells:
+            wells_dict[well.name] = well.to_dict()
+        model_dict["wells_dict"] = wells_dict
+
+        return model_dict
+
+    def unpack_dict(self, data):
+        """
+        Unpack a dictionary representation of the model and set the model's attributes.
+
+        Parameters
+        ----------
+        data : dict
+            A dictionary representation of the model.
+
+        Returns
+        -------
+        None
+            This method modifies the model in place.
+        """
+        self.name = data.get("name", self.name)
+        self.model_attribute = data.get("model_attribute", self.model_attribute)
+
+        # Unpack wells
+        wells_dict = data.get("wells_dict", {})
+        for well_name, is_reference, well_data in wells_dict.items():
+            well = Well(name=well_name, is_reference=is_reference)
+            well.unpack_dict(well_data)
+            self.add_well(well)
+
+    def save_project(self, filename=None, overwrite=False):
         """
         Save the model to a file.
 
         Parameters
         ----------
-        filepath : str
-            The path to the file where the model will be saved.
+        filename : str or None, optional
+            The name of the file where the model will be saved. The path can be included.
+        overwrite : bool, optional
+            Whether to overwrite the file if it already exists (default is False).
 
         Returns
         -------
         None
             This method saves the model to a file.
         """
-        # Convert model to dict before saving
-        # Placeholder for actual conversion logic
-        # model_dict = self.to_dict()
+
+        # Convert the model to a dictionary
+        model_dict = self.to_dict()
+
+        # Set default filename if not provided
+        if filename is None:
+            filename = f"{self.name}.gwref"
 
         # Save the model dictionary to a file
-        save(self, filepath, overwrite=overwrite)
-        logger.info(f"Model '{self.name}' saved to '{filepath}'.")
+        save(filename, model_dict, overwrite=overwrite)
+        logger.info(f"Model '{self.name}' saved to '{filename}'.")
 
-    def load(self, filepath):
+    def open_project(self, filepath):
         """
         Load the model from a file.
 
@@ -109,4 +300,5 @@ class Model:
             This method loads the model from a file.
         """
         # Placeholder for load logic
+        data = load(filepath)
         logger.info(f"Model '{self.name}' loaded from '{filepath}'.")

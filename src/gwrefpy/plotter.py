@@ -1,5 +1,3 @@
-
-
 class Plotter:
     well_list = None
 
