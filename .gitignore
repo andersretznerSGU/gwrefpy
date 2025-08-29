@@ -17,3 +17,6 @@ wheels/
 
 # vscode
 .vscode/
+
+# AI
+CLAUDE.md
