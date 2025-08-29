@@ -1,7 +1,7 @@
 from scipy.stats import stats
 
 
-class Fit():
+class Fit:
     def __init__(self, model, data):
         self.model = model
         self.data = data

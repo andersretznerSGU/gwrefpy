@@ -40,9 +40,10 @@ class Well:
         self.is_reference = is_reference
         self.model = []
         if model is not None:
-            self.model.append(model)  # Reference to the groundwater model # Todo: allow multiple models? with for loop
+            self.model.append(
+                model
+            )  # Reference to the groundwater model # Todo: allow multiple models? with for loop
             model.add_well(self)  # Add this well to the model's list of wells
-
 
         # Time and measurement attributes
         self.timeseries = None
@@ -105,7 +106,6 @@ class Well:
 
     def __str__(self):
         return f"Well: {self.name}"
-
 
     @staticmethod
     def _datetime_to_float(date_time):
