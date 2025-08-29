@@ -1,6 +1,7 @@
 import logging
 
 import pandas as pd
+from .utils.conversions import float_to_datetime, datetime_to_float
 
 logger = logging.getLogger(__name__)
 
@@ -96,23 +97,6 @@ class Well:
     def __str__(self):
         return f"Well: {self.name}"
 
-    @staticmethod
-    def _datetime_to_float(date_time):
-        """
-        Convert a datetime object to a float representation.
-
-        Parameters
-        ----------
-        date_time : datetime
-            The datetime object to convert.
-
-        Returns
-        -------
-        float
-            The float representation of the datetime.
-        """
-        return date_time.timestamp() if hasattr(date_time, "timestamp") else date_time
-
     def add_timeseries(self, timeseries: pd.Series):
         """
         Add a timeseries to the well. This will be validated by `_validate_timeseries`.
@@ -144,12 +128,17 @@ class Well:
         """
         # Check basic structure
         if not isinstance(timeseries, pd.Series):
+            logger.error("Timeseries must be a pandas Series.")
             raise TypeError("Timeseries must be a pandas Series.")
         if timeseries.empty:
+            logger.error("Timeseries cannot be empty.")
             raise ValueError("Timeseries cannot be empty.")
 
         # Check index is DatetimeIndex with pandas.Timestamps
         if not isinstance(timeseries.index, pd.DatetimeIndex):
+            logger.error(
+                f"Timeseries index must be pandas.DatetimeIndex, got {type(timeseries.index)}"
+            )
             raise TypeError(
                 f"Timeseries index must be pandas.DatetimeIndex, "
                 f"got {type(timeseries.index)}"
@@ -157,6 +146,70 @@ class Well:
 
         # Check values are float dtype
         if not pd.api.types.is_float_dtype(timeseries.values):
+            logger.error(
+                f"Timeseries values must be float dtype, got {timeseries.values.dtype}"
+            )
             raise TypeError(
                 f"Timeseries values must be float dtype, got {timeseries.values.dtype}"
             )
+
+    def _time_series_to_dict(self):
+
+        # Convert DatetimeIndex to float timestamps
+        float_index = self.timeseries.index.map(lambda dt: datetime_to_float(dt))
+        return pd.Series(self.timeseries.values, index=float_index).to_dict()
+
+    def to_dict(self):
+        """
+        Convert the Well object to a dictionary representation.
+
+        Returns
+        -------
+        dict
+            A dictionary containing the well's attributes.
+        """
+        return {
+            "name": self.name,
+            "is_reference": self.is_reference,
+            "timeseries": self._time_series_to_dict() if self.timeseries is not None else None,
+            "color": self.color,
+            "alpha": self.alpha,
+            "linestyle": self.linestyle,
+            "linewidth": self.linewidth,
+            "marker": self.marker,
+            "markersize": self.markersize,
+            "markerstyle": self.markerstyle,
+            "latitude": self.latitude,
+            "longitude": self.longitude,
+            "elevation": self.elevation,
+        }
+
+    def unpack_dict(self, data):
+        """
+        Unpack a dictionary representation to set the Well object's attributes.
+
+        Parameters
+        ----------
+        data : dict
+            A dictionary containing the well's attributes.
+        """
+        self.name = data.get("name", self.name)
+        self.is_reference = data.get("is_reference", self.is_reference)
+
+        timeseries_dict = data.get("timeseries", None)
+        if timeseries_dict is not None:
+            # Convert float timestamps back to DatetimeIndex
+            datetime_index = pd.Index([float_to_datetime(ts) for ts in timeseries_dict.keys()])
+            values = list(timeseries_dict.values())
+            self.timeseries = pd.Series(values, index=datetime_index)
+
+        self.color = data.get("color", self.color)
+        self.alpha = data.get("alpha", self.alpha)
+        self.linestyle = data.get("linestyle", self.linestyle)
+        self.linewidth = data.get("linewidth", self.linewidth)
+        self.marker = data.get("marker", self.marker)
+        self.markersize = data.get("markersize", self.markersize)
+        self.markerstyle = data.get("markerstyle", self.markerstyle)
+        self.latitude = data.get("latitude", self.latitude)
+        self.longitude = data.get("longitude", self.longitude)
+        self.elevation = data.get("elevation", self.elevation)
