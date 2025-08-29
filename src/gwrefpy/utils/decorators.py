@@ -1,5 +1,14 @@
 def timed(iters=1):
-    """Decorator to time a function."""
+    """Decorator to time a function.
+    Parameters
+    ----------
+    iters : int
+        Number of iterations to run the function for timing. Default is 1.
+
+    Returns
+    -------
+    decorator : function
+        The decorator function."""
     import time
 
     def decorator(func):
@@ -34,7 +43,16 @@ def timed(iters=1):
 
 
 def print_return(func):
-    """Decorator to print the return value of a function."""
+    """Decorator to print the return value of a function.
+    Parameters
+    ----------
+    func : function
+        The function whose return value is to be printed.
+
+    Returns
+    -------
+    None
+        The return value of the decorated function is printed to the console."""
 
     def wrapper(*args, **kwargs):
         """Wrapper function that prints the return value."""
