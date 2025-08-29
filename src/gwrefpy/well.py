@@ -54,9 +54,6 @@ class Well:
         self.longitude = None
         self.elevation = None
 
-        # Well attributes
-        self.well_attribute = {}
-
     @property
     def name(self):
         """The name of the well."""

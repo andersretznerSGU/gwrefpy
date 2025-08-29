@@ -53,21 +53,33 @@ def linregressfit(ref_well, obs_well, p=0.95):
         pc = ta * stderr * np.sqrt(1+1/n)
         return pc, ta
 
+    def stdfelxy(x, y, a, b, n):
+        y_pred = a * x + b
+        residuals = y - y_pred
+
+        stderr = np.sum(residuals ** 2) -  np.sum(residuals * (x - np.mean(x))) ** 2 / np.sum((x - np.mean(x)) ** 2)
+        stderr *= 1 / (n - 2)
+        stderr = np.sqrt(stderr)
+
+        return stderr
+
     n = len(ref_well.timeseries)
 
     linreg = _get_linear_regression(ref_well.timeseries, obs_well.timeseries)
 
-    pred_const, t_a = _get_gwrefs_stats(p, n, linreg.stderr)
+    stderr = stdfelxy(ref_well.timeseries, obs_well.timeseries, linreg.slope, linreg.intercept, n)
+
+    pred_const, t_a = _get_gwrefs_stats(p, n, stderr)
 
     # Create and return a FitResultData object with the regression results
     fit_result = FitResultData(
         ref_well=ref_well,
         obs_well=obs_well,
-        rmse=linreg.stderr,
+        rmse=linreg.rvalue,
         n=n,
         fit_method=linreg,
         t_a=t_a,
-        stderr=linreg.stderr,
+        stderr=stderr,
         pred_const=pred_const
     )
     return fit_result

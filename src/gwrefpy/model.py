@@ -24,9 +24,6 @@ class Model:
         # Fit attributes
         self.fits = []
 
-        # Model attributes
-        self.model_attribute = {}
-
     def __str__(self):
         """String representation of the Model object."""
         return f"Model(name={self.name}, wells={len(self.wells)})"
@@ -143,6 +140,10 @@ class Model:
             The reference well to use for fitting.
         obs_well : Well
             The observation well to use for fitting.
+        p : float, optional
+            The confidence level for the fit (default is 0.95).
+        method : str, optional
+            The fitting method to use (default is 'linearregression').
 
         Returns
         -------
@@ -163,9 +164,15 @@ class Model:
         logger.debug(
             f"Internal fitting logic for model '{self.name}' with reference well '{ref_well.name}' and observation well '{obs_well.name}'.")
 
+        fit = None
         if method == 'linearregression':
             logger.debug("Using linear regression method for fitting.")
             fit = linregressfit(ref_well, obs_well, p=p)
+
+        if fit is None:
+            logger.error(f"Fitting method '{method}' is not implemented.")
+            raise NotImplementedError(f"Fitting method '{method}' is not implemented.")
+
         self.fits.append(fit)
         logger.info(f"Fit completed for model '{self.name}'.")
 
