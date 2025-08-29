@@ -1,11 +1,11 @@
 from src.gwrefpy.model import Model
-from src.gwrefpy.well import WellBase
+from src.gwrefpy.well import Well
 
 
 def test_add_well_to_model():
     model = Model("Test Model", "1.0")
-    well1 = WellBase("Well 1", model=model)
-    WellBase("Well 2", model=model)
+    well1 = Well("Well 1", model=model)
+    Well("Well 2", model=model)
 
     assert len(model.wells) == 2
     assert model.wells[0].name == "Well 1"

@@ -1,9 +1,9 @@
 from src.gwrefpy.model import Model
-from src.gwrefpy.well import WellBase
+from src.gwrefpy.well import Well
 
 
 def test_datetime_to_float():
-    well = WellBase("Test Well", model=Model("Test Model"))
+    well = Well("Test Well", model=Model("Test Model"))
 
     import datetime
 
@@ -15,23 +15,23 @@ def test_datetime_to_float():
 
 def test_well_name():
     model = Model("Test Model")
-    well = WellBase("Test Well", model=model)
+    well = Well("Test Well", model=model)
     assert well.name == "Test Well"
 
     try:
-        WellBase("", model=model)
+        Well("", model=model)
     except ValueError as e:
         assert str(e) == "Name cannot be an empty string."
 
     try:
-        WellBase(123, model=model)
+        Well(123, model=model)
     except TypeError as e:
         assert str(e) == "Name must be a string."
 
 
 def test_set_kwargs():
     model = Model("Test Model")
-    well = WellBase("Test Well", model=model)
+    well = Well("Test Well", model=model)
 
     well.set_kwargs(color="red", alpha=0.5, latitude=45.0, longitude=-120.0)
     assert well.color == "red"

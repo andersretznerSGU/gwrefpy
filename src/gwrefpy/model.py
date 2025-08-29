@@ -5,7 +5,7 @@ A class representing a groundwater model that can contain multiple wells.
 
 """
 import logging
-from src.gwrefpy.well import WellBase
+from src.gwrefpy.well import Well
 from src.gwrefpy.io.io import save, load
 
 logger = logging.getLogger(__name__)
@@ -27,7 +27,7 @@ class Model:
 
         Parameters
         ----------
-        well : WellBase or list of WellBase
+        well : Well or list of WellBase
             The well or list of wells to add to the model.
 
         Returns
@@ -49,7 +49,7 @@ class Model:
 
         Parameters
         ----------
-        well : WellBase
+        well : Well
             The well to add to the model.
 
         Raises
@@ -64,7 +64,7 @@ class Model:
         None
             This method modifies the model in place.
         """
-        if not isinstance(well, WellBase):
+        if not isinstance(well, Well):
             logger.error("Only WellBase instances can be added to the model.")
             raise TypeError("Only WellBase instances can be added to the model.")
         if well in self.wells:

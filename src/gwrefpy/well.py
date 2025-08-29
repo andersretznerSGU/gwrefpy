@@ -14,7 +14,7 @@ import scipy.stats as stats
 logger = logging.getLogger(__name__)
 
 
-class WellBase:
+class Well:
     """
     Base class for a well in a groundwater model.
     """
