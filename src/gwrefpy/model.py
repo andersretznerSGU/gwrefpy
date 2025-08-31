@@ -7,6 +7,7 @@ A class representing a groundwater model that can contain multiple wells.
 
 import logging
 
+from .fitresults import FitResultData, unpack_dict_fit_method
 from .io.io import load, save
 from .methods.linregressfit import linregressfit
 from .well import Well
@@ -111,7 +112,7 @@ class Model:
 
     # ============================== Load and Save Methods ==============================
 
-    def fit(self, ref_well, obs_well):
+    def fit(self, ref_well, obs_well, time_equivalent, calibration_period_start, calibration_period_end, p=0.95, method="linearregression"):
         """
         Fit the model using a reference well and an observation well.
 
@@ -121,18 +122,28 @@ class Model:
             The reference well to use for fitting.
         obs_well : Well
             The observation well to use for fitting.
+        time_equivalent : float
+            The time equivalent value.
+        calibration_period_start : datetime
+            The start date of the calibration period.
+        calibration_period_end : datetime
+            The end date of the calibration period.
+        p : float, optional
+            The confidence level for the fit (default is 0.95).
+        method : str, optional
+            The fitting method to use (default is 'linearregression').
 
         Returns
         -------
         None
             This method modifies the model in place.
         """
-        self._fit(ref_well, obs_well)
+        self._fit(ref_well, obs_well, time_equivalent, calibration_period_start, calibration_period_end, p, method)
         logger.info(
             f"Fitting model '{self.name}' using reference well '{ref_well.name}' and observation well '{obs_well.name}'."
         )
 
-    def _fit(self, ref_well, obs_well, p=0.95, method="linearregression"):
+    def _fit(self, ref_well, obs_well, time_equivalent, calibration_period_start, calibration_period_end, p, method):
         """
         The internal method to perform the fitting.
 
@@ -174,7 +185,7 @@ class Model:
         fit = None
         if method == "linearregression":
             logger.debug("Using linear regression method for fitting.")
-            fit = linregressfit(ref_well, obs_well, p=p)
+            fit = linregressfit(ref_well, obs_well, time_equivalent, calibration_period_start, calibration_period_end, p=p)
 
         if fit is None:
             logger.error(f"Fitting method '{method}' is not implemented.")
@@ -248,6 +259,10 @@ class Model:
             wells_dict[well.name] = well.to_dict()
         model_dict["wells_dict"] = wells_dict
 
+        # Add fits if they exist
+        if self.fits:
+            model_dict["fits"] = [fit.to_dict() for fit in self.fits]
+
         return model_dict
 
     def unpack_dict(self, data):
@@ -273,6 +288,25 @@ class Model:
             well = Well(name=well_obj["name"], is_reference=well_obj["is_reference"])
             well.unpack_dict(well_obj)
             self.add_well(well)
+
+        # Unpack fits
+        fits_list = data.get("fits", [])
+        for fit_data in fits_list:
+            fit = FitResultData(
+                ref_well=self.wells[self.well_names.index(fit_data["ref_well"])],
+                obs_well=self.wells[self.well_names.index(fit_data["obs_well"])],
+                rmse = fit_data.get("rmse", None),
+                n = fit_data.get("n", None),
+                fit_method = unpack_dict_fit_method(fit_data),
+                t_a = fit_data.get("t_a", None),
+                stderr = fit_data.get("stderr", None),
+                pred_const = fit_data.get("pred_const", None),
+                p = fit_data.get("p", None),
+                time_equivalent = fit_data.get("time_equivalent", None),
+                calibration_period_start = fit_data.get("calibration_period_start", None),
+                calibration_period_end = fit_data.get("calibration_period_end", None),
+            )
+            self.fits.append(fit)
 
     def save_project(self, filename=None, overwrite=False):
         """

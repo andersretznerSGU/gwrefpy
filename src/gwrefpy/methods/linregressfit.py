@@ -1,7 +1,7 @@
 import numpy as np
 import scipy as sp
 
-from ..fitresults import FitResultData
+from ..fitresults import FitResultData, LinRegResult
 from .timeseries import adjust_timeseries
 
 
@@ -51,7 +51,17 @@ def linregressfit(
             and standard error of the regression line.
         """
         # Calculate the slope and intercept using scipy's linregress
-        return sp.stats.linregress(timeseries_ref, timeseries_obs)
+        res = sp.stats.linregress(timeseries_ref, timeseries_obs)
+
+        # Create and return a LinRegResult object with the regression results
+        linreg = LinRegResult(
+            slope=res.slope,
+            intercept=res.intercept,
+            rvalue=res.rvalue,
+            pvalue=res.pvalue,
+            stderr=res.stderr,
+        )
+        return linreg
 
     def _t_inv(probability, degrees_freedom):
         """
@@ -110,3 +120,13 @@ def linregressfit(
         calibration_period_end=calibration_period_end,
     )
     return fit_result
+
+def linregress_to_dict(fit_result):
+    linreg = fit_result.fit_method
+    return {
+        "slope": linreg.slope,
+        "intercept": linreg.intercept,
+        "rvalue": linreg.rvalue,
+        "pvalue": linreg.pvalue,
+        "stderr": linreg.stderr,
+    }
