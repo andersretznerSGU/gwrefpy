@@ -10,13 +10,16 @@ import logging
 from .fitresults import FitResultData, unpack_dict_fit_method
 from .io.io import load, save
 from .methods.linregressfit import linregressfit
+from .plotter import Plotter
+from .utils.conversions import float_to_datetime
 from .well import Well
 
 logger = logging.getLogger(__name__)
 
 
-class Model:
+class Model(Plotter):
     def __init__(self, name: str):
+        super().__init__()
         self.name = name
 
         # Well attributes
@@ -110,7 +113,7 @@ class Model:
         well.model.append(self)
         logger.debug(f"Well '{well.name}' added to model '{self.name}'.")
 
-    # ============================== Load and Save Methods ==============================
+    # ============================== Fit methods ==============================
 
     def fit(self, ref_well, obs_well, time_equivalent, calibration_period_start, calibration_period_end, p=0.95, method="linearregression"):
         """
@@ -236,6 +239,22 @@ class Model:
         self.fits.append(best_fit)
         logger.info(f"Best fit completed for model '{self.name}'.")
 
+    def well_in_fits(self, well):
+        """
+        Check if a well is involved in any fit results.
+
+        Parameters
+        ----------
+        well : Well
+            The well to check.
+
+        Returns
+        -------
+        bool
+            True if the well is involved in any fit results, False otherwise.
+        """
+        return [fit.has_well(well) for fit in self.fits]
+
     # ============================== Load and Save Methods ==============================
 
     def to_dict(self):
@@ -277,7 +296,7 @@ class Model:
         Returns
         -------
         None
-            This method modifies the model in place.
+            This method adds wells, fits, and properties to the model.
         """
         self.name = data.get("name", self.name)
 
@@ -303,8 +322,8 @@ class Model:
                 pred_const = fit_data.get("pred_const", None),
                 p = fit_data.get("p", None),
                 time_equivalent = fit_data.get("time_equivalent", None),
-                calibration_period_start = fit_data.get("calibration_period_start", None),
-                calibration_period_end = fit_data.get("calibration_period_end", None),
+                calibration_period_start = float_to_datetime(fit_data.get("calibration_period_start", None)),
+                calibration_period_end = float_to_datetime(fit_data.get("calibration_period_end", None)),
             )
             self.fits.append(fit)
 

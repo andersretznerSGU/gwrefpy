@@ -72,6 +72,22 @@ class FitResultData:
             f"rmse={self.rmse:.4f}, n={self.n}, fit_method={self.fit_method})"
         )
 
+    def has_well(self, well):
+        """
+        Check if the FitResultData object involves the given well.
+
+        Parameters
+        ----------
+        well : Well
+            The well to check.
+
+        Returns
+        -------
+        bool
+            True if the well is either the reference or observation well, False otherwise.
+        """
+        return self.ref_well == well or self.obs_well == well
+
     def to_dict(self):
         """
         Convert the FitResultData object to a dictionary.
