@@ -35,7 +35,7 @@ class Model(Plotter):
         """String representation of the Model object."""
         return f"Model(name={self.name}, wells={len(self.wells)})"
 
-    # ============================== Well Management Methods ==============================
+    # ======================== Well Management Methods ========================
 
     @property
     def obs_wells(self):
@@ -170,11 +170,13 @@ class Model(Plotter):
         obs_well : Well
             The observation well to use for fitting.
         offset: pd.DateOffset | pd.Timedelta | str
-            The offset to apply to the time series when grouping within time equivalents.
+            The offset to apply to the time series when grouping within time
+            equivalents.
         p : float, optional
             The confidence level for the fit (default is 0.95).
         method : Literal["linearregression"]
-            Method with which to perform regression. Currently only supports linear regression.
+            Method with which to perform regression. Currently only supports
+            linear regression.
         tmin: pd.Timestamp | str | None = None
             Minimum time for calibration period.
         tmax: pd.Timestamp | str | None = None
@@ -187,7 +189,8 @@ class Model(Plotter):
         """
         self._fit(ref_well, obs_well, offset, p, method, tmin, tmax)
         logger.info(
-            f"Fitting model '{self.name}' using reference well '{ref_well.name}' and observation well '{obs_well.name}'."
+            f"Fitting model '{self.name}' using reference well '{ref_well.name}' "
+            f"and observation well '{obs_well.name}'."
         )
 
     def _fit(
@@ -284,7 +287,7 @@ class Model(Plotter):
             else (fit_list[0] if len(fit_list) == 1 else None)
         )
 
-    # ============================== Load and Save Methods ==============================
+    # ======================== Load and Save Methods ========================
 
     def to_dict(self):
         """
@@ -363,7 +366,8 @@ class Model(Plotter):
         Parameters
         ----------
         filename : str or None, optional
-            The name of the file where the model will be saved. The path can be included.
+            The name of the file where the model will be saved. The path can be
+            included.
         overwrite : bool, optional
             Whether to overwrite the file if it already exists (default is False).
 

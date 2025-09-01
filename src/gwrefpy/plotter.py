@@ -24,7 +24,7 @@ class Plotter:
         ax.set_title(title, **tfont)
         ax.set_xlabel(xlabel, **afont)
         ax.set_ylabel(ylabel, **afont)
-        for cnt, well in enumerate(self.wells):
+        for _cnt, well in enumerate(self.wells):
             self._set_plot_attributes(well)
             self._plot_well(well, ax)
             print(f"Plotting data for well: {well.name}")

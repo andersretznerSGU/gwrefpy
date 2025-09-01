@@ -21,7 +21,8 @@ def save(filename, data, overwrite=False):
     Parameters
     ----------
     filename : str
-        The name of the file where the object will be saved. Can include the .gwref extension or not. Can include a path.
+        The name of the file where the object will be saved. Can include the
+        .gwref extension or not. Can include a path.
     data : dict
         The data to save, typically a dictionary containing the object and its metadata.
     overwrite : bool, optional

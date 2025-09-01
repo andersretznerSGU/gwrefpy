@@ -140,7 +140,8 @@ class Well:
         # Check index is DatetimeIndex with pandas.Timestamps
         if not isinstance(timeseries.index, pd.DatetimeIndex):
             logger.error(
-                f"Timeseries index must be pandas.DatetimeIndex, got {type(timeseries.index)}"
+                f"Timeseries index must be pandas.DatetimeIndex, got "
+                f"{type(timeseries.index)}"
             )
             raise TypeError(
                 f"Timeseries index must be pandas.DatetimeIndex, "

@@ -14,8 +14,8 @@ class LinRegResult:
         stderr: float,
     ):
         """
-        Initialize a LinRegResult object to store the results of a linear regression. This replaces the scipy
-        LinregressResult object to make it serializable.
+        Initialize a LinRegResult object to store the results of a linear regression.
+        This replaces the scipy LinregressResult object to make it serializable.
 
         Parameters
         ----------
@@ -26,7 +26,8 @@ class LinRegResult:
         rvalue : float
             The correlation coefficient.
         pvalue : float
-            The two-sided p-value for a hypothesis test whose null hypothesis is that the slope is zero.
+            The two-sided p-value for a hypothesis test whose null hypothesis is
+            that the slope is zero.
         stderr : float
             The standard error of the estimated slope.
         """
@@ -39,13 +40,15 @@ class LinRegResult:
     def __str__(self):
         return (
             f"LinRegResult(slope={self.slope:.4f}, intercept={self.intercept:.4f}, "
-            f"rvalue={self.rvalue:.4f}, pvalue={self.pvalue:.4f}, stderr={self.stderr:.4f})"
+            f"rvalue={self.rvalue:.4f}, pvalue={self.pvalue:.4f}, "
+            f"stderr={self.stderr:.4f})"
         )
 
     def __repr__(self):
         return (
             f"LinRegResult(slope={self.slope:.4f}, intercept={self.intercept:.4f}, "
-            f"rvalue={self.rvalue:.4f}, pvalue={self.pvalue:.4f}, stderr={self.stderr:.4f})"
+            f"rvalue={self.rvalue:.4f}, pvalue={self.pvalue:.4f}, "
+            f"stderr={self.stderr:.4f})"
         )
 
 
@@ -143,7 +146,8 @@ class FitResultData:
             )
         else:
             raise NotImplementedError(
-                f"Fitting method {self.fit_method.__class__.__name__} is not implemented"
+                f"Fitting method {self.fit_method.__class__.__name__} is not "
+                f"implemented"
             )
 
     def has_well(self, well: Well) -> bool:
@@ -158,7 +162,8 @@ class FitResultData:
         Returns
         -------
         bool
-            True if the well is either the reference or observation well, False otherwise.
+            True if the well is either the reference or observation well,
+            False otherwise.
         """
         return self.ref_well == well or self.obs_well == well
 
