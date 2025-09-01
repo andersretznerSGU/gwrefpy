@@ -106,3 +106,6 @@ class Plotter:
         # Legend
         ax.legend(prop=lfont)
 
+
+    def get_fits(self, well):
+        raise NotImplementedError("Subclasses should implement this method.")
