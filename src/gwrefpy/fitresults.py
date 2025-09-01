@@ -131,8 +131,8 @@ class FitResultData:
             "pred_const": self.pred_const,
             "p": self.p,
             "offset": self.offset,
-            "calibration_period_start": datetime_to_float(self.tmin),
-            "calibration_period_end": datetime_to_float(self.tmax),
+            "tmin": datetime_to_float(self.tmin),
+            "tmax": datetime_to_float(self.tmax),
         }
 
         if dict_representation["fit_method"] == "LinRegResult":
