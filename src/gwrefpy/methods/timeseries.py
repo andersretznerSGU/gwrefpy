@@ -68,7 +68,7 @@ def _create_time_equivalents(
     return pd.Series(index=timestamps, data=np.cumsum(starts), name="time_equivalents")
 
 
-def test_offsets(
+def analyze_offsets(
     ref: pd.Series | Well,
     obs: pd.Series | Well,
     offsets: Sequence[pd.DateOffset | pd.Timedelta | str],

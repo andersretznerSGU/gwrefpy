@@ -1,6 +1,6 @@
 import pandas as pd
 
-from gwrefpy import test_offsets
+from gwrefpy import analyze_offsets
 from gwrefpy.methods.timeseries import groupby_time_equivalents
 
 
@@ -43,7 +43,7 @@ def test_groupby_time_equivalents_no_pairs() -> None:
 def test_test_offsets(strandangers_example) -> None:
     obs, ref = strandangers_example
     offsets = ["0D", "1D", "3.5D", "5D", "7D"]
-    result = test_offsets(ref, obs, offsets)
+    result = analyze_offsets(ref, obs, offsets)
     assert len(result) == len(offsets)
     assert result.index.tolist() == offsets
     assert result.name == "n_pairs"
