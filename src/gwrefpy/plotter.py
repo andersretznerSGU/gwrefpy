@@ -23,20 +23,20 @@ class Plotter:
             self._set_plot_attributes(well)
             self._plot_well(well, ax)
             print(f"Plotting data for well: {well.name}")
-
-
         self.default_plot_settings(ax)
 
     def _plot_well(self, well, ax):
         ax.plot(well.timeseries.index, well.timeseries.values, label=well.name, color=well.color, alpha=well.alpha,
-                linestyle=well.linestyle, linewidth=well.linewidth, marker=well.marker if well.marker_vissible else None, markersize=well.markersize)
+                linestyle=well.linestyle, linewidth=well.linewidth, marker=well.marker if well.marker_visible else None, markersize=well.markersize)
         # Placeholder for individual well plotting logic
         print(f"Plotting individual well: {well.name}")
         if well.is_reference is False:
             self._plot_fit(well, ax)
 
     def _plot_fit(self, well, ax):
-        fits = [fit for fit, include in zip(self.fits, self.well_in_fits(well)) if include]
+        fits = self.get_fits(well)
+        if isinstance(fits, list) is False:
+            fits = [fits]
         for fit in fits:
             pred_const = fit.pred_const
             fit_timeseries = fit.fit_timeseries()

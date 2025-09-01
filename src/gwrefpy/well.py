@@ -44,13 +44,13 @@ class Well:
         self.timeseries = None
 
         # Plotting attributes
-        self.color = None
-        self.alpha = 1.0
-        self.linestyle = None
-        self.linewidth = 1.0
-        self.marker = None
-        self.markersize = 6
-        self.marker_vissible = False
+        self.color = DEFAULT_PLOT_ATTRIBUTES["color"]
+        self.alpha = DEFAULT_PLOT_ATTRIBUTES["alpha"]
+        self.linestyle = DEFAULT_PLOT_ATTRIBUTES["linestyle"]
+        self.linewidth = DEFAULT_PLOT_ATTRIBUTES["linewidth"]
+        self.marker = DEFAULT_PLOT_ATTRIBUTES["marker"]
+        self.markersize = DEFAULT_PLOT_ATTRIBUTES["markersize"]
+        self.marker_visible = DEFAULT_PLOT_ATTRIBUTES["marker_visible"]
 
         # Geographic attributes
         self.latitude = None
@@ -181,7 +181,7 @@ class Well:
             "linewidth": self.linewidth,
             "marker": self.marker,
             "markersize": self.markersize,
-            "marker_vissible": self.marker_vissible,
+            "marker_visible": self.marker_visible,
             "latitude": self.latitude,
             "longitude": self.longitude,
             "elevation": self.elevation,
@@ -212,7 +212,7 @@ class Well:
         self.linewidth = data.get("linewidth", self.linewidth)
         self.marker = data.get("marker", self.marker)
         self.markersize = data.get("markersize", self.markersize)
-        self.marker_vissible = data.get("marker_vissible", self.marker_vissible)
+        self.marker_visible = data.get("marker_visible", self.marker_visible)
         self.latitude = data.get("latitude", self.latitude)
         self.longitude = data.get("longitude", self.longitude)
         self.elevation = data.get("elevation", self.elevation)

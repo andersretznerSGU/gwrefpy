@@ -265,7 +265,7 @@ class Model(Plotter):
         self.fits.append(best_fit)
         logger.info(f"Best fit completed for model '{self.name}'.")
 
-    def get_fits(self, well: Well):
+    def get_fits(self, well: Well, as_list=False):
         """
         Get all fit results involving a specific well.
 

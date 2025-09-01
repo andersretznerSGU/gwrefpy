@@ -46,13 +46,13 @@ DEFAULT_MARKER_STYLES = [
 
 # Dict for default plot attributes
 DEFAULT_PLOT_ATTRIBUTES = {
-    "color": None,  # Default to black
+    "color": None,
     "alpha": 1.0,
-    "linestyle": None,  # Solid line
+    "linestyle": None,
     "linewidth": 1.0,
     "marker": None,
     "markersize": 6,
-    "markerstyle": None,  # Circle marker
+    "marker_visible": False,
 }
 
 # Set the font size and family for matplotlib
