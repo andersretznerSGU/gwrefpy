@@ -8,7 +8,6 @@ A class representing a groundwater model that can contain multiple wells.
 import logging
 from typing import Literal
 
-
 import pandas as pd
 
 from .fitresults import FitResultData, unpack_dict_fit_method
@@ -17,7 +16,6 @@ from .methods.linregressfit import linregressfit
 from .plotter import Plotter
 from .utils.conversions import float_to_datetime
 from .well import Well
-from .fitresults import FitResultData
 
 logger = logging.getLogger(__name__)
 

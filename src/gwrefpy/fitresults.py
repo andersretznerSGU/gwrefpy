@@ -1,7 +1,7 @@
 import pandas as pd
 
-from .well import Well
 from .utils.conversions import datetime_to_float
+from .well import Well
 
 
 class LinRegResult:

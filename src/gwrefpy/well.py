@@ -3,7 +3,7 @@ import logging
 import pandas as pd
 
 from .constants import DEFAULT_PLOT_ATTRIBUTES
-from .utils.conversions import float_to_datetime, datetime_to_float
+from .utils.conversions import datetime_to_float, float_to_datetime
 
 logger = logging.getLogger(__name__)
 

@@ -1,13 +1,13 @@
 import matplotlib.pyplot as plt
 
 from .constants import (
-    tfont,
-    afont,
-    lfont,
-    tifont,
     DEFAULT_COLORS,
     DEFAULT_LINE_STYLES,
     DEFAULT_MARKER_STYLES,
+    afont,
+    lfont,
+    tfont,
+    tifont,
 )
 
 

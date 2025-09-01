@@ -1,9 +1,9 @@
-import pandas as pd
 import datetime
 
+import pandas as pd
 
-from gwrefpy.well import Well
 from gwrefpy.utils.conversions import datetime_to_float
+from gwrefpy.well import Well
 
 
 def test_datetime_to_float():

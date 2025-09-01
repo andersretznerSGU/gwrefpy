@@ -1,12 +1,12 @@
-import numpy as np
-import scipy as sp
-import pandas as pd
 import logging
 
-from ..well import Well
+import numpy as np
+import pandas as pd
+import scipy as sp
+
 from ..fitresults import FitResultData, LinRegResult
 from ..methods.timeseries import groupby_time_equivalents
-
+from ..well import Well
 
 logger = logging.getLogger(__name__)
 
@@ -99,7 +99,7 @@ def linregressfit(
 
     # Groupby time equivalents with given offset
     if ref_well.timeseries is None or obs_well.timeseries is None:
-        logger.critical(f"Missing time series data for for either ref or obs well")
+        logger.critical("Missing time series data for for either ref or obs well")
         return None
 
     ref_timeseries, obs_timeseries, n = groupby_time_equivalents(

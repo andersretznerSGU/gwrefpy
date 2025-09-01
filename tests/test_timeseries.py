@@ -1,5 +1,5 @@
-import pytest
 import pandas as pd
+
 from gwrefpy.methods.timeseries import groupby_time_equivalents
 
 
