@@ -13,7 +13,12 @@ class Well:
     Base class for a well in a groundwater model.
     """
 
-    def __init__(self, name, is_reference, model=None):
+    def __init__(
+        self,
+        name,
+        is_reference,
+        timeseries: pd.Series | None = None,
+    ):
         """
         Initialize a WellBase object.
 
@@ -24,9 +29,10 @@ class Well:
         is_reference : bool
             Indicates if the well is a reference well (True) or an observation
              well (False).
+        timeseries : pd.Series | None
+            Supply a pandas Series to associate a time series with the well.
         model : Model | None
             Supply a Model instance to associate the well with a groundwater model.
-
         """
 
         # Initialize attributes
@@ -34,14 +40,9 @@ class Well:
         self.name = name  # This will call the setter
         self.is_reference = is_reference
         self.model = []
-        if model is not None:
-            self.model.append(
-                model
-            )  # Reference to the groundwater model # Todo: allow multiple models? with for loop
-            model.add_well(self)  # Add this well to the model's list of wells
 
-        # Time and measurement attributes
-        self.timeseries = None
+        if timeseries is not None:
+            self.add_timeseries(timeseries)
 
         # Plotting attributes
         self.color = DEFAULT_PLOT_ATTRIBUTES["color"]

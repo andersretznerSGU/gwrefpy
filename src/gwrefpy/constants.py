@@ -24,24 +24,24 @@ DEFAULT_COLORS = [
 
 # List of default line styles
 DEFAULT_LINE_STYLES = [
-    "-",    # solid
-    "--",   # dashed
-    ":",    # dotted
-    "-.",   # dashdot
+    "-",  # solid
+    "--",  # dashed
+    ":",  # dotted
+    "-.",  # dashdot
 ]
 
 # List of default marker styles
 DEFAULT_MARKER_STYLES = [
-    "o",    # circle
-    "s",    # square
-    "^",    # triangle up
-    "v",    # triangle down
-    "D",    # diamond
-    "x",    # x
-    "+",    # plus
-    "*",    # star
-    "p",    # pentagon
-    "h",    # hexagon
+    "o",  # circle
+    "s",  # square
+    "^",  # triangle up
+    "v",  # triangle down
+    "D",  # diamond
+    "x",  # x
+    "+",  # plus
+    "*",  # star
+    "p",  # pentagon
+    "h",  # hexagon
 ]
 
 # Dict for default plot attributes
@@ -62,4 +62,3 @@ tfont = {"family": FONT_FAMILY, "size": FONT_SIZE}
 afont = {"family": FONT_FAMILY, "size": FONT_SIZE - 2}
 lfont = {"family": FONT_FAMILY, "size": FONT_SIZE - 4}
 tifont = {"family": FONT_FAMILY, "size": FONT_SIZE - 6}
-

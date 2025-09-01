@@ -51,7 +51,7 @@ def linregressfit(
         ----------
         timeseries_ref : pd.Series
             A pandas Series with reference well time series data.
-        timeseries_obs : pd.Series  
+        timeseries_obs : pd.Series
             A pandas Series with observation well time series data.
 
         Returns
@@ -137,6 +137,7 @@ def linregressfit(
         tmax=tmax,
     )
     return fit_result
+
 
 def linregress_to_dict(fit_result):
     linreg = fit_result.fit_method

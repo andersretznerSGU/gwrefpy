@@ -280,7 +280,11 @@ class Model(Plotter):
             A list of fit results involving the specified well.
         """
         fit_list = [fit for fit in self.fits if fit.has_well(well)]
-        return fit_list if len(fit_list) > 1 else (fit_list[0] if len(fit_list) == 1 else None)
+        return (
+            fit_list
+            if len(fit_list) > 1
+            else (fit_list[0] if len(fit_list) == 1 else None)
+        )
 
     # ============================== Load and Save Methods ==============================
 
@@ -341,16 +345,16 @@ class Model(Plotter):
             fit = FitResultData(
                 ref_well=self.wells[self.well_names.index(fit_data["ref_well"])],
                 obs_well=self.wells[self.well_names.index(fit_data["obs_well"])],
-                rmse = fit_data.get("rmse", None),
-                n = fit_data.get("n", None),
-                fit_method = unpack_dict_fit_method(fit_data),
-                t_a = fit_data.get("t_a", None),
-                stderr = fit_data.get("stderr", None),
-                pred_const = fit_data.get("pred_const", None),
-                p = fit_data.get("p", None),
-                offset = fit_data.get("offset", None),
-                tmin = float_to_datetime(fit_data.get("tmin", None)),
-                tmax = float_to_datetime(fit_data.get("tmax", None)),
+                rmse=fit_data.get("rmse", None),
+                n=fit_data.get("n", None),
+                fit_method=unpack_dict_fit_method(fit_data),
+                t_a=fit_data.get("t_a", None),
+                stderr=fit_data.get("stderr", None),
+                pred_const=fit_data.get("pred_const", None),
+                p=fit_data.get("p", None),
+                offset=fit_data.get("offset", None),
+                tmin=float_to_datetime(fit_data.get("tmin", None)),
+                tmax=float_to_datetime(fit_data.get("tmax", None)),
             )
             self.fits.append(fit)
 

@@ -93,7 +93,9 @@ class FitResultData:
             The fitted values based on the reference series.
         """
         if isinstance(self.fit_method, LinRegResult):
-            return self.ref_well.timeseries.apply(lambda x: self.fit_method.slope * x + self.fit_method.intercept)
+            return self.ref_well.timeseries.apply(
+                lambda x: self.fit_method.slope * x + self.fit_method.intercept
+            )
 
     def has_well(self, well):
         """

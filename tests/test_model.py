@@ -4,8 +4,9 @@ from src.gwrefpy.well import Well
 
 def test_add_well_to_model() -> None:
     model = Model("Test Model")
-    well1 = Well("Well 1", is_reference=True, model=model)
-    Well("Well 2", is_reference=True, model=model)
+    well1 = Well("Well 1", is_reference=True)
+    well2 = Well("Well 2", is_reference=True)
+    model.add_well([well1, well2])
 
     assert len(model.wells) == 2
     assert model.wells[0].name == "Well 1"
