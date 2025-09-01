@@ -148,8 +148,6 @@ class FitResultData:
 
 
 def unpack_dict_fit_method(data):
-    from scipy.stats import linregress
-
     fit_method_name = data.get("fit_method", None)
     if fit_method_name == "LinRegResult":
         linreg_data = data.get("LinRegResult", {})
