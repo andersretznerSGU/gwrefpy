@@ -4,6 +4,44 @@ from .well import Well
 from .utils.conversions import datetime_to_float
 
 
+class LinRegResult:
+    def __init__(self, slope, intercept, rvalue, pvalue, stderr):
+        """
+        Initialize a LinRegResult object to store the results of a linear regression. This replaces the scipy
+        LinregressResult object to make it serializable.
+
+        Parameters
+        ----------
+        slope : float
+            The slope of the regression line.
+        intercept : float
+            The intercept of the regression line.
+        rvalue : float
+            The correlation coefficient.
+        pvalue : float
+            The two-sided p-value for a hypothesis test whose null hypothesis is that the slope is zero.
+        stderr : float
+            The standard error of the estimated slope.
+        """
+        self.slope = slope
+        self.intercept = intercept
+        self.rvalue = rvalue
+        self.pvalue = pvalue
+        self.stderr = stderr
+
+    def __str__(self):
+        return (
+            f"LinRegResult(slope={self.slope:.4f}, intercept={self.intercept:.4f}, "
+            f"rvalue={self.rvalue:.4f}, pvalue={self.pvalue:.4f}, stderr={self.stderr:.4f})"
+        )
+
+    def __repr__(self):
+        return (
+            f"LinRegResult(slope={self.slope:.4f}, intercept={self.intercept:.4f}, "
+            f"rvalue={self.rvalue:.4f}, pvalue={self.pvalue:.4f}, stderr={self.stderr:.4f})"
+        )
+
+
 class FitResultData:
     def __init__(
         self,
@@ -11,7 +49,7 @@ class FitResultData:
         obs_well: Well,
         rmse: float,
         n: int,
-        fit_method: object,
+        fit_method: LinRegResult,
         t_a: float,
         stderr: float,
         pred_const: float,
@@ -36,7 +74,7 @@ class FitResultData:
             The root mean square error of the fit.
         n : int
             The number of data points used in the fit.
-        fit_method : object
+        fit_method : LinRegResult
             The method used for fitting (e.g., linreg).
         t_a : float
             The t-value for the given confidence level and degrees of freedom.
@@ -162,41 +200,3 @@ def unpack_dict_fit_method(data):
         )
     else:
         raise ValueError(f"Unsupported fit method: {fit_method_name}")
-
-
-class LinRegResult:
-    def __init__(self, slope, intercept, rvalue, pvalue, stderr):
-        """
-        Initialize a LinRegResult object to store the results of a linear regression. This replaces the scipy
-        LinregressResult object to make it serializable.
-
-        Parameters
-        ----------
-        slope : float
-            The slope of the regression line.
-        intercept : float
-            The intercept of the regression line.
-        rvalue : float
-            The correlation coefficient.
-        pvalue : float
-            The two-sided p-value for a hypothesis test whose null hypothesis is that the slope is zero.
-        stderr : float
-            The standard error of the estimated slope.
-        """
-        self.slope = slope
-        self.intercept = intercept
-        self.rvalue = rvalue
-        self.pvalue = pvalue
-        self.stderr = stderr
-
-    def __str__(self):
-        return (
-            f"LinRegResult(slope={self.slope:.4f}, intercept={self.intercept:.4f}, "
-            f"rvalue={self.rvalue:.4f}, pvalue={self.pvalue:.4f}, stderr={self.stderr:.4f})"
-        )
-
-    def __repr__(self):
-        return (
-            f"LinRegResult(slope={self.slope:.4f}, intercept={self.intercept:.4f}, "
-            f"rvalue={self.rvalue:.4f}, pvalue={self.pvalue:.4f}, stderr={self.stderr:.4f})"
-        )
