@@ -11,17 +11,21 @@ from typing import Literal
 
 import pandas as pd
 
+from .fitresults import FitResultData, unpack_dict_fit_method
 from .io.io import load, save
 from .methods.linregressfit import linregressfit
+from .plotter import Plotter
+from .utils.conversions import float_to_datetime
 from .well import Well
 from .fitresults import FitResultData
 
 logger = logging.getLogger(__name__)
 
 
-class Model:
+class Model(Plotter):
     def __init__(self, name: str):
-        self.name: str = name
+        super().__init__()
+        self.name = name
 
         # Well attributes
         self.wells: list[Well] = []
@@ -114,7 +118,7 @@ class Model:
         well.model.append(self)
         logger.debug(f"Well '{well.name}' added to model '{self.name}'.")
 
-    # ============================== Load and Save Methods ==============================
+    # ============================== Fit methods ==============================
 
     def fit(
         self,
@@ -229,6 +233,22 @@ class Model:
         self.fits.append(best_fit)
         logger.info(f"Best fit completed for model '{self.name}'.")
 
+    def well_in_fits(self, well):
+        """
+        Check if a well is involved in any fit results.
+
+        Parameters
+        ----------
+        well : Well
+            The well to check.
+
+        Returns
+        -------
+        bool
+            True if the well is involved in any fit results, False otherwise.
+        """
+        return [fit.has_well(well) for fit in self.fits]
+
     # ============================== Load and Save Methods ==============================
 
     def to_dict(self):
@@ -252,6 +272,10 @@ class Model:
             wells_dict[well.name] = well.to_dict()
         model_dict["wells_dict"] = wells_dict
 
+        # Add fits if they exist
+        if self.fits:
+            model_dict["fits"] = [fit.to_dict() for fit in self.fits]
+
         return model_dict
 
     def unpack_dict(self, data):
@@ -266,16 +290,36 @@ class Model:
         Returns
         -------
         None
-            This method modifies the model in place.
+            This method adds wells, fits, and properties to the model.
         """
         self.name = data.get("name", self.name)
 
         # Unpack wells
         wells_dict = data.get("wells_dict", {})
-        for well_name, is_reference, well_data in wells_dict.items():
-            well = Well(name=well_name, is_reference=is_reference)
-            well.unpack_dict(well_data)
+        for w in wells_dict.items():
+            well_obj = w[1]
+            well = Well(name=well_obj["name"], is_reference=well_obj["is_reference"])
+            well.unpack_dict(well_obj)
             self.add_well(well)
+
+        # Unpack fits
+        fits_list = data.get("fits", [])
+        for fit_data in fits_list:
+            fit = FitResultData(
+                ref_well=self.wells[self.well_names.index(fit_data["ref_well"])],
+                obs_well=self.wells[self.well_names.index(fit_data["obs_well"])],
+                rmse = fit_data.get("rmse", None),
+                n = fit_data.get("n", None),
+                fit_method = unpack_dict_fit_method(fit_data),
+                t_a = fit_data.get("t_a", None),
+                stderr = fit_data.get("stderr", None),
+                pred_const = fit_data.get("pred_const", None),
+                p = fit_data.get("p", None),
+                time_equivalent = fit_data.get("time_equivalent", None),
+                calibration_period_start = float_to_datetime(fit_data.get("calibration_period_start", None)),
+                calibration_period_end = float_to_datetime(fit_data.get("calibration_period_end", None)),
+            )
+            self.fits.append(fit)
 
     def save_project(self, filename=None, overwrite=False):
         """
