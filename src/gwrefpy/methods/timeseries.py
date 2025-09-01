@@ -1,86 +1,64 @@
 import pandas as pd
+import numpy as np
 
 
-def adjust_timeseries(
+def groupby_time_equivalents(
     ref_timeseries: pd.Series,
     obs_timeseries: pd.Series,
-    time_equivalent: pd.DateOffset | pd.Timedelta | str,
-    calibration_period_start: pd.Timestamp | None = None,
-    calibration_period_end: pd.Timestamp | None = None,
-):
+    offset: pd.DateOffset | pd.Timedelta | str,
+) -> tuple[pd.Series, pd.Series, int]:
     """
-    Adjusts the observation timeseries based on the time equivalent and calibration period.
+    Groups the reference and observation timeseries by their time equivalents.
+    Currently, this function uses the mean to aggregate within each time equivalent.
 
     Parameters
     ----------
     ref_timeseries : pd.Series
         The reference timeseries data.
-    obs_timeseries : pd.Series
-        The observation timeseries data.
-    time_equivalent :
-        The time equivalent value for adjustment.
-    calibration_period_start : pd.Timestamp | None
-        The start date of the calibration period.
-    calibration_period_end : pd.Timestamp | None
-        The end date of the calibration period.
+    obs_timeseries: pd.Series
+        The observed timeseries data.
+    offset: pd.DateOffset | pd.Timedelta | str
+        Maximum date offset to allow to group pairs of data points.
 
     Returns
     -------
     pd.Series
-        The adjusted observation timeseries.
+        Reference time series data grouped by their time equivalents.
     pd.Series
-        The adjusted reference timeseries.
+        Observed time series data grouped by their time equivalents.
     int
-        The number of overlapping data points in the adjusted timeseries.
+        Number of grouped pairs of data points.
     """
-    # Cut the timeseries to the calibration period
-    if calibration_period_start is not None and calibration_period_end is not None:
-        cut_ref_timeseries, cut_obs_timeseries = _cut_timeseries(
-            ref_timeseries,
-            obs_timeseries,
-            calibration_period_start,
-            calibration_period_end,
-        )
-    else:
-        cut_ref_timeseries = ref_timeseries
-        cut_obs_timeseries = obs_timeseries
+    if not ref_timeseries.name:
+        ref_timeseries.name = "ref"
+    if not obs_timeseries.name:
+        obs_timeseries.name = "obs"
 
-    # Resample to the desired frequency
-    resampled_ref_timeseries = cut_ref_timeseries.resample(time_equivalent).mean()
-    resampled_obs_timeseries = cut_obs_timeseries.resample(time_equivalent).mean()
-
-    common_times = resampled_ref_timeseries.index.intersection(
-        resampled_obs_timeseries.index
+    time_equivalents = _create_time_equivalents(
+        ref_timeseries.index, obs_timeseries.index, offset
     )
-    aligned_ref = resampled_ref_timeseries.loc[common_times]
-    aligned_obs = resampled_obs_timeseries.loc[common_times]
 
-    return aligned_ref, aligned_obs, len(common_times)
+    combined = pd.concat([ref_timeseries, obs_timeseries], axis="columns")
+    combined_time_eqs = combined.set_index(time_equivalents, drop=True)
+    time_eq_means = combined_time_eqs.groupby(combined_time_eqs.index).mean()
+
+    time_eq_means = time_eq_means.dropna()
+
+    return (
+        time_eq_means[ref_timeseries.name],
+        time_eq_means[obs_timeseries.name],
+        len(time_eq_means),
+    )
 
 
-def _cut_timeseries(
-    ref_timeseries: pd.Series,
-    obs_timeseries: pd.Series,
-    calibration_period_start: pd.Timestamp,
-    calibration_period_end: pd.Timestamp,
-):
-    """
-    Cut the timeseries to the specified calibration period.
+def _create_time_equivalents(
+    ref_index: pd.DatetimeIndex,
+    obs_index: pd.DatetimeIndex,
+    offset: pd.DateOffset | pd.Timedelta | str,
+) -> pd.Series:
+    timestamps = ref_index.union(obs_index).to_series().sort_index().index
+    ts_diffs = timestamps.diff()
+    starts = ts_diffs > offset
+    starts[0] = True
 
-    Parameters
-    ----------
-    calibration_period_start : datetime
-        The start date of the calibration period.
-    calibration_period_end : datetime
-        The end date of the calibration period.
-
-    Returns
-    -------
-    cut_ref_timeseries : pd.Series
-        The cut reference timeseries.
-    cut_obs_timeseries : pd.Series
-        The cut observation timeseries.
-    """
-    cut_ref_timeseries = ref_timeseries[calibration_period_start:calibration_period_end]
-    cut_obs_timeseries = obs_timeseries[calibration_period_start:calibration_period_end]
-    return cut_ref_timeseries, cut_obs_timeseries
+    return pd.Series(index=timestamps, data=np.cumsum(starts), name="time_equivalents")

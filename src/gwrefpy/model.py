@@ -6,23 +6,28 @@ A class representing a groundwater model that can contain multiple wells.
 """
 
 import logging
+from typing import Literal
+
+
+import pandas as pd
 
 from .io.io import load, save
 from .methods.linregressfit import linregressfit
 from .well import Well
+from .fitresults import FitResultData
 
 logger = logging.getLogger(__name__)
 
 
 class Model:
     def __init__(self, name: str):
-        self.name = name
+        self.name: str = name
 
         # Well attributes
-        self.wells = []
+        self.wells: list[Well] = []
 
         # Fit attributes
-        self.fits = []
+        self.fits: list[FitResultData] = []
 
     def __str__(self):
         """String representation of the Model object."""
@@ -45,13 +50,13 @@ class Model:
         """List of all well names in the model."""
         return [well.name for well in self.wells]
 
-    def add_well(self, well):
+    def add_well(self, well: Well | list[Well]):
         """
         Add a well or a list of wells to the model.
 
         Parameters
         ----------
-        well : Well or list of WellBase
+        well : Well or list of Wells
             The well or list of wells to add to the model.
 
         Returns
@@ -111,9 +116,18 @@ class Model:
 
     # ============================== Load and Save Methods ==============================
 
-    def fit(self, ref_well, obs_well):
+    def fit(
+        self,
+        ref_well: Well,
+        obs_well: Well,
+        offset: pd.DateOffset | pd.Timedelta | str,
+        p: float = 0.95,
+        method: Literal["linearregression"] = "linearregression",
+        tmin: pd.Timestamp | str | None = None,
+        tmax: pd.Timestamp | str | None = None,
+    ):
         """
-        Fit the model using a reference well and an observation well.
+        Fit a reference well to an observation well using regression.
 
         Parameters
         ----------
@@ -121,37 +135,37 @@ class Model:
             The reference well to use for fitting.
         obs_well : Well
             The observation well to use for fitting.
+        offset: pd.DateOffset | pd.Timedelta | str
+            The offset to apply to the time series when grouping within time equivalents.
+        p : float, optional
+            The confidence level for the fit (default is 0.95).
+        method : Literal["linearregression"]
+            Method with which to perform regression. Currently only supports linear regression.
+        tmin: pd.Timestamp | str | None = None
+            Minimum time for calibration period.
+        tmax: pd.Timestamp | str | None = None
+            Maximum time for calibration period.
 
         Returns
         -------
         None
             This method modifies the model in place.
         """
-        self._fit(ref_well, obs_well)
+        self._fit(ref_well, obs_well, offset, p, method, tmin, tmax)
         logger.info(
             f"Fitting model '{self.name}' using reference well '{ref_well.name}' and observation well '{obs_well.name}'."
         )
 
-    def _fit(self, ref_well, obs_well, p=0.95, method="linearregression"):
-        """
-        The internal method to perform the fitting.
-
-        Parameters
-        ----------
-        ref_well : Well
-            The reference well to use for fitting.
-        obs_well : Well
-            The observation well to use for fitting.
-        p : float, optional
-            The confidence level for the fit (default is 0.95).
-        method : str, optional
-            The fitting method to use (default is 'linearregression').
-
-        Returns
-        -------
-        None
-            This method modifies the model in place.
-        """
+    def _fit(
+        self,
+        ref_well: Well,
+        obs_well: Well,
+        offset: pd.DateOffset | pd.Timedelta | str,
+        p: float = 0.95,
+        method: Literal["linearregression"] = "linearregression",
+        tmin: pd.Timestamp | str | None = None,
+        tmax: pd.Timestamp | str | None = None,
+    ):
         # Check that the ref_well is a reference well
         if not ref_well.is_reference:
             logger.error(f"The well '{ref_well.name}' is not a reference well.")
@@ -162,26 +176,16 @@ class Model:
             logger.error(f"The well '{obs_well.name}' is not an observation well.")
             raise ValueError(f"The well '{obs_well.name}' is not an observation well.")
 
-        # Placeholder for internal fit logic
-        logger.debug(
-            f"Internal fitting logic for model '{self.name}' with reference well '{ref_well.name}' and observation well '{obs_well.name}'."
-        )
-
-        # Validate and adjust wells
-        ref_timeseries = ref_well.timeseries
-        obs_timeseries = obs_well.timeseries
-
         fit = None
         if method == "linearregression":
             logger.debug("Using linear regression method for fitting.")
-            fit = linregressfit(ref_well, obs_well, p=p)
-
+            fit = linregressfit(ref_well, obs_well, offset, tmin, tmax, p)
         if fit is None:
             logger.error(f"Fitting method '{method}' is not implemented.")
             raise NotImplementedError(f"Fitting method '{method}' is not implemented.")
 
         self.fits.append(fit)
-        logger.info(f"Fit completed for model '{self.name}'.")
+        logger.info(f"Fit completed for model '{self.name}' with RMSE {fit.rmse}.")
 
     def best_fit(self, ref_well=None, obs_well=None):
         """

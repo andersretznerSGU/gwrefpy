@@ -1,17 +1,16 @@
 import pandas as pd
+import datetime
 
-from src.gwrefpy.model import Model
-from src.gwrefpy.well import Well
+
+from gwrefpy.model import Model
+from gwrefpy.well import Well
+from gwrefpy.utils.conversions import datetime_to_float
 
 
 def test_datetime_to_float():
-    well = Well("Test Well", model=Model("Test Model"), is_reference=True)
-
-    import datetime
-
     time = datetime.datetime(2025, 8, 27, 20, 15, 16, 626237)
     assert (
-        abs(well._datetime_to_float(time) - 1756318516.626237) < 1e-6
+        abs(datetime_to_float(time) - 1756318516.626237) < 1e-6
     )  # Allow small numerical error
 
 

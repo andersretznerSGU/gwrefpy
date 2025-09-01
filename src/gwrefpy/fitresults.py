@@ -1,21 +1,29 @@
+import pandas as pd
+
+from gwrefpy.well import Well
+
+
 class FitResultData:
     def __init__(
         self,
-        ref_well,
-        obs_well,
-        rmse,
-        n,
-        fit_method,
-        t_a,
-        stderr,
-        pred_const,
-        p,
-        time_equivalent,
-        calibration_period_start,
-        calibration_period_end,
+        ref_well: Well,
+        obs_well: Well,
+        rmse: float,
+        n: int,
+        fit_method: object,
+        t_a: float,
+        stderr: float,
+        pred_const: float,
+        p: float,
+        offset: pd.DateOffset | pd.Timedelta | str,
+        tmin: pd.Timestamp | str | None,
+        tmax: pd.Timestamp | str | None,
     ):
         """
-        Initialize a FitResultData object to store the results of a fit between
+        Initialize a FitResultData object to store the results of a fit between.
+
+        This class contains all information that is required to reproduce a fit between
+        a reference well and an observation well.
 
         Parameters
         ----------
@@ -37,12 +45,12 @@ class FitResultData:
             The prediction constant for the confidence interval.
         p : float
             The confidence level used in the fit.
-        time_equivalent : float
-            The time equivalent value.
-        calibration_period_start : datetime
-            The start date of the calibration period.
-        calibration_period_end : datetime
-            The end date of the calibration period.
+        offset: pd.DateOffset | pd.Timedelta | str
+            Allowed offset when grouping data points within time equivalents.
+        tmin: pd.Timestamp | str | None
+            The minimum timestamp for the calibration period.
+        tmax: pd.Timestamp | str | None
+            The maximum timestamp for the calibration period.
         """
         self.ref_well = ref_well
         self.obs_well = obs_well
@@ -53,9 +61,9 @@ class FitResultData:
         self.stderr = stderr
         self.pred_const = pred_const
         self.p = p
-        self.time_equivalent = time_equivalent
-        self.calibration_period_start = calibration_period_start
-        self.calibration_period_end = calibration_period_end
+        self.offset = offset
+        self.tmin = tmin
+        self.tmax = tmax
 
     def __str__(self):
         return (

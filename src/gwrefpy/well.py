@@ -154,7 +154,6 @@ class Well:
             )
 
     def _time_series_to_dict(self):
-
         # Convert DatetimeIndex to float timestamps
         float_index = self.timeseries.index.map(lambda dt: datetime_to_float(dt))
         return pd.Series(self.timeseries.values, index=float_index).to_dict()
@@ -171,7 +170,9 @@ class Well:
         return {
             "name": self.name,
             "is_reference": self.is_reference,
-            "timeseries": self._time_series_to_dict() if self.timeseries is not None else None,
+            "timeseries": self._time_series_to_dict()
+            if self.timeseries is not None
+            else None,
             "color": self.color,
             "alpha": self.alpha,
             "linestyle": self.linestyle,
@@ -199,7 +200,9 @@ class Well:
         timeseries_dict = data.get("timeseries", None)
         if timeseries_dict is not None:
             # Convert float timestamps back to DatetimeIndex
-            datetime_index = pd.Index([float_to_datetime(ts) for ts in timeseries_dict.keys()])
+            datetime_index = pd.Index(
+                [float_to_datetime(ts) for ts in timeseries_dict.keys()]
+            )
             values = list(timeseries_dict.values())
             self.timeseries = pd.Series(values, index=datetime_index)
 
