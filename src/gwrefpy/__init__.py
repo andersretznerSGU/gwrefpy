@@ -1,6 +1,7 @@
+from .methods.timeseries import test_offsets
 from .model import Model
 from .well import Well
 
 __name__ = "gwrefpy"
 __version__ = "0.1.0"
-__all__ = ["Model", "Well"]
+__all__ = ["Model", "Well", "test_offsets"]
