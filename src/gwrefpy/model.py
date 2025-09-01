@@ -118,6 +118,38 @@ class Model(Plotter):
         well.model.append(self)
         logger.debug(f"Well '{well.name}' added to model '{self.name}'.")
 
+    def get_wells(self, names: list[str] | str):
+        """
+        Get wells from the model by their names.
+
+        Parameters
+        ----------
+        names : list of str or str
+            The name or list of names of the wells to retrieve.
+
+        Returns
+        -------
+        list of Well or Well
+            The well or list of wells with the specified names.
+
+        Raises
+        ------
+        ValueError
+            If any of the specified well names are not found in the model.
+        """
+        if isinstance(names, str):
+            names = [names]
+
+        found_wells = []
+        for name in names:
+            if name in self.well_names:
+                found_wells.append(self.wells[self.well_names.index(name)])
+            else:
+                logger.error(f"Well name '{name}' not found in the model.")
+                raise ValueError(f"Well name '{name}' not found in the model.")
+
+        return found_wells if len(found_wells) > 1 else found_wells[0]
+
     # ============================== Fit methods ==============================
 
     def fit(
@@ -233,9 +265,9 @@ class Model(Plotter):
         self.fits.append(best_fit)
         logger.info(f"Best fit completed for model '{self.name}'.")
 
-    def well_in_fits(self, well):
+    def get_fits(self, well: Well):
         """
-        Check if a well is involved in any fit results.
+        Get all fit results involving a specific well.
 
         Parameters
         ----------
@@ -244,10 +276,11 @@ class Model(Plotter):
 
         Returns
         -------
-        bool
-            True if the well is involved in any fit results, False otherwise.
+        list of FitResultData
+            A list of fit results involving the specified well.
         """
-        return [fit.has_well(well) for fit in self.fits]
+        fit_list = [fit for fit in self.fits if fit.has_well(well)]
+        return fit_list if len(fit_list) > 1 else (fit_list[0] if len(fit_list) == 1 else None)
 
     # ============================== Load and Save Methods ==============================
 
