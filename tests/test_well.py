@@ -7,9 +7,12 @@ from gwrefpy.well import Well
 
 
 def test_datetime_to_float():
-    time = datetime.datetime(2025, 8, 27, 20, 15, 16, 626237)
+    # Use timezone-aware datetime to ensure consistent behavior across environments
+    time = datetime.datetime(2025, 8, 27, 20, 15, 16, 626237, tzinfo=datetime.UTC)
+    expected = 1756325716.626237  # Updated to correct UTC timestamp
+    actual = datetime_to_float(time)
     assert (
-        abs(datetime_to_float(time) - 1756318516.626237) < 1e-6
+        abs(actual - expected) < 1e-6
     )  # Allow small numerical error
 
 
