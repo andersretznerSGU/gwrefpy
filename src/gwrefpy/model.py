@@ -315,9 +315,9 @@ class Model(Plotter):
                 stderr = fit_data.get("stderr", None),
                 pred_const = fit_data.get("pred_const", None),
                 p = fit_data.get("p", None),
-                time_equivalent = fit_data.get("time_equivalent", None),
-                calibration_period_start = float_to_datetime(fit_data.get("calibration_period_start", None)),
-                calibration_period_end = float_to_datetime(fit_data.get("calibration_period_end", None)),
+                offset = fit_data.get("offset", None),
+                tmin = float_to_datetime(fit_data.get("tmin", None)),
+                tmax = float_to_datetime(fit_data.get("tmax", None)),
             )
             self.fits.append(fit)
 

@@ -1,7 +1,7 @@
 import pandas as pd
 
-from gwrefpy.well import Well
-from gwrefpy.utils.conversions import datetime_to_float
+from .well import Well
+from .utils.conversions import datetime_to_float
 
 
 class FitResultData:
@@ -78,6 +78,23 @@ class FitResultData:
             f"rmse={self.rmse:.4f}, n={self.n}, fit_method={self.fit_method})"
         )
 
+    def fit_timeseries(self):
+        """
+        Apply the fit method to a reference time series to get the fitted values.
+
+        Parameters
+        ----------
+        ref_series : pd.Series
+            The reference time series data.
+
+        Returns
+        -------
+        pd.Series
+            The fitted values based on the reference series.
+        """
+        if isinstance(self.fit_method, LinRegResult):
+            return self.ref_well.timeseries.apply(lambda x: self.fit_method.slope * x + self.fit_method.intercept)
+
     def has_well(self, well):
         """
         Check if the FitResultData object involves the given well.
@@ -113,9 +130,9 @@ class FitResultData:
             "stderr": self.stderr,
             "pred_const": self.pred_const,
             "p": self.p,
-            "time_equivalent": self.time_equivalent,
-            "calibration_period_start": datetime_to_float(self.calibration_period_start),
-            "calibration_period_end": datetime_to_float(self.calibration_period_end),
+            "offset": self.offset,
+            "calibration_period_start": datetime_to_float(self.tmin),
+            "calibration_period_end": datetime_to_float(self.tmax),
         }
 
         if dict_representation["fit_method"] == "LinRegResult":

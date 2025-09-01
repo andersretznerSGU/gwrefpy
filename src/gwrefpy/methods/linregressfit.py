@@ -3,9 +3,9 @@ import scipy as sp
 import pandas as pd
 import logging
 
-from gwrefpy.well import Well
-from gwrefpy.fitresults import FitResultData, LinRegResult
-from gwrefpy.methods.timeseries import groupby_time_equivalents
+from ..well import Well
+from ..fitresults import FitResultData, LinRegResult
+from ..methods.timeseries import groupby_time_equivalents
 
 
 logger = logging.getLogger(__name__)
@@ -106,7 +106,14 @@ def linregressfit(
         ref_well.timeseries.loc[tmin:tmax], obs_well.timeseries.loc[tmin:tmax], offset
     )
 
-    linreg = sp.stats.linregress(ref_timeseries, obs_timeseries)
+    res = sp.stats.linregress(ref_timeseries, obs_timeseries)
+    linreg = LinRegResult(
+        slope=res.slope,
+        intercept=res.intercept,
+        rvalue=res.rvalue,
+        pvalue=res.pvalue,
+        stderr=res.stderr,
+    )
 
     stderr = compute_residual_std_error(
         ref_timeseries, obs_timeseries, linreg.slope, linreg.intercept, n

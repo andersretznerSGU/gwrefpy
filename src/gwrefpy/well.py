@@ -1,6 +1,8 @@
 import logging
 
 import pandas as pd
+
+from .constants import DEFAULT_PLOT_ATTRIBUTES
 from .utils.conversions import float_to_datetime, datetime_to_float
 
 logger = logging.getLogger(__name__)
@@ -48,7 +50,7 @@ class Well:
         self.linewidth = 1.0
         self.marker = None
         self.markersize = 6
-        self.markerstyle = None
+        self.marker_vissible = False
 
         # Geographic attributes
         self.latitude = None
@@ -179,7 +181,7 @@ class Well:
             "linewidth": self.linewidth,
             "marker": self.marker,
             "markersize": self.markersize,
-            "markerstyle": self.markerstyle,
+            "marker_vissible": self.marker_vissible,
             "latitude": self.latitude,
             "longitude": self.longitude,
             "elevation": self.elevation,
@@ -210,7 +212,7 @@ class Well:
         self.linewidth = data.get("linewidth", self.linewidth)
         self.marker = data.get("marker", self.marker)
         self.markersize = data.get("markersize", self.markersize)
-        self.markerstyle = data.get("markerstyle", self.markerstyle)
+        self.marker_vissible = data.get("marker_vissible", self.marker_vissible)
         self.latitude = data.get("latitude", self.latitude)
         self.longitude = data.get("longitude", self.longitude)
         self.elevation = data.get("elevation", self.elevation)
