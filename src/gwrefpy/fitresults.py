@@ -5,7 +5,14 @@ from .well import Well
 
 
 class LinRegResult:
-    def __init__(self, slope, intercept, rvalue, pvalue, stderr):
+    def __init__(
+        self,
+        slope: float,
+        intercept: float,
+        rvalue: float,
+        pvalue: float,
+        stderr: float,
+    ):
         """
         Initialize a LinRegResult object to store the results of a linear regression. This replaces the scipy
         LinregressResult object to make it serializable.
@@ -116,7 +123,7 @@ class FitResultData:
             f"rmse={self.rmse:.4f}, n={self.n}, fit_method={self.fit_method})"
         )
 
-    def fit_timeseries(self):
+    def fit_timeseries(self) -> pd.Series:
         """
         Apply the fit method to a reference time series to get the fitted values.
 
@@ -134,8 +141,12 @@ class FitResultData:
             return self.ref_well.timeseries.apply(
                 lambda x: self.fit_method.slope * x + self.fit_method.intercept
             )
+        else:
+            raise NotImplementedError(
+                f"Fitting method {self.fit_method.__class__.__name__} is not implemented"
+            )
 
-    def has_well(self, well):
+    def has_well(self, well: Well) -> bool:
         """
         Check if the FitResultData object involves the given well.
 
@@ -151,7 +162,7 @@ class FitResultData:
         """
         return self.ref_well == well or self.obs_well == well
 
-    def to_dict(self):
+    def to_dict(self) -> dict:
         """
         Convert the FitResultData object to a dictionary.
 
@@ -187,7 +198,7 @@ class FitResultData:
         return dict_representation
 
 
-def unpack_dict_fit_method(data):
+def unpack_dict_fit_method(data: dict) -> LinRegResult:
     fit_method_name = data.get("fit_method", None)
     if fit_method_name == "LinRegResult":
         linreg_data = data.get("LinRegResult", {})
