@@ -22,6 +22,16 @@ DEFAULT_COLORS = [
     "#FABFD2",  # light pink
 ]
 
+# List of default monochrome colors (grayscale)
+DEFAULT_MONOCHROME_COLORS = [
+    "#000000",  # black
+    "#444444",  # dark gray
+    "#888888",  # gray
+    "#BBBBBB",  # light gray
+    "#DDDDDD",  # lighter gray
+    "#E8E8E8",  # white
+]
+
 # List of default line styles
 DEFAULT_LINE_STYLES = [
     "-",  # solid

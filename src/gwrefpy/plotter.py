@@ -1,10 +1,14 @@
-import matplotlib.pyplot as plt
 import logging
+
+import matplotlib.pyplot as plt
+import numpy as np
+from matplotlib.dates import date2num, num2date
 
 from .constants import (
     DEFAULT_COLORS,
     DEFAULT_LINE_STYLES,
     DEFAULT_MARKER_STYLES,
+    DEFAULT_MONOCHROME_COLORS,
     afont,
     lfont,
     tfont,
@@ -13,14 +17,28 @@ from .constants import (
 
 logger = logging.getLogger(__name__)
 
+
 class Plotter:
     def __init__(self):
         self.wells = None
         self.cnt_colors = 0
         self.cnt_linestyles = 0
         self.cnt_markers = 0
+        self.plot_style = "fancy"
+        self.color_style = "color"
+        self.xmin = None
+        self.xmax = None
+        self.ymin = None
+        self.ymax = None
 
-    def plot(self, title: str="Well Data Plot", xlabel: str="Time", ylabel: str="Measurement"):
+    def plot(
+        self,
+        title: str = "Well Data Plot",
+        xlabel: str = "Time",
+        ylabel: str = "Measurement",
+        plot_style: str = "fancy",
+        color_style: str = "color",
+    ):
         """
         This method plots the time series data for all wells in the model.
         It also overlays the fitted models if available.
@@ -33,6 +51,10 @@ class Plotter:
             The label for the x-axis.
         ylabel : str
             The label for the y-axis.
+        plot_style : str
+            The style of the plot. Options are "fancy" or "scientific".
+        color_style : str
+            The color style of the plot. Options are "color" or "monochrome".
 
         Returns
         -------
@@ -41,7 +63,18 @@ class Plotter:
         ax : matplotlib.axes.Axes
             The axes object of the plot.
         """
-        # Placeholder for plotting logic
+        # Store the plot style
+        if plot_style not in ["fancy", "scientific"]:
+            logger.error("Invalid plot_style. Must be 'fancy' or 'scientific'.")
+            raise ValueError("plot_style must be 'fancy' or 'scientific'")
+        self.plot_style = plot_style
+
+        if color_style not in ["color", "monochrome"]:
+            logger.error("Invalid color_style. Must be 'color' or 'monochrome'.")
+            raise ValueError("color_style must be 'color' or 'monochrome'")
+        self.color_style = color_style
+
+        # Create the plot
         fig, ax = plt.subplots(figsize=(10, 6))
         ax.set_title(title, **tfont)
         ax.set_xlabel(xlabel, **afont)
@@ -52,7 +85,7 @@ class Plotter:
             self._plot_well(well, ax)
             if well.is_reference is False:
                 self._mark_outliers(well, ax)
-        self._default_plot_settings(ax)
+        self._plot_settings(ax)
 
         return fig, ax
 
@@ -68,15 +101,17 @@ class Plotter:
             marker=well.marker if well.marker_visible else None,
             markersize=well.markersize,
         )
-        ax.text(
-            well.timeseries.index[-1],
-            well.timeseries.values[-1],
-            f" {well.name}",
-            color=well.color,
-            horizontalalignment="left",
-            verticalalignment="center",
-            **lfont,
-        )
+        self._update_axis_limits(well)
+        if self.plot_style == "fancy":
+            ax.text(
+                well.timeseries.index[-1],
+                well.timeseries.values[-1],
+                f" {well.name}",
+                color=well.color,
+                horizontalalignment="left",
+                verticalalignment="center",
+                **lfont,
+            )
         if well.is_reference is False:
             self._plot_fit(well, ax)
 
@@ -89,8 +124,15 @@ class Plotter:
             fit_timeseries = fit.fit_timeseries()
             x = fit_timeseries.index
             y = fit_timeseries.values
-            ax.plot(x, y, linestyle="-", color="gray", alpha=0.2)
-            ax.fill_between(x, y - pred_const, y + pred_const, color="gray", alpha=0.2)
+            ax.plot(x, y, linestyle="-", color=well.color, alpha=0.2, label=None)
+            ax.fill_between(
+                x,
+                y - pred_const,
+                y + pred_const,
+                color=well.color,
+                alpha=0.2,
+                label=None,
+            )
         logger.info(f"Plotting fit for well: {well.name}")
 
     def _mark_outliers(self, well, ax):
@@ -99,15 +141,16 @@ class Plotter:
             fit = fit[0]
         outliers = fit.fit_outliers()
         well_outliers = well.timeseries[outliers]
+        edgecolor = "red" if self.color_style == "color" else "black"
         if well_outliers is not None and not well_outliers.empty:
             ax.scatter(
                 well_outliers.index,
                 well_outliers.values,
-                edgecolor="red",
-                facecolors='none',
+                edgecolor=edgecolor,
+                facecolors="none",
                 marker="o",
                 s=50,
-                label=f"{well.name} Outliers",
+                label=None,
                 zorder=5,
             )
             logger.info(f"Marking outliers for well: {well.name}")
@@ -116,7 +159,12 @@ class Plotter:
         # Set default plot attributes if not already set
         if well.color is None:
             cnt = self.cnt_colors
-            well.color = DEFAULT_COLORS[cnt % len(DEFAULT_COLORS)]
+            if self.color_style == "monochrome":
+                well.color = DEFAULT_MONOCHROME_COLORS[
+                    cnt % len(DEFAULT_MONOCHROME_COLORS)
+                ]
+            else:
+                well.color = DEFAULT_COLORS[cnt % len(DEFAULT_COLORS)]
             self.cnt_colors += 1
         if well.linestyle is None:
             cnt = self.cnt_linestyles
@@ -131,41 +179,34 @@ class Plotter:
         if well.alpha is None:
             well.alpha = 1.0
 
-    @staticmethod
-    def _default_plot_settings(ax):
-        # Hide the all but the bottom spines (axis lines)
-        ax.spines["right"].set_visible(False)
-        ax.spines["left"].set_visible(False)
-        ax.spines["top"].set_visible(False)
+    def _update_axis_limits(self, well):
+        if self.xmin is None or well.timeseries.index.min() < self.xmin:
+            self.xmin = well.timeseries.index.min()
+        if self.xmax is None or well.timeseries.index.max() > self.xmax:
+            self.xmax = well.timeseries.index.max()
+        if self.ymin is None or well.timeseries.min() < self.ymin:
+            self.ymin = well.timeseries.min()
+        if self.ymax is None or well.timeseries.max() > self.ymax:
+            self.ymax = well.timeseries.max()
 
-        # Only show ticks on the left and bottom spines
-        ax.yaxis.set_ticks_position("left")
-        ax.xaxis.set_ticks_position("bottom")
+    def _plot_settings(self, ax):
+        if self.plot_style == "fancy":
+            self._plot_settings_fancy(ax)
+        elif self.plot_style == "scientific":
+            self._plot_settings_scientific(ax)
+
+        # limit x axis to data range
+        ax.set_xlim(left=self.xmin, right=self.xmax)
 
         # Set ticks font
-        xticks = ax.get_xticks()
+        xticks = np.linspace(date2num(self.xmin), date2num(self.xmax), num=6)
+        xlabels = [f"{num2date(tick):%Y-%m-%d}" for tick in xticks]
         yticks = ax.get_yticks()
-        xlabels = [item.get_text() for item in ax.get_xticklabels()]
         ylabels = [item.get_text() for item in ax.get_yticklabels()]
-        ax.xaxis.set_major_locator(
-            plt.FixedLocator(xticks)
-        )  # Needed to suppress warnings
-        ax.yaxis.set_major_locator(plt.FixedLocator(yticks))
+        ax.set_xticks(xticks)
+        ax.set_yticks(yticks)
         ax.set_xticklabels(xlabels, **tifont)
         ax.set_yticklabels(ylabels, **tifont)
-        ax.spines["bottom"].set_bounds(min(xticks), max(xticks))
-
-        # Add grid lines
-        ax.grid(
-            visible=True,
-            which="major",
-            color="lightgrey",
-            linestyle="--",
-            linewidth=0.5,
-        )
-        ax.grid(
-            visible=True, which="minor", color="lightgrey", linestyle=":", linewidth=0.5
-        )
 
         # Set font sizes and styles
         ax.title.set_fontsize(16)
@@ -175,6 +216,44 @@ class Plotter:
 
         # Tight layout
         plt.tight_layout()
+
+    def _plot_settings_fancy(self, ax):
+        # Hide the all but the bottom spines (axis lines)
+        ax.spines["right"].set_visible(False)
+        ax.spines["left"].set_visible(False)
+        ax.spines["top"].set_visible(False)
+
+        # Only show ticks on the left and bottom spines
+        ax.yaxis.set_ticks_position("left")
+        ax.xaxis.set_ticks_position("bottom")
+        ax.spines["bottom"].set_bounds(date2num(self.xmin), date2num(self.xmax))
+
+        # Add grid lines
+        ax.grid(
+            visible=True,
+            which="major",
+            color="#E8E8E8",
+            linestyle="--",
+            linewidth=0.5,
+        )
+        ax.grid(
+            visible=True, which="minor", color="#E8E8E8", linestyle=":", linewidth=0.5
+        )
+
+    def _plot_settings_scientific(self, ax):
+        # Add grid lines
+        ax.grid(
+            visible=True,
+            which="major",
+            color="black",
+            linestyle="--",
+            linewidth=0.5,
+        )
+        ax.grid(
+            visible=True, which="minor", color="black", linestyle=":", linewidth=0.5
+        )
+
+        ax.legend(prop=lfont)
 
     def get_fits(self, well):
         raise NotImplementedError("Subclasses should implement this method.")
