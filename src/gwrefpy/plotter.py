@@ -24,8 +24,8 @@ class Plotter:
         self.cnt_colors = 0
         self.cnt_linestyles = 0
         self.cnt_markers = 0
-        self.plot_style = "fancy"
-        self.color_style = "color"
+        self.plot_style = None
+        self.color_style = None
         self.xmin = None
         self.xmax = None
         self.ymin = None
@@ -36,8 +36,12 @@ class Plotter:
         title: str = "Well Data Plot",
         xlabel: str = "Time",
         ylabel: str = "Measurement",
+        mark_outliers: bool = True,
         plot_style: str = "fancy",
         color_style: str = "color",
+        save_path: str | None = None,
+        num: int = 6,
+        **kwargs,
     ):
         """
         This method plots the time series data for all wells in the model.
@@ -51,10 +55,22 @@ class Plotter:
             The label for the x-axis.
         ylabel : str
             The label for the y-axis.
+        mark_outliers : bool
+            If True, outliers will be marked on the plot.
         plot_style : str
             The style of the plot. Options are "fancy" or "scientific".
         color_style : str
             The color style of the plot. Options are "color" or "monochrome".
+        save_path : str | None
+            If provided, the plot will be saved to this path.
+        num : int
+            Number of ticks on the x-axis (default is 6).
+        **kwargs : dict
+            Additional keyword arguments for customization. See the documentation of Matplotlib's
+            `plt.subplots` and `plt.savefig` for more details. Common kwargs include:
+
+            - figsize (tuple): Size of the figure (width, height) in inches.
+            - dpi (int): Dots per inch for the saved figure.
 
         Returns
         -------
@@ -75,7 +91,8 @@ class Plotter:
         self.color_style = color_style
 
         # Create the plot
-        fig, ax = plt.subplots(figsize=(10, 6))
+        figsize = kwargs.pop("figsize", (10, 6))
+        fig, ax = plt.subplots(figsize=figsize, **kwargs)
         ax.set_title(title, **tfont)
         ax.set_xlabel(xlabel, **afont)
         ax.set_ylabel(ylabel, **afont)
@@ -83,13 +100,18 @@ class Plotter:
             logger.info(f"Plotting well: {well.name}")
             self._set_plot_attributes(well)
             self._plot_well(well, ax)
-            if well.is_reference is False:
+            if well.is_reference is False and mark_outliers:
                 self._mark_outliers(well, ax)
-        self._plot_settings(ax)
+        self._plot_settings(ax, num, **kwargs)
+
+        if save_path is not None:
+            plt.savefig(save_path, **kwargs)
+            logger.info(f"Plot saved to {save_path}")
 
         return fig, ax
 
     def _plot_well(self, well, ax):
+        """Plot the time series data for a single well."""
         ax.plot(
             well.timeseries.index,
             well.timeseries.values,
@@ -116,6 +138,7 @@ class Plotter:
             self._plot_fit(well, ax)
 
     def _plot_fit(self, well, ax):
+        """Plot the fitted model for a single well."""
         fits = self.get_fits(well)
         if isinstance(fits, list) is False:
             fits = [fits]
@@ -136,6 +159,7 @@ class Plotter:
         logger.info(f"Plotting fit for well: {well.name}")
 
     def _mark_outliers(self, well, ax):
+        """Mark outliers on the plot for a single well."""
         fit = self.get_fits(well)
         if isinstance(fit, list):
             fit = fit[0]
@@ -151,11 +175,12 @@ class Plotter:
                 marker="o",
                 s=50,
                 label=None,
-                zorder=5,
+                zorder=500,
             )
             logger.info(f"Marking outliers for well: {well.name}")
 
     def _set_plot_attributes(self, well):
+        """Set default plot attributes for a well if not already set."""
         # Set default plot attributes if not already set
         if well.color is None:
             cnt = self.cnt_colors
@@ -180,6 +205,7 @@ class Plotter:
             well.alpha = 1.0
 
     def _update_axis_limits(self, well):
+        """Update the axis limits based on the well's time series data."""
         if self.xmin is None or well.timeseries.index.min() < self.xmin:
             self.xmin = well.timeseries.index.min()
         if self.xmax is None or well.timeseries.index.max() > self.xmax:
@@ -189,7 +215,8 @@ class Plotter:
         if self.ymax is None or well.timeseries.max() > self.ymax:
             self.ymax = well.timeseries.max()
 
-    def _plot_settings(self, ax):
+    def _plot_settings(self, ax, num):
+        """Apply final plot settings based on the selected style."""
         if self.plot_style == "fancy":
             self._plot_settings_fancy(ax)
         elif self.plot_style == "scientific":
@@ -199,7 +226,7 @@ class Plotter:
         ax.set_xlim(left=self.xmin, right=self.xmax)
 
         # Set ticks font
-        xticks = np.linspace(date2num(self.xmin), date2num(self.xmax), num=6)
+        xticks = np.linspace(date2num(self.xmin), date2num(self.xmax), num=num)
         xlabels = [f"{num2date(tick):%Y-%m-%d}" for tick in xticks]
         yticks = ax.get_yticks()
         ylabels = [item.get_text() for item in ax.get_yticklabels()]
@@ -218,6 +245,7 @@ class Plotter:
         plt.tight_layout()
 
     def _plot_settings_fancy(self, ax):
+        """Apply fancy plot settings."""
         # Hide the all but the bottom spines (axis lines)
         ax.spines["right"].set_visible(False)
         ax.spines["left"].set_visible(False)
@@ -241,6 +269,7 @@ class Plotter:
         )
 
     def _plot_settings_scientific(self, ax):
+        """Apply scientific plot settings."""
         # Add grid lines
         ax.grid(
             visible=True,
