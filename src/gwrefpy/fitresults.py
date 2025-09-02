@@ -150,6 +150,28 @@ class FitResultData:
                 f"implemented"
             )
 
+    def fit_outliers(self) -> pd.Series:
+        """
+        Calculate the outliers based on the fit method and RMSE.
+
+        Returns
+        -------
+        pd.Series
+            The outlier values based on the fit method and RMSE.
+        """
+        if isinstance(self.fit_method, LinRegResult):
+            fitted_values = self.fit_timeseries()
+            outliers = pd.Series(
+                abs(self.obs_well.timeseries - fitted_values) > self.pred_const,
+                index=self.obs_well.timeseries.index,
+            )
+            return outliers
+        else:
+            raise NotImplementedError(
+                f"Fitting method {self.fit_method.__class__.__name__} is not "
+                f"implemented"
+            )
+
     def has_well(self, well: Well) -> bool:
         """
         Check if the FitResultData object involves the given well.

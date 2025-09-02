@@ -60,5 +60,5 @@ FONT_SIZE = 12
 FONT_FAMILY = "Times New Roman"
 tfont = {"family": FONT_FAMILY, "size": FONT_SIZE}
 afont = {"family": FONT_FAMILY, "size": FONT_SIZE - 2}
-lfont = {"family": FONT_FAMILY, "size": FONT_SIZE - 4}
+lfont = {"family": FONT_FAMILY, "size": FONT_SIZE + 2, "weight": "bold"}
 tifont = {"family": FONT_FAMILY, "size": FONT_SIZE - 6}

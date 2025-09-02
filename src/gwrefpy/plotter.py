@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import logging
 
 from .constants import (
     DEFAULT_COLORS,
@@ -10,6 +11,7 @@ from .constants import (
     tifont,
 )
 
+logger = logging.getLogger(__name__)
 
 class Plotter:
     def __init__(self):
@@ -18,17 +20,41 @@ class Plotter:
         self.cnt_linestyles = 0
         self.cnt_markers = 0
 
-    def plot(self, title="Well Data Plot", xlabel="Time", ylabel="Measurement"):
+    def plot(self, title: str="Well Data Plot", xlabel: str="Time", ylabel: str="Measurement"):
+        """
+        This method plots the time series data for all wells in the model.
+        It also overlays the fitted models if available.
+
+        Parameters
+        ----------
+        title : str
+            The title of the plot.
+        xlabel : str
+            The label for the x-axis.
+        ylabel : str
+            The label for the y-axis.
+
+        Returns
+        -------
+        fig : matplotlib.figure.Figure
+            The figure object containing the plot.
+        ax : matplotlib.axes.Axes
+            The axes object of the plot.
+        """
         # Placeholder for plotting logic
         fig, ax = plt.subplots(figsize=(10, 6))
         ax.set_title(title, **tfont)
         ax.set_xlabel(xlabel, **afont)
         ax.set_ylabel(ylabel, **afont)
         for _cnt, well in enumerate(self.wells):
+            logger.info(f"Plotting well: {well.name}")
             self._set_plot_attributes(well)
             self._plot_well(well, ax)
-            print(f"Plotting data for well: {well.name}")
-        self.default_plot_settings(ax)
+            if well.is_reference is False:
+                self._mark_outliers(well, ax)
+        self._default_plot_settings(ax)
+
+        return fig, ax
 
     def _plot_well(self, well, ax):
         ax.plot(
@@ -42,8 +68,15 @@ class Plotter:
             marker=well.marker if well.marker_visible else None,
             markersize=well.markersize,
         )
-        # Placeholder for individual well plotting logic
-        print(f"Plotting individual well: {well.name}")
+        ax.text(
+            well.timeseries.index[-1],
+            well.timeseries.values[-1],
+            f" {well.name}",
+            color=well.color,
+            horizontalalignment="left",
+            verticalalignment="center",
+            **lfont,
+        )
         if well.is_reference is False:
             self._plot_fit(well, ax)
 
@@ -56,9 +89,28 @@ class Plotter:
             fit_timeseries = fit.fit_timeseries()
             x = fit_timeseries.index
             y = fit_timeseries.values
-            ax.plot(x, y, linestyle="-", color="black", alpha=0.7)
+            ax.plot(x, y, linestyle="-", color="gray", alpha=0.2)
             ax.fill_between(x, y - pred_const, y + pred_const, color="gray", alpha=0.2)
-        print(f"Plotting fit for well: {well.name}")
+        logger.info(f"Plotting fit for well: {well.name}")
+
+    def _mark_outliers(self, well, ax):
+        fit = self.get_fits(well)
+        if isinstance(fit, list):
+            fit = fit[0]
+        outliers = fit.fit_outliers()
+        well_outliers = well.timeseries[outliers]
+        if well_outliers is not None and not well_outliers.empty:
+            ax.scatter(
+                well_outliers.index,
+                well_outliers.values,
+                edgecolor="red",
+                facecolors='none',
+                marker="o",
+                s=50,
+                label=f"{well.name} Outliers",
+                zorder=5,
+            )
+            logger.info(f"Marking outliers for well: {well.name}")
 
     def _set_plot_attributes(self, well):
         # Set default plot attributes if not already set
@@ -80,7 +132,7 @@ class Plotter:
             well.alpha = 1.0
 
     @staticmethod
-    def default_plot_settings(ax):
+    def _default_plot_settings(ax):
         # Hide the all but the bottom spines (axis lines)
         ax.spines["right"].set_visible(False)
         ax.spines["left"].set_visible(False)
@@ -101,6 +153,7 @@ class Plotter:
         ax.yaxis.set_major_locator(plt.FixedLocator(yticks))
         ax.set_xticklabels(xlabels, **tifont)
         ax.set_yticklabels(ylabels, **tifont)
+        ax.spines["bottom"].set_bounds(min(xticks), max(xticks))
 
         # Add grid lines
         ax.grid(
@@ -120,8 +173,8 @@ class Plotter:
         ax.yaxis.label.set_fontsize(14)
         ax.tick_params(axis="both", which="major", labelsize=12)
 
-        # Legend
-        ax.legend(prop=lfont)
+        # Tight layout
+        plt.tight_layout()
 
     def get_fits(self, well):
         raise NotImplementedError("Subclasses should implement this method.")
