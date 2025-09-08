@@ -7,8 +7,8 @@ from ..well import Well
 
 
 def groupby_time_equivalents(
-    ref_timeseries: pd.Series,
     obs_timeseries: pd.Series,
+    ref_timeseries: pd.Series,
     offset: pd.DateOffset | pd.Timedelta | str,
 ) -> tuple[pd.Series, pd.Series, int]:
     """
@@ -17,10 +17,10 @@ def groupby_time_equivalents(
 
     Parameters
     ----------
-    ref_timeseries : pd.Series
-        The reference timeseries data.
     obs_timeseries: pd.Series
         The observed timeseries data.
+    ref_timeseries : pd.Series
+        The reference timeseries data.
     offset: pd.DateOffset | pd.Timedelta | str
         Maximum date offset to allow to group pairs of data points.
 
@@ -33,16 +33,16 @@ def groupby_time_equivalents(
     int
         Number of grouped pairs of data points.
     """
-    if not ref_timeseries.name:
-        ref_timeseries.name = "ref"
     if not obs_timeseries.name:
         obs_timeseries.name = "obs"
+    if not ref_timeseries.name:
+        ref_timeseries.name = "ref"
 
     time_equivalents = _create_time_equivalents(
-        ref_timeseries.index, obs_timeseries.index, offset
+        obs_timeseries.index, ref_timeseries.index, offset
     )
 
-    combined = pd.concat([ref_timeseries, obs_timeseries], axis="columns")
+    combined = pd.concat([obs_timeseries, ref_timeseries], axis="columns")
     combined_time_eqs = combined.set_index(time_equivalents, drop=True)
     time_eq_means = combined_time_eqs.groupby(combined_time_eqs.index).mean()
 

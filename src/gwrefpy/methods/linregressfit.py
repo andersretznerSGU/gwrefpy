@@ -12,8 +12,8 @@ logger = logging.getLogger(__name__)
 
 
 def linregressfit(
-    ref_well: Well,
     obs_well: Well,
+    ref_well: Well,
     offset: pd.DateOffset | pd.Timedelta | str,
     tmin: pd.Timestamp | str | None = None,
     tmax: pd.Timestamp | str | None = None,
@@ -24,10 +24,10 @@ def linregressfit(
 
     Parameters
     ----------
-    ref_well : Well
-        The reference well object containing the time series data.
     obs_well : Well
         The observation well object containing the time series data.
+    ref_well : Well
+        The reference well object containing the time series data.
     offset: pd.DateOffset | pd.Timedelta | str
         The offset to apply when grouping the time series into time equivalents.
     tmin: pd.Timestamp | str | None = None
@@ -103,7 +103,7 @@ def linregressfit(
         return None
 
     ref_timeseries, obs_timeseries, n = groupby_time_equivalents(
-        ref_well.timeseries.loc[tmin:tmax], obs_well.timeseries.loc[tmin:tmax], offset
+        obs_well.timeseries.loc[tmin:tmax], ref_well.timeseries.loc[tmin:tmax], offset
     )
 
     res = sp.stats.linregress(ref_timeseries, obs_timeseries)

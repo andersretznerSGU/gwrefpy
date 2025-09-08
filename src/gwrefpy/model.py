@@ -116,7 +116,7 @@ class Model(Plotter):
         well.model.append(self)
         logger.debug(f"Well '{well.name}' added to model '{self.name}'.")
 
-    def get_wells(self, names: list[str] | str):
+    def get_wells(self, names: list[str] | str) -> Well | list[Well]:
         """
         Get wells from the model by their names.
 
@@ -127,7 +127,7 @@ class Model(Plotter):
 
         Returns
         -------
-        list of Well or Well
+        Well | list[Well]
             The well or list of wells with the specified names.
 
         Raises
@@ -152,8 +152,8 @@ class Model(Plotter):
 
     def fit(
         self,
-        ref_well: Well,
         obs_well: Well,
+        ref_well: Well,
         offset: pd.DateOffset | pd.Timedelta | str,
         p: float = 0.95,
         method: Literal["linearregression"] = "linearregression",
@@ -165,10 +165,10 @@ class Model(Plotter):
 
         Parameters
         ----------
-        ref_well : Well
-            The reference well to use for fitting.
         obs_well : Well
             The observation well to use for fitting.
+        ref_well : Well
+            The reference well to use for fitting.
         offset: pd.DateOffset | pd.Timedelta | str
             The offset to apply to the time series when grouping within time
             equivalents.
@@ -184,10 +184,10 @@ class Model(Plotter):
 
         Returns
         -------
-        None
-            This method modifies the model in place.
+        FitResultData
+            The fit result object containing fit details.
         """
-        self._fit(ref_well, obs_well, offset, p, method, tmin, tmax)
+        self._fit(obs_well, ref_well, offset, p, method, tmin, tmax)
         logger.info(
             f"Fitting model '{self.name}' using reference well '{ref_well.name}' "
             f"and observation well '{obs_well.name}'."
@@ -195,14 +195,14 @@ class Model(Plotter):
 
     def _fit(
         self,
-        ref_well: Well,
         obs_well: Well,
+        ref_well: Well,
         offset: pd.DateOffset | pd.Timedelta | str,
         p: float = 0.95,
         method: Literal["linearregression"] = "linearregression",
         tmin: pd.Timestamp | str | None = None,
         tmax: pd.Timestamp | str | None = None,
-    ):
+    ) -> FitResultData:
         # Check that the ref_well is a reference well
         if not ref_well.is_reference:
             logger.error(f"The well '{ref_well.name}' is not a reference well.")
@@ -216,71 +216,137 @@ class Model(Plotter):
         fit = None
         if method == "linearregression":
             logger.debug("Using linear regression method for fitting.")
-            fit = linregressfit(ref_well, obs_well, offset, tmin, tmax, p)
+            fit = linregressfit(obs_well, ref_well, offset, tmin, tmax, p)
         if fit is None:
             logger.error(f"Fitting method '{method}' is not implemented.")
             raise NotImplementedError(f"Fitting method '{method}' is not implemented.")
 
         self.fits.append(fit)
         logger.info(f"Fit completed for model '{self.name}' with RMSE {fit.rmse}.")
+        return fit
 
-    def best_fit(self, ref_well=None, obs_well=None):
+    def best_fit(
+        self,
+        obs_well: str | Well,
+        ref_wells: list[str | Well] | None = None,
+        method: Literal["linearregression"] = "linearregression",
+        **kwargs,
+    ) -> FitResultData:
         """
         Find the best fit for the model using the provided wells.
 
         Parameters
         ----------
-        ref_well : Well or list of Well or None, optional
-            The reference well to use for fitting (default is None).
         obs_well : Well or list of Well or None, optional
-            The observation well to use for fitting (default is None).
+            The observation well to use for fitting.
+        ref_wells : Well or list of Well or None, optional
+            The reference wells to test. If None, all reference wells in the
+            model will be used (default is None).
+        method : Literal["linearregression"]
+            Method with which to perform regression. Currently only supports
+            linear regression.
+        **kwargs
+            Keyword arguments to pass to the fitting method. For example, you can use
+            `offset`, `p`, `tmin`, and `tmax` to control
 
         Returns
         -------
-        None
-            This method modifies the model in place.
+        FitResultData
+            Returns the best fit for the given observation well.
         """
-        # Placeholder for best fit logic
-        logger.info(f"Finding best fit for model '{self.name}'.")
+        return self._best_fit(obs_well, ref_wells, method, **kwargs)
 
-    def _best_fit(self, ref_well=None, obs_well=None):
+    def _best_fit(
+        self,
+        obs_well: str | Well,
+        ref_wells: list[str | Well] | None = None,
+        method: Literal["linearregression"] = "linearregression",
+        **kwargs,
+    ) -> FitResultData:
         """
         The internal method to find the best fit.
 
         Parameters
         ----------
-        ref_well : Well or list of Well or None, optional
-            The reference well to use for fitting (default is None).
         obs_well : Well or list of Well or None, optional
-            The observation well to use for fitting (default is None).
+            The observation well to use for fitting.
+        ref_wells : Well or list of Well or None, optional
+            The reference wells to test. If None, all reference wells in the
+            model will be used (default is None).
+        method : Literal["linearregression"]
+            Method with which to perform regression. Currently only supports
+            linear regression.
+        **kwargs
+            Keyword arguments to pass to the fitting method. For example, you can use
+            `offset`, `p`, `tmin`, and `tmax` to control
 
         Returns
         -------
-        None
-            This method modifies the model in place.
+        FitResultData
+            Returns the best fit for the given arguments.
         """
-        # Placeholder for internal best fit logic
-        logger.debug(f"Internal best fit logic for model '{self.name}'.")
-        # best_fit = BestFitResults(ref_well, obs_well)
-        best_fit = "h"
-        self.fits.append(best_fit)
-        logger.info(f"Best fit completed for model '{self.name}'.")
+        if isinstance(ref_wells, list) and len(ref_wells) < 1:
+            logger.error("ref_wells list cannot be empty.")
+            raise ValueError("ref_wells list cannot be empty.")
 
-    def get_fits(self, well: Well):
+        if isinstance(obs_well, str):
+            target_obs_well = self.get_wells(obs_well)
+            if isinstance(target_obs_well, list):
+                raise ValueError(
+                    "obs_well parameter must resolve to a single well, not a list."
+                )
+        elif isinstance(obs_well, Well):
+            target_obs_well = obs_well
+        if ref_wells is None:
+            target_ref_wells = [well for well in self.wells if well.is_reference]
+            if len(target_ref_wells) < 1:
+                logger.error("No reference wells available in the model.")
+                raise ValueError("No reference wells available in the model.")
+        else:
+            target_ref_wells: list[Well] = []
+            for rw in ref_wells:
+                if isinstance(rw, str):
+                    target_ref_wells.append(self.get_wells(rw))  # type: ignore
+                elif isinstance(rw, Well):
+                    target_ref_wells.append(rw)
+        local_fits: list[FitResultData] = []
+        for ref_well in target_ref_wells:
+            logger.debug(
+                f"Testing fit for observation well '{target_obs_well.name}' "
+                f"and reference well '{ref_well.name}'."
+            )
+            fit = self._fit(target_obs_well, ref_well, method=method, **kwargs)
+            local_fits.append(fit)
+            logger.debug(
+                f"Fit result for observation well '{target_obs_well.name}' and"
+                f"reference well '{ref_well.name}': RMSE={fit.rmse}"
+            )
+        return min(local_fits, key=lambda x: x.rmse)
+
+    def get_fits(self, well: Well | str) -> list[FitResultData] | FitResultData | None:
         """
         Get all fit results involving a specific well.
 
         Parameters
         ----------
-        well : Well
+        well : Well | str
             The well to check.
 
         Returns
         -------
-        list of FitResultData
+        list[FitResultData] | FitResultData | None
             A list of fit results involving the specified well.
         """
-        fit_list = [fit for fit in self.fits if fit.has_well(well)]
+        target_well: Well
+        if isinstance(well, str):
+            target_well = self.get_wells(well)  # type: ignore
+        elif isinstance(well, Well):
+            target_well = well
+        else:
+            logger.error("Parameter 'well' must be a Well instance or a string.")
+            raise TypeError("Parameter 'well' must be a Well instance or a string.")
+
+        fit_list = [fit for fit in self.fits if fit.has_well(target_well)]
         return (
             fit_list
             if len(fit_list) > 1
