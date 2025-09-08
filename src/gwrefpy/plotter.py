@@ -66,8 +66,9 @@ class Plotter:
         num : int
             Number of ticks on the x-axis (default is 6).
         **kwargs : dict
-            Additional keyword arguments for customization. See the documentation of Matplotlib's
-            `plt.subplots` and `plt.savefig` for more details. Common kwargs include:
+            Additional keyword arguments for customization. See the documentation of
+            Matplotlib's `plt.subplots` and `plt.savefig` for more details.
+            Common kwargs include:
 
             - figsize (tuple): Size of the figure (width, height) in inches.
             - dpi (int): Dots per inch for the saved figure.

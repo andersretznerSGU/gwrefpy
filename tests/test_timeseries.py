@@ -7,7 +7,7 @@ from gwrefpy.methods.timeseries import groupby_time_equivalents
 def test_strandangers_example(strandangers_example) -> None:
     obs, ref = strandangers_example
 
-    ref_te, obs_te, n = groupby_time_equivalents(ref, obs, "3.5D")
+    ref_te, obs_te, n = groupby_time_equivalents(obs, ref, "3.5D")
     assert n == 3
     assert ref_te.tolist() == [8.9, 9.2, 9.4]
     assert obs_te.tolist() == [11.4, 11.7, 11.8]
@@ -34,7 +34,7 @@ def test_groupby_time_equivalents_no_pairs() -> None:
         data=[8.9, 9.2, 9.3, 9.3, 9.5],
         name="ref",
     )
-    ref_te, obs_te, n = groupby_time_equivalents(ref, obs, "7D")
+    ref_te, obs_te, n = groupby_time_equivalents(obs, ref, "7D")
     assert n == 0
     assert ref_te.tolist() == []
     assert obs_te.tolist() == []

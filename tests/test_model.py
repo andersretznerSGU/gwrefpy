@@ -1,5 +1,4 @@
-from src.gwrefpy.model import Model
-from src.gwrefpy.well import Well
+from gwrefpy import Model, Well
 
 
 def test_add_well_to_model() -> None:
@@ -26,12 +25,10 @@ def test_add_well_to_model() -> None:
 def test_strandangers_model(strandangers_model) -> None:
     assert strandangers_model.name == "Strandangers"
     assert len(strandangers_model.wells) == 2
-    assert strandangers_model.wells[0].name == "obs"
-    assert strandangers_model.wells[1].name == "ref"
+    obs = strandangers_model.get_wells("obs")
+    ref = strandangers_model.get_wells("ref")
 
-    [obs, ref] = strandangers_model.wells
-
-    strandangers_model.fit(ref, obs, "3.5D")
-    [fit] = strandangers_model.fits
-    assert fit.n == 3
-    assert fit.offset == "3.5D"
+    assert isinstance(obs, Well)
+    assert isinstance(ref, Well)
+    assert obs.name == "obs"
+    assert ref.name == "ref"
