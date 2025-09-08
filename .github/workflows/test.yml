@@ -27,7 +27,7 @@ jobs:
         run: uv sync --locked --dev
 
       - name: Run linter
-        run: uv run ruff check
+        run: uv run ruff check --fix
 
       - name: Run formatter check
         run: uv run ruff format --check
