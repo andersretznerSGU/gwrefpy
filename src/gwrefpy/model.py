@@ -292,13 +292,16 @@ class Model(Plotter):
         if isinstance(obs_well, str):
             target_obs_well = self.get_wells(obs_well)
             if isinstance(target_obs_well, list):
+                logger.error(
+                    "obs_well parameter must resolve to a single well, not a list."
+                )
                 raise ValueError(
                     "obs_well parameter must resolve to a single well, not a list."
                 )
         elif isinstance(obs_well, Well):
             target_obs_well = obs_well
         if ref_wells is None:
-            target_ref_wells = [well for well in self.wells if well.is_reference]
+            target_ref_wells = self.ref_wells
             if len(target_ref_wells) < 1:
                 logger.error("No reference wells available in the model.")
                 raise ValueError("No reference wells available in the model.")
@@ -309,6 +312,14 @@ class Model(Plotter):
                     target_ref_wells.append(self.get_wells(rw))  # type: ignore
                 elif isinstance(rw, Well):
                     target_ref_wells.append(rw)
+                else:
+                    logger.error(
+                        f"Unsupported type for {rw}. Supported types are Well or str"
+                    )
+                    raise TypeError(
+                        f"Unsupported type for {rw}. Supported types are Well or str"
+                    )
+
         local_fits: list[FitResultData] = []
         for ref_well in target_ref_wells:
             logger.debug(
