@@ -1,4 +1,3 @@
-from . import logger_config
 from .decorators import print_return, timed
 from .logger_config import set_log_level
 
