@@ -1,3 +1,8 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
+
 def timed(iters=1):
     """Decorator to time a function.
     Parameters
@@ -25,13 +30,13 @@ def timed(iters=1):
                 result = func(*args, **kwargs)
             end_time = time.time()
             if iters > 1:
-                print(
+                logger.info(
                     f"Function {func.__name__} took"
                     f" {(end_time - start_time) / iters:.4f}"
                     f" seconds on average over {iters} iterations."
                 )
             else:
-                print(
+                logger.info(
                     f"Function {func.__name__} took"
                     f" {end_time - start_time:.4f} seconds."
                 )
@@ -57,7 +62,7 @@ def print_return(func):
     def wrapper(*args, **kwargs):
         """Wrapper function that prints the return value."""
         result = func(*args, **kwargs)
-        print(f"Return value of {func.__name__}: {result}")
+        logger.info(f"Return value of {func.__name__}: {result}")
         return result
 
     return wrapper
