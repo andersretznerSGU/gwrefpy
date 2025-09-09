@@ -236,7 +236,7 @@ class Model(Plotter):
         obs_wells = self._resolve_wells(obs_well)
         ref_wells = self._resolve_wells(ref_well)
 
-        # Handle single well case (backward compatibility)
+        # Handle single well case
         if len(obs_wells) == 1 and len(ref_wells) == 1:
             result = self._fit(
                 obs_wells[0], ref_wells[0], offset, p, method, tmin, tmax
