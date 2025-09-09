@@ -115,15 +115,41 @@ class FitResultData:
         self.tmax = tmax
 
     def __str__(self):
-        return (
-            f"FitResultData(ref_well={self.ref_well}, obs_well={self.obs_well}, "
-            f"rmse={self.rmse:.4f}, n={self.n}, fit_method={self.fit_method})"
-        )
+        """Return a nicely formatted table representation of the fit results."""
+        # Header
+        header = f"Fit Results: {self.obs_well.name} ~ {self.ref_well.name}"
+        separator = "=" * len(header)
+
+        # Build the table content
+        lines = [
+            header,
+            separator,
+            f"{'Statistic':<15} {'Value':<12} {'Description'}",
+            "-" * 50,
+            f"{'RMSE':<15} {self.rmse:<12.4f} Root Mean Square Error",
+            f"{'R²':<15} {self.fit_method.rvalue**2:<12.4f} "
+            f"Coefficient of Determination",
+            f"{'R-value':<15} {self.fit_method.rvalue:<12.4f} Correlation Coefficient",
+            f"{'Slope':<15} {self.fit_method.slope:<12.4f} Linear Regression Slope",
+            f"{'Intercept':<15} {self.fit_method.intercept:<12.4f} "
+            f"Linear Regression Intercept",
+            f"{'P-value':<15} {self.fit_method.pvalue:<12.4f} Statistical Significance",
+            f"{'N':<15} {self.n:<12d} Number of Data Points",
+            f"{'Std Error':<15} {self.stderr:<12.4f} Standard Error",
+            f"{'Confidence':<15} {self.p * 100:<12.1f}% Confidence Level",
+            "",
+            f"Calibration Period: {self.tmin} to {self.tmax}",
+            f"Time Offset: {self.offset}",
+        ]
+
+        return "\n".join(lines)
 
     def __repr__(self):
+        """Return a concise representation for debugging."""
         return (
-            f"FitResultData(ref_well={self.ref_well}, obs_well={self.obs_well}, "
-            f"rmse={self.rmse:.4f}, n={self.n}, fit_method={self.fit_method})"
+            f"FitResultData(ref_well='{self.ref_well.name}', "
+            f"obs_well='{self.obs_well.name}', "
+            f"rmse={self.rmse:.4f}, r²={self.fit_method.rvalue**2:.4f}, n={self.n})"
         )
 
     def fit_timeseries(self) -> pd.Series:
