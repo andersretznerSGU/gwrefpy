@@ -14,6 +14,7 @@ from .constants import (
     tfont,
     tifont,
 )
+from .fitresults import FitResultData
 
 logger = logging.getLogger(__name__)
 
@@ -31,8 +32,11 @@ class Plotter:
         self.ymin = None
         self.ymax = None
 
-    def plot(
+        self.fits = []
+
+    def plot_fits(
         self,
+        fits: FitResultData | list[FitResultData] = None,
         title: str = "Well Data Plot",
         xlabel: str = "Time",
         ylabel: str = "Measurement",
@@ -49,6 +53,9 @@ class Plotter:
 
         Parameters
         ----------
+        fits : FitResultData | list[FitResultData]
+            A FitResultData instance or a list of FitResultData instances
+            containing the fit results to be plotted. If None, all fits will be plotted.
         title : str
             The title of the plot.
         xlabel : str
@@ -80,6 +87,26 @@ class Plotter:
         ax : matplotlib.axes.Axes
             The axes object of the plot.
         """
+        if fits is not None and not (
+            isinstance(fits, FitResultData)
+            or (
+                isinstance(fits, list)
+                and all(isinstance(f, FitResultData) for f in fits)
+            )
+        ):
+            logger.error(
+                "fits must be a FitResultData instance or a list of "
+                "FitResultData instances"
+            )
+            raise TypeError(
+                "fits must be a FitResultData instance or a list of "
+                "FitResultData instances"
+            )
+        if fits is None:
+            fits = self.fits
+        elif isinstance(fits, FitResultData):
+            fits = [fits]
+
         # Store the plot style
         if plot_style not in ["fancy", "scientific"]:
             logger.error("Invalid plot_style. Must be 'fancy' or 'scientific'.")
@@ -97,12 +124,14 @@ class Plotter:
         ax.set_title(title, **tfont)
         ax.set_xlabel(xlabel, **afont)
         ax.set_ylabel(ylabel, **afont)
-        for _cnt, well in enumerate(self.wells):
-            logger.info(f"Plotting well: {well.name}")
-            self._set_plot_attributes(well)
-            self._plot_well(well, ax)
-            if well.is_reference is False and mark_outliers:
-                self._mark_outliers(well, ax)
+        for fit in fits:
+            logger.info(f"Plotting fit: {fit.obs_well.name} ~ {fit.ref_well.name}")
+            self._set_plot_attributes(fit.obs_well)
+            self._set_plot_attributes(fit.ref_well)
+            self._plot_well(fit.obs_well, ax)
+            self._plot_well(fit.ref_well, ax)
+            if mark_outliers:
+                self._mark_outliers(fit.obs_well, ax)
         self._plot_settings(ax, num, **kwargs)
 
         if save_path is not None:

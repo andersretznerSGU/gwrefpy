@@ -55,8 +55,8 @@ class LinRegResult:
 class FitResultData:
     def __init__(
         self,
-        ref_well: Well,
         obs_well: Well,
+        ref_well: Well,
         rmse: float,
         n: int,
         fit_method: LinRegResult,
@@ -101,8 +101,8 @@ class FitResultData:
         tmax: pd.Timestamp | str | None
             The maximum timestamp for the calibration period.
         """
-        self.ref_well = ref_well
         self.obs_well = obs_well
+        self.ref_well = ref_well
         self.rmse = rmse
         self.n = n
         self.fit_method = fit_method

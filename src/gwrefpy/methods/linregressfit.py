@@ -93,8 +93,8 @@ def linregressfit(
 
     # Create and return a FitResultData object with the regression results
     fit_result = FitResultData(
-        ref_well=ref_well,
         obs_well=obs_well,
+        ref_well=ref_well,
         rmse=linreg.rvalue,
         n=n,
         fit_method=linreg,
