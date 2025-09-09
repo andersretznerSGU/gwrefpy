@@ -115,15 +115,132 @@ class FitResultData:
         self.tmax = tmax
 
     def __str__(self):
-        return (
-            f"FitResultData(ref_well={self.ref_well}, obs_well={self.obs_well}, "
-            f"rmse={self.rmse:.4f}, n={self.n}, fit_method={self.fit_method})"
-        )
+        """Return a nicely formatted table representation of the fit results."""
+        # Header
+        header = f"Fit Results: {self.obs_well.name} ~ {self.ref_well.name}"
+        separator = "=" * len(header)
+
+        # Build the table content
+        lines = [
+            header,
+            separator,
+            f"{'Statistic':<15} {'Value':<12} {'Description'}",
+            "-" * 50,
+            f"{'RMSE':<15} {self.rmse:<12.4f} Root Mean Square Error",
+            f"{'R²':<15} {self.fit_method.rvalue**2:<12.4f} "
+            f"Coefficient of Determination",
+            f"{'R-value':<15} {self.fit_method.rvalue:<12.4f} Correlation Coefficient",
+            f"{'Slope':<15} {self.fit_method.slope:<12.4f} Linear Regression Slope",
+            f"{'Intercept':<15} {self.fit_method.intercept:<12.4f} "
+            f"Linear Regression Intercept",
+            f"{'P-value':<15} {self.fit_method.pvalue:<12.4f} Statistical Significance",
+            f"{'N':<15} {self.n:<12d} Number of Data Points",
+            f"{'Std Error':<15} {self.stderr:<12.4f} Standard Error",
+            f"{'Confidence':<15} {self.p * 100:<12.1f}% Confidence Level",
+            "",
+            f"Calibration Period: {self.tmin} to {self.tmax}",
+            f"Time Offset: {self.offset}",
+        ]
+
+        return "\n".join(lines)
+
+    def _repr_html_(self):
+        """Return HTML representation for Jupyter notebooks."""
+        return f"""
+        <div style="margin: 10px 0;">
+            <h4>Fit Results: {self.obs_well.name} ~ {self.ref_well.name}</h4>
+            <table style="border-collapse: collapse; margin: 10px 0;
+                           font-family: monospace;">
+                <thead>
+                    <tr style="background-color: #f0f0f0;">
+                        <th style="border: 1px solid #ccc; padding: 8px;
+                                   text-align: left;">Statistic</th>
+                        <th style="border: 1px solid #ccc; padding: 8px;
+                                   text-align: left;">Value</th>
+                        <th style="border: 1px solid #ccc; padding: 8px;
+                                   text-align: left;">Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="border: 1px solid #ccc; padding: 8px;">RMSE</td>
+                        <td style="border: 1px solid #ccc; padding: 8px;">
+                            {self.rmse:.4f}</td>
+                        <td style="border: 1px solid #ccc; padding: 8px;">
+                            Root Mean Square Error</td>
+                    </tr>
+                    <tr>
+                        <td style="border: 1px solid #ccc; padding: 8px;">R²</td>
+                        <td style="border: 1px solid #ccc; padding: 8px;">
+                            {self.fit_method.rvalue**2:.4f}</td>
+                        <td style="border: 1px solid #ccc; padding: 8px;">
+                            Coefficient of Determination</td>
+                    </tr>
+                    <tr>
+                        <td style="border: 1px solid #ccc; padding: 8px;">R-value</td>
+                        <td style="border: 1px solid #ccc; padding: 8px;">
+                            {self.fit_method.rvalue:.4f}</td>
+                        <td style="border: 1px solid #ccc; padding: 8px;">
+                            Correlation Coefficient</td>
+                    </tr>
+                    <tr>
+                        <td style="border: 1px solid #ccc; padding: 8px;">Slope</td>
+                        <td style="border: 1px solid #ccc; padding: 8px;">
+                            {self.fit_method.slope:.4f}</td>
+                        <td style="border: 1px solid #ccc; padding: 8px;">
+                            Linear Regression Slope</td>
+                    </tr>
+                    <tr>
+                        <td style="border: 1px solid #ccc; padding: 8px;">Intercept</td>
+                        <td style="border: 1px solid #ccc; padding: 8px;">
+                            {self.fit_method.intercept:.4f}</td>
+                        <td style="border: 1px solid #ccc; padding: 8px;">
+                            Linear Regression Intercept</td>
+                    </tr>
+                    <tr>
+                        <td style="border: 1px solid #ccc; padding: 8px;">P-value</td>
+                        <td style="border: 1px solid #ccc; padding: 8px;">
+                            {self.fit_method.pvalue:.4f}</td>
+                        <td style="border: 1px solid #ccc; padding: 8px;">
+                            Statistical Significance</td>
+                    </tr>
+                    <tr>
+                        <td style="border: 1px solid #ccc; padding: 8px;">N</td>
+                        <td style="border: 1px solid #ccc; padding: 8px;">
+                            {self.n}</td>
+                        <td style="border: 1px solid #ccc; padding: 8px;">
+                            Number of Data Points</td>
+                    </tr>
+                    <tr>
+                        <td style="border: 1px solid #ccc; padding: 8px;">Std Error</td>
+                        <td style="border: 1px solid #ccc; padding: 8px;">
+                            {self.stderr:.4f}</td>
+                        <td style="border: 1px solid #ccc; padding: 8px;">
+                            Standard Error</td>
+                    </tr>
+                    <tr>
+                        <td style="border: 1px solid #ccc; padding: 8px;">
+                            Confidence</td>
+                        <td style="border: 1px solid #ccc; padding: 8px;">
+                            {self.p * 100:.1f}%</td>
+                        <td style="border: 1px solid #ccc; padding: 8px;">
+                            Confidence Level</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p style="margin: 10px 0; font-family: monospace;">
+                <strong>Calibration Period:</strong> {self.tmin} to {self.tmax}<br>
+                <strong>Time Offset:</strong> {self.offset}
+            </p>
+        </div>
+        """
 
     def __repr__(self):
+        """Return a concise representation for debugging."""
         return (
-            f"FitResultData(ref_well={self.ref_well}, obs_well={self.obs_well}, "
-            f"rmse={self.rmse:.4f}, n={self.n}, fit_method={self.fit_method})"
+            f"FitResultData(ref_well='{self.ref_well.name}', "
+            f"obs_well='{self.obs_well.name}', "
+            f"rmse={self.rmse:.4f}, r²={self.fit_method.rvalue**2:.4f}, n={self.n})"
         )
 
     def fit_timeseries(self) -> pd.Series:
