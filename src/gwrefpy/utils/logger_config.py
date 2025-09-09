@@ -38,6 +38,7 @@ logging.config.dictConfig(LOGGING_CONFIG)
 logger = logging.getLogger(__name__)
 logger.info("Logging is configured.")
 
+
 def set_log_level(level: str) -> None:
     """Set the logging level for the gwrefpy logger.
 
