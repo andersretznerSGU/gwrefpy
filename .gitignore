@@ -9,6 +9,9 @@ wheels/
 # virtual environments
 .venv
 
+# logfiles
+*.log
+
 # ruff
 .ruff_cache/
 
@@ -20,3 +23,6 @@ wheels/
 
 # AI
 CLAUDE.md
+
+# documentation builds
+docs/_build/

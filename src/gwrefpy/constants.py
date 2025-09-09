@@ -1,35 +1,74 @@
-# Dict of default colors
-DEFAULT_COLORS = {
-    "red": "#FF0000",
-    "green": "#00FF00",
-    "blue": "#0000FF",
-    "yellow": "#FFFF00",
-    "cyan": "#00FFFF",
-    "magenta": "#FF00FF",
-    "orange": "#FFA500",
-    "purple": "#800080",
-    "lime": "#00FF00",
-    "pink": "#FFC0CB",
-    "teal": "#008080",
-    "lavender": "#E6E6FA",
-    "brown": "#A52A2A",
-    "beige": "#F5F5DC",
-    "maroon": "#800000",
-    "mint": "#98FF98",
-    "olive": "#808000",
-    "coral": "#FF7F50",
-    "navy": "#000080",
-    "grey": "#808080",
-}
+# List of default colors
+DEFAULT_COLORS = [
+    "#4E79A7",  # deep blue
+    "#F28E2B",  # orange
+    "#E15759",  # red
+    "#76B7B2",  # teal
+    "#59A14F",  # green
+    "#EDC948",  # yellow
+    "#B07AA1",  # purple
+    "#FF9DA7",  # pink
+    "#9C755F",  # brown
+    "#BAB0AC",  # gray
+    "#A0CBE8",  # light blue
+    "#FFBE7D",  # light orange
+    "#FFB7B2",  # light red
+    "#CFCFCF",  # silver
+    "#8CD17D",  # mint
+    "#B6992D",  # gold
+    "#F1CE63",  # light yellow
+    "#499894",  # blue-green
+    "#D37295",  # magenta
+    "#FABFD2",  # light pink
+]
 
-# Dict of default line styles
-DEFAULT_LINE_STYLES = {
-    "solid": "-",
-    "dashed": "--",
-    "dotted": ":",
-    "dashdot": "-.",
+# List of default monochrome colors (grayscale)
+DEFAULT_MONOCHROME_COLORS = [
+    "#000000",  # black
+    "#444444",  # dark gray
+    "#888888",  # gray
+    "#BBBBBB",  # light gray
+    "#DDDDDD",  # lighter gray
+    "#E8E8E8",  # white
+]
+
+# List of default line styles
+DEFAULT_LINE_STYLES = [
+    "-",  # solid
+    "--",  # dashed
+    ":",  # dotted
+    "-.",  # dashdot
+]
+
+# List of default marker styles
+DEFAULT_MARKER_STYLES = [
+    "o",  # circle
+    "s",  # square
+    "^",  # triangle up
+    "v",  # triangle down
+    "D",  # diamond
+    "x",  # x
+    "+",  # plus
+    "*",  # star
+    "p",  # pentagon
+    "h",  # hexagon
+]
+
+# Dict for default plot attributes
+DEFAULT_PLOT_ATTRIBUTES = {
+    "color": None,
+    "alpha": 1.0,
+    "linestyle": None,
+    "linewidth": 1.0,
+    "marker": None,
+    "markersize": 6,
+    "marker_visible": False,
 }
 
 # Set the font size and family for matplotlib
 FONT_SIZE = 12
 FONT_FAMILY = "Times New Roman"
+tfont = {"family": FONT_FAMILY, "size": FONT_SIZE}
+afont = {"family": FONT_FAMILY, "size": FONT_SIZE - 2}
+lfont = {"family": FONT_FAMILY, "size": FONT_SIZE + 2, "weight": "bold"}
+tifont = {"family": FONT_FAMILY, "size": FONT_SIZE - 6}

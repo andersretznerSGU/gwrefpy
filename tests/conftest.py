@@ -1,36 +1,75 @@
-from pathlib import Path
-
+import numpy as np
 import pandas as pd
 import pytest
 
 from gwrefpy import Model, Well
 
-THIS_DIR = Path(__file__).resolve().parent
-TEST_PATH = THIS_DIR / "test_lagga2.csv"
-assert TEST_PATH.exists(), f"Test file {TEST_PATH} does not exist."
-
 
 @pytest.fixture()
 def timeseries() -> pd.Series:
-    """Fixture for loading a timeseries for testing."""
-    return pd.read_csv(TEST_PATH, parse_dates=True, index_col=0).squeeze()
+    """Fixture for generating a sinusoidal timeseries for testing."""
+    # Generate 334 days of data starting from 2024-10-01 (matching original data length)
+    start_date = pd.Timestamp("2024-10-01")
+    dates = pd.date_range(start=start_date, periods=334, freq="D")
+
+    # Generate sinusoidal data with some variation (similar to groundwater patterns)
+    # Base level around 25, with seasonal variation and some noise
+    t = np.arange(334)
+    base_level = 25.0
+    seasonal_amplitude = 2.0
+    seasonal_period = 365.25  # days per year
+    trend = 0.0001 * t  # slight upward trend
+    noise = 0.05 * np.random.RandomState(42).randn(334)  # reproducible noise
+
+    values = (
+        base_level
+        + seasonal_amplitude * np.sin(2 * np.pi * t / seasonal_period)
+        + trend
+        + noise
+    )
+
+    return pd.Series(values, index=dates, name="lagga2")
 
 
 @pytest.fixture()
-def strandangers_model() -> Model:
+def strandangers_example() -> tuple[pd.Series, pd.Series]:
+    """Test fixture to create Strandangers example."""
+    obs = pd.Series(
+        index=[
+            pd.Timestamp("2023-01-07"),
+            pd.Timestamp("2023-02-01"),
+            pd.Timestamp("2023-02-25"),
+        ],
+        data=[11.4, 11.7, 11.8],
+        name="obs",
+    )
+    ref = pd.Series(
+        index=[
+            pd.Timestamp("2023-01-08"),
+            pd.Timestamp("2023-02-03"),
+            pd.Timestamp("2023-02-08"),
+            pd.Timestamp("2023-02-25"),
+            pd.Timestamp("2023-02-28"),
+        ],
+        data=[8.9, 9.2, 9.3, 9.3, 9.5],
+        name="ref",
+    )
+    return obs, ref
+
+
+@pytest.fixture()
+def strandangers_model(strandangers_example) -> Model:
     """Fixture for creating Strandangers test case."""
-    dates = pd.date_range("2020-01-01", periods=3, freq="D")
-    values_obs = [11.4, 11.7, 11.8]
-    values_ref = [8.9, 9.2, 9.4]
+    obs, ref = strandangers_example
 
-    obs = Well(name="obs", is_reference=False)
-    obs.add_timeseries(pd.Series(values_obs, index=dates))
+    obs_well = Well("obs", is_reference=False)
+    obs_well.add_timeseries(obs)
 
-    ref = Well(name="ref", is_reference=True)
-    ref.add_timeseries(pd.Series(values_ref, index=dates))
+    ref_well = Well("ref", is_reference=True)
+    ref_well.add_timeseries(ref)
 
     model = Model(name="Strandangers")
-    model.add_well(obs)
-    model.add_well(ref)
+    model.add_well(obs_well)
+    model.add_well(ref_well)
 
     return model
