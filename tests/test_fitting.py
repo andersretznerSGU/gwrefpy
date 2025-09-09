@@ -65,7 +65,6 @@ def test_strandangers_model_fit_multiple_wells(strandangers_model) -> None:
     # Test fitting with lists of wells
     results = strandangers_model.fit([obs, obs2], [ref, ref2], offset="3.5D")
 
-
     # Verify we get a list of results
     assert isinstance(results, list)
     assert len(results) == 2
