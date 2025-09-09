@@ -414,7 +414,7 @@ class Model(Plotter):
             pass
 
         # Not in Jupyter or IPython not available, use regular print
-        print(result)
+        logger.info(result)
 
     def _resolve_wells(self, wells: Well | list[Well] | str | list[str]) -> list[Well]:
         """
