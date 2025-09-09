@@ -42,7 +42,7 @@ jobs:
       - name: Build HTML
         run: |
           cd docs/
-          make html
+          uv run make html
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
