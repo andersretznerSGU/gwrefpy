@@ -33,7 +33,46 @@ class Model(Plotter):
 
     def __str__(self):
         """String representation of the Model object."""
-        return f"Model(name={self.name}, wells={len(self.wells)})"
+        obs_count = len(self.obs_wells)
+        ref_count = len(self.ref_wells)
+        fits_count = len(self.fits)
+
+        lines = [
+            f"Model: {self.name}",
+            "=" * (7 + len(self.name)),
+            f"Wells: {len(self.wells)} total "
+            f"({obs_count} observation, {ref_count} reference)",
+            f"Fits: {fits_count}",
+        ]
+
+        if self.wells:
+            lines.append("")
+            lines.append("Wells:")
+            for well in self.wells:
+                well_type = "ref" if well.is_reference else "obs"
+                data_points = len(well.timeseries) if hasattr(well, "timeseries") else 0
+                lines.append(
+                    f"  • {well.name} ({well_type}) - {data_points} data points"
+                )
+
+        if self.fits:
+            lines.append("")
+            lines.append("Recent fits:")
+            for fit in self.fits[-3:]:  # Show last 3 fits
+                lines.append(
+                    f"  • {fit.obs_well.name} ~ {fit.ref_well.name}: "
+                    f"RMSE={fit.rmse:.4f}"
+                )
+            if len(self.fits) > 3:
+                lines.append(f"  ... and {len(self.fits) - 3} more")
+
+        return "\n".join(lines)
+
+    def __repr__(self):
+        """Concise representation of the Model object for debugging."""
+        return (
+            f"Model(name='{self.name}', wells={len(self.wells)}, fits={len(self.fits)})"
+        )
 
     # ======================== Well Management Methods ========================
 
@@ -42,7 +81,6 @@ class Model(Plotter):
         """List of observation wells in the model."""
         return [well for well in self.wells if not well.is_reference]
 
-    @property
     def obs_wells_summary(self) -> pd.DataFrame:
         """
         Get a summary DataFrame of observation wells in the model.
@@ -108,7 +146,6 @@ class Model(Plotter):
         """List of reference wells in the model."""
         return [well for well in self.wells if well.is_reference]
 
-    @property
     def ref_wells_summary(self) -> pd.DataFrame:
         """
         Get a summary DataFrame of reference wells in the model.
@@ -189,8 +226,8 @@ class Model(Plotter):
             Combined DataFrame with both observation and reference wells,
             including all columns from both summary types
         """
-        obs_df = self.obs_wells_summary
-        ref_df = self.ref_wells_summary
+        obs_df = self.obs_wells_summary()
+        ref_df = self.ref_wells_summary()
 
         if obs_df.empty and ref_df.empty:
             return pd.DataFrame()
@@ -354,6 +391,31 @@ class Model(Plotter):
 
     # ============================== Fit methods ==============================
 
+    def _display_result(self, result: FitResultData):
+        """
+        Display fit result appropriately based on environment.
+
+        In Jupyter notebooks, rely on the automatic HTML display of the return value.
+        In other environments, print the text representation.
+        """
+        try:
+            # Check if we're in a Jupyter environment
+            from IPython.core.getipython import get_ipython
+
+            ipython = get_ipython()
+            if (
+                ipython is not None
+                and ipython.__class__.__name__ == "ZMQInteractiveShell"
+            ):
+                # We're in Jupyter - don't print, let the return value display
+                return
+        except ImportError:
+            # IPython not available, definitely not in Jupyter
+            pass
+
+        # Not in Jupyter or IPython not available, use regular print
+        print(result)
+
     def _resolve_wells(self, wells: Well | list[Well] | str | list[str]) -> list[Well]:
         """
         Resolve well names to Well objects using get_wells().
@@ -453,7 +515,7 @@ class Model(Plotter):
                 f"'{ref_wells[0].name}' and observation well '{obs_wells[0].name}'."
             )
             if report:
-                print(result)
+                self._display_result(result)
             return result
 
         # Validate that lists have the same length
@@ -475,7 +537,7 @@ class Model(Plotter):
                 f"and observation well '{obs_w.name}'."
             )
             if report:
-                print(result)
+                self._display_result(result)
 
         return results
 

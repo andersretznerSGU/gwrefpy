@@ -39,7 +39,7 @@ def test_strandangers_model(strandangers_model) -> None:
 def test_obs_wells_summary_empty() -> None:
     """Test obs_wells_summary with no observation wells."""
     model = Model("Test Model")
-    summary = model.obs_wells_summary
+    summary = model.obs_wells_summary()
     assert isinstance(summary, pd.DataFrame)
     assert summary.empty
 
@@ -62,7 +62,7 @@ def test_obs_wells_summary_with_data() -> None:
 
     model.add_well(obs_well)
 
-    summary = model.obs_wells_summary
+    summary = model.obs_wells_summary()
     assert len(summary) == 1
     assert summary.iloc[0]["name"] == "OBS001"
     assert summary.iloc[0]["well_type"] == "observation"
@@ -82,7 +82,7 @@ def test_obs_wells_summary_without_timeseries() -> None:
     obs_well = Well("OBS001", is_reference=False)
     model.add_well(obs_well)
 
-    summary = model.obs_wells_summary
+    summary = model.obs_wells_summary()
     assert len(summary) == 1
     assert summary.iloc[0]["name"] == "OBS001"
     assert summary.iloc[0]["data_points"] == 0
@@ -94,7 +94,7 @@ def test_obs_wells_summary_without_timeseries() -> None:
 def test_ref_wells_summary_empty() -> None:
     """Test ref_wells_summary with no reference wells."""
     model = Model("Test Model")
-    summary = model.ref_wells_summary
+    summary = model.ref_wells_summary()
     assert isinstance(summary, pd.DataFrame)
     assert summary.empty
 
@@ -117,7 +117,7 @@ def test_ref_wells_summary_with_data() -> None:
 
     model.add_well(ref_well)
 
-    summary = model.ref_wells_summary
+    summary = model.ref_wells_summary()
     assert len(summary) == 1
     assert summary.iloc[0]["name"] == "REF001"
     assert summary.iloc[0]["well_type"] == "reference"
@@ -137,7 +137,7 @@ def test_ref_wells_summary_without_timeseries() -> None:
     ref_well = Well("REF001", is_reference=True)
     model.add_well(ref_well)
 
-    summary = model.ref_wells_summary
+    summary = model.ref_wells_summary()
     assert len(summary) == 1
     assert summary.iloc[0]["name"] == "REF001"
     assert summary.iloc[0]["data_points"] == 0
