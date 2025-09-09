@@ -150,10 +150,44 @@ class Model(Plotter):
 
     # ============================== Fit methods ==============================
 
+    def _resolve_wells(self, wells: Well | list[Well] | str | list[str]) -> list[Well]:
+        """
+        Resolve well names to Well objects using get_wells().
+
+        Parameters
+        ----------
+        wells : Well | list[Well] | str | list[str]
+            Well objects, well names, or lists of either.
+
+        Returns
+        -------
+        list[Well]
+            A list of Well objects.
+        """
+        if isinstance(wells, str | Well):
+            # Single item - convert to list for consistent handling
+            wells = [wells]
+
+        resolved_wells = []
+        for well in wells:
+            if isinstance(well, str):
+                # Convert string name to Well object
+                resolved_well = self.get_wells(well)
+                # get_wells returns single Well for single string input
+                resolved_wells.append(resolved_well)
+            elif isinstance(well, Well):
+                resolved_wells.append(well)
+            else:
+                raise TypeError(
+                    f"Unsupported well type: {type(well)}. Expected Well or str."
+                )
+
+        return resolved_wells
+
     def fit(
         self,
-        obs_well: Well | list[Well],
-        ref_well: Well | list[Well],
+        obs_well: Well | list[Well] | str | list[str],
+        ref_well: Well | list[Well] | str | list[str],
         offset: pd.DateOffset | pd.Timedelta | str,
         p: float = 0.95,
         method: Literal["linearregression"] = "linearregression",
@@ -165,11 +199,13 @@ class Model(Plotter):
 
         Parameters
         ----------
-        obs_well : Well | list[Well]
-            The observation well(s) to use for fitting. If a list is provided,
+        obs_well : Well | list[Well] | str | list[str]
+            The observation well(s) to use for fitting. Can be Well objects,
+            well names (strings), or lists of either. If a list is provided,
             each well will be paired with the corresponding reference well by index.
-        ref_well : Well | list[Well]
-            The reference well(s) to use for fitting. If a list is provided,
+        ref_well : Well | list[Well] | str | list[str]
+            The reference well(s) to use for fitting. Can be Well objects,
+            well names (strings), or lists of either. If a list is provided,
             each well will be paired with the corresponding observation well by index.
         offset: pd.DateOffset | pd.Timedelta | str
             The offset to apply to the time series when grouping within time
@@ -196,18 +232,20 @@ class Model(Plotter):
         ValueError
             If lists are provided but have different lengths.
         """
+        # Resolve wells (convert strings to Well objects and normalize to lists)
+        obs_wells = self._resolve_wells(obs_well)
+        ref_wells = self._resolve_wells(ref_well)
+
         # Handle single well case (backward compatibility)
-        if not isinstance(obs_well, list) and not isinstance(ref_well, list):
-            result = self._fit(obs_well, ref_well, offset, p, method, tmin, tmax)
+        if len(obs_wells) == 1 and len(ref_wells) == 1:
+            result = self._fit(
+                obs_wells[0], ref_wells[0], offset, p, method, tmin, tmax
+            )
             logger.info(
-                f"Fitting model '{self.name}' using reference well '{ref_well.name}' "
-                f"and observation well '{obs_well.name}'."
+                f"Fitting model '{self.name}' using reference well "
+                f"'{ref_wells[0].name}' and observation well '{obs_wells[0].name}'."
             )
             return result
-
-        # Handle list case
-        obs_wells = obs_well if isinstance(obs_well, list) else [obs_well]
-        ref_wells = ref_well if isinstance(ref_well, list) else [ref_well]
 
         # Validate that lists have the same length
         if len(obs_wells) != len(ref_wells):

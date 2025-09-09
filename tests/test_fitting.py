@@ -65,6 +65,7 @@ def test_strandangers_model_fit_multiple_wells(strandangers_model) -> None:
     # Test fitting with lists of wells
     results = strandangers_model.fit([obs, obs2], [ref, ref2], offset="3.5D")
 
+
     # Verify we get a list of results
     assert isinstance(results, list)
     assert len(results) == 2
@@ -96,3 +97,52 @@ def test_strandangers_model_fit_mismatched_lists(strandangers_model) -> None:
     # Try to fit with mismatched list lengths (should raise ValueError)
     with pytest.raises(ValueError):
         strandangers_model.fit([obs, obs2], [ref], offset="3.5D")
+
+
+def test_strandangers_model_fit_string_names(strandangers_model) -> None:
+    # Test fitting using string well names instead of Well objects
+    [obs, ref] = strandangers_model.get_wells(["obs", "ref"])
+
+    # Create additional wells
+    ts_obs2 = obs.timeseries + 1.0
+    obs2 = Well("obs2", is_reference=False, timeseries=ts_obs2)
+    strandangers_model.add_well(obs2)
+
+    ts_ref2 = ref.timeseries + 0.5
+    ref2 = Well("ref2", is_reference=True, timeseries=ts_ref2)
+    strandangers_model.add_well(ref2)
+
+    # Test single string names
+    result_single = strandangers_model.fit("obs", "ref", offset="3.5D")
+    assert isinstance(result_single, FitResultData)
+    assert result_single.obs_well.name == "obs"
+    assert result_single.ref_well.name == "ref"
+
+    # Test list of string names
+    results_list = strandangers_model.fit(
+        ["obs", "obs2"], ["ref", "ref2"], offset="3.5D"
+    )
+    assert isinstance(results_list, list)
+    assert len(results_list) == 2
+    assert results_list[0].obs_well.name == "obs"
+    assert results_list[0].ref_well.name == "ref"
+    assert results_list[1].obs_well.name == "obs2"
+    assert results_list[1].ref_well.name == "ref2"
+
+    # Test mixed Well objects and strings
+    result_mixed = strandangers_model.fit([obs, "obs2"], ["ref", ref2], offset="3.5D")
+    assert isinstance(result_mixed, list)
+    assert len(result_mixed) == 2
+    assert result_mixed[0].obs_well == obs
+    assert result_mixed[0].ref_well.name == "ref"
+    assert result_mixed[1].obs_well.name == "obs2"
+    assert result_mixed[1].ref_well == ref2
+
+
+def test_strandangers_model_fit_invalid_well_name(strandangers_model) -> None:
+    # Test error handling for non-existent well names
+    with pytest.raises(ValueError, match="not found in the model"):
+        strandangers_model.fit("nonexistent", "ref", offset="3.5D")
+
+    with pytest.raises(ValueError, match="not found in the model"):
+        strandangers_model.fit("obs", "nonexistent", offset="3.5D")
