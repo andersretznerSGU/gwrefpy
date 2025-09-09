@@ -37,3 +37,16 @@ logging.config.dictConfig(LOGGING_CONFIG)
 
 logger = logging.getLogger(__name__)
 logger.info("Logging is configured.")
+
+def set_log_level(level: str) -> None:
+    """Set the logging level for the gwrefpy logger.
+
+    Args:
+        level (str): Logging level as a string (e.g., 'DEBUG', 'INFO', 'WARNING',
+        'ERROR', 'CRITICAL').
+    """
+    numeric_level = getattr(logging, level.upper(), None)
+    if not isinstance(numeric_level, int):
+        raise ValueError(f"Invalid log level: {level}")
+    logging.getLogger("gwrefpy").setLevel(numeric_level)
+    logger.info(f"Log level set to {level}")
