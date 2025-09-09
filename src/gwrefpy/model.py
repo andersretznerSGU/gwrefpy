@@ -225,7 +225,13 @@ class Model(Plotter):
         logger.info(f"Fit completed for model '{self.name}' with RMSE {fit.rmse}.")
         return fit
 
-    def best_fit(self, ref_wells=None, obs_well=None, method="ols", **kwargs):
+    def best_fit(
+        self,
+        obs_well: str | Well,
+        ref_wells: list[str | Well] | None = None,
+        method: Literal["linearregression"] = "linearregression",
+        **kwargs,
+    ) -> FitResultData:
         """
         Find the best fit for the model using the provided wells.
 
@@ -234,34 +240,21 @@ class Model(Plotter):
         obs_well : Well or list of Well or None, optional
             The observation well to use for fitting.
         ref_wells : Well or list of Well or None, optional
-            The reference well(s) to use for fitting (default is None).
-            If None, all observation wells in the model will be used.
-        method : str
-            The fitting method to use (default is "ols").
-        **kwargs : dict
-            Additional keyword arguments passed to the fitting function.
+            The reference wells to test. If None, all reference wells in the
+            model will be used (default is None).
+        method : Literal["linearregression"]
+            Method with which to perform regression. Currently only supports
+            linear regression.
+        **kwargs
+            Keyword arguments to pass to the fitting method. For example, you can use
+            `offset`, `p`, `tmin`, and `tmax` to control
 
         Returns
         -------
-        dict[str, FitResultData]
-            A dictionary with well names as keys and fit results as values.
+        FitResultData
+            Returns the best fit for the given observation well.
         """
-        # Bestäm vilka observationsbrunnar som ska användas
-        if obs_well is None:
-            wells_to_fit = self.obs_wells
-        elif isinstance(obs_well, list):
-            wells_to_fit = obs_well
-        else:
-            wells_to_fit = [obs_well]
-
-        results: dict[str, FitResultData] = {}
-
-        # Kör _best_fit för varje brunn
-        for obs in wells_to_fit:
-            obs_name = obs.name if hasattr(obs, "name") else str(obs)
-            results[obs_name] = self._best_fit(obs, ref_wells, method, **kwargs)
-
-        return results
+        return self._best_fit(obs_well, ref_wells, method, **kwargs)
 
     def _best_fit(
         self,
