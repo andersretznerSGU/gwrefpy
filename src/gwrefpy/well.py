@@ -1,7 +1,9 @@
 import logging
 
 import pandas as pd
-from .utils.conversions import float_to_datetime, datetime_to_float
+
+from .constants import DEFAULT_PLOT_ATTRIBUTES
+from .utils.conversions import datetime_to_float, float_to_datetime
 
 logger = logging.getLogger(__name__)
 
@@ -11,7 +13,12 @@ class Well:
     Base class for a well in a groundwater model.
     """
 
-    def __init__(self, name, is_reference, model=None):
+    def __init__(
+        self,
+        name,
+        is_reference,
+        timeseries: pd.Series | None = None,
+    ):
         """
         Initialize a WellBase object.
 
@@ -22,9 +29,10 @@ class Well:
         is_reference : bool
             Indicates if the well is a reference well (True) or an observation
              well (False).
+        timeseries : pd.Series | None
+            Supply a pandas Series to associate a time series with the well.
         model : Model | None
             Supply a Model instance to associate the well with a groundwater model.
-
         """
 
         # Initialize attributes
@@ -32,23 +40,18 @@ class Well:
         self.name = name  # This will call the setter
         self.is_reference = is_reference
         self.model = []
-        if model is not None:
-            self.model.append(
-                model
-            )  # Reference to the groundwater model # Todo: allow multiple models? with for loop
-            model.add_well(self)  # Add this well to the model's list of wells
 
-        # Time and measurement attributes
-        self.timeseries = None
+        if timeseries is not None:
+            self.add_timeseries(timeseries)
 
         # Plotting attributes
-        self.color = None
-        self.alpha = 1.0
-        self.linestyle = None
-        self.linewidth = 1.0
-        self.marker = None
-        self.markersize = 6
-        self.markerstyle = None
+        self.color = DEFAULT_PLOT_ATTRIBUTES["color"]
+        self.alpha = DEFAULT_PLOT_ATTRIBUTES["alpha"]
+        self.linestyle = DEFAULT_PLOT_ATTRIBUTES["linestyle"]
+        self.linewidth = DEFAULT_PLOT_ATTRIBUTES["linewidth"]
+        self.marker = DEFAULT_PLOT_ATTRIBUTES["marker"]
+        self.markersize = DEFAULT_PLOT_ATTRIBUTES["markersize"]
+        self.marker_visible = DEFAULT_PLOT_ATTRIBUTES["marker_visible"]
 
         # Geographic attributes
         self.latitude = None
@@ -137,7 +140,8 @@ class Well:
         # Check index is DatetimeIndex with pandas.Timestamps
         if not isinstance(timeseries.index, pd.DatetimeIndex):
             logger.error(
-                f"Timeseries index must be pandas.DatetimeIndex, got {type(timeseries.index)}"
+                f"Timeseries index must be pandas.DatetimeIndex, got "
+                f"{type(timeseries.index)}"
             )
             raise TypeError(
                 f"Timeseries index must be pandas.DatetimeIndex, "
@@ -154,7 +158,6 @@ class Well:
             )
 
     def _time_series_to_dict(self):
-
         # Convert DatetimeIndex to float timestamps
         float_index = self.timeseries.index.map(lambda dt: datetime_to_float(dt))
         return pd.Series(self.timeseries.values, index=float_index).to_dict()
@@ -171,14 +174,16 @@ class Well:
         return {
             "name": self.name,
             "is_reference": self.is_reference,
-            "timeseries": self._time_series_to_dict() if self.timeseries is not None else None,
+            "timeseries": self._time_series_to_dict()
+            if self.timeseries is not None
+            else None,
             "color": self.color,
             "alpha": self.alpha,
             "linestyle": self.linestyle,
             "linewidth": self.linewidth,
             "marker": self.marker,
             "markersize": self.markersize,
-            "markerstyle": self.markerstyle,
+            "marker_visible": self.marker_visible,
             "latitude": self.latitude,
             "longitude": self.longitude,
             "elevation": self.elevation,
@@ -193,13 +198,13 @@ class Well:
         data : dict
             A dictionary containing the well's attributes.
         """
-        self.name = data.get("name", self.name)
-        self.is_reference = data.get("is_reference", self.is_reference)
 
         timeseries_dict = data.get("timeseries", None)
         if timeseries_dict is not None:
             # Convert float timestamps back to DatetimeIndex
-            datetime_index = pd.Index([float_to_datetime(ts) for ts in timeseries_dict.keys()])
+            datetime_index = pd.Index(
+                [float_to_datetime(float(ts)) for ts in timeseries_dict.keys()]
+            )
             values = list(timeseries_dict.values())
             self.timeseries = pd.Series(values, index=datetime_index)
 
@@ -209,7 +214,7 @@ class Well:
         self.linewidth = data.get("linewidth", self.linewidth)
         self.marker = data.get("marker", self.marker)
         self.markersize = data.get("markersize", self.markersize)
-        self.markerstyle = data.get("markerstyle", self.markerstyle)
+        self.marker_visible = data.get("marker_visible", self.marker_visible)
         self.latitude = data.get("latitude", self.latitude)
         self.longitude = data.get("longitude", self.longitude)
         self.elevation = data.get("elevation", self.elevation)

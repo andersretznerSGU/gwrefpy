@@ -1,11 +1,11 @@
 Plotting
 ========
 
-The gwrefpy package has several plotting capabilities to visualize groundwaer data. Below are some examples of how to use these plotting functions.
+The gwrefpy package has several plotting capabilities to visualize groundwater data. Below are some examples of how to use these plotting functions.
 
 Setting plotting style
 ----------------------
-You can set the indivudual plotting syles of each well object by assigning the plotting attributes to that object. The available attributes are: ``color``, ``linestyle``, ``linewidth``, ``label``, ``alpha``, ``marker``, and ``markersize``
+You can set the individual plotting styles of each well object by assigning the plotting attributes to that object. The available attributes are: ``color``, ``linestyle``, ``linewidth``, ``label``, ``alpha``, ``marker``, and ``markersize``
 
 .. code-block:: python
 
@@ -21,3 +21,8 @@ You can set the indivudual plotting syles of each well object by assigning the p
 
     # Plot the well with default style
     model.plot_wells(show=True)
+
+Plotting kwargs
+---------------
+The plotting functions in gwrefpy accept additional keyword arguments (kwargs) that can be used to customize the appearance of the plots. These kwargs are passed directly to the underlying matplotlib functions. Currently kwargs are passed to the following functions: ``plt.subplot()`` and ``plt.savefig()``.
+

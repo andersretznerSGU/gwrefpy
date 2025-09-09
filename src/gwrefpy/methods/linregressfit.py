@@ -1,16 +1,22 @@
+import logging
+
 import numpy as np
+import pandas as pd
 import scipy as sp
 
-from src.gwrefpy.fitresults import FitResultData
-from src.gwrefpy.methods.timeseries import adjust_timeseries
+from ..fitresults import FitResultData, LinRegResult
+from ..methods.timeseries import groupby_time_equivalents
+from ..well import Well
+
+logger = logging.getLogger(__name__)
 
 
 def linregressfit(
-    ref_well,
-    obs_well,
-    time_equivalent,
-    calibration_period_start,
-    calibration_period_end,
+    obs_well: Well,
+    ref_well: Well,
+    offset: pd.DateOffset | pd.Timedelta | str,
+    tmin: pd.Timestamp | str | None = None,
+    tmax: pd.Timestamp | str | None = None,
     p=0.95,
 ):
     """
@@ -18,21 +24,23 @@ def linregressfit(
 
     Parameters
     ----------
-    ref_well : Well
-        The reference well object containing the time series data.
     obs_well : Well
         The observation well object containing the time series data.
-    ref_timeseries : pd.Series
-        A pandas Series with a datetime index and numerical values for the reference well.
-    obs_timeseries : pd.Series
-        A pandas Series with a datetime index and numerical values for the observation well.
+    ref_well : Well
+        The reference well object containing the time series data.
+    offset: pd.DateOffset | pd.Timedelta | str
+        The offset to apply when grouping the time series into time equivalents.
+    tmin: pd.Timestamp | str | None = None
+        The minimum timestamp for the calibration period.
+    tmax: pd.Timestamp | str | None = None
+        The maximum timestamp for the calibration period.
     p : float, optional
         The confidence level for the prediction interval (default is 0.95).
 
     Returns
     -------
     fit_result : FitResultData
-        An object containing the results of the linear regression fit.
+        A `FitResultData` object containing the results of the linear regression fit.
     """
 
     def _get_linear_regression(timeseries_ref, timeseries_obs):
@@ -41,17 +49,29 @@ def linregressfit(
 
         Parameters
         ----------
-        timeseries : pd.Series
-            A pandas Series with a datetime index and numerical values.
+        timeseries_ref : pd.Series
+            A pandas Series with reference well time series data.
+        timeseries_obs : pd.Series
+            A pandas Series with observation well time series data.
 
         Returns
         -------
-        linreg : LinregressResult
+        linreg : LinRegResult
             An object containing the slope, intercept, r-value, p-value,
             and standard error of the regression line.
         """
         # Calculate the slope and intercept using scipy's linregress
-        return sp.stats.linregress(timeseries_ref, timeseries_obs)
+        res = sp.stats.linregress(timeseries_ref, timeseries_obs)
+
+        # Create and return a LinRegResult object with the regression results
+        linreg = LinRegResult(
+            slope=res.slope,
+            intercept=res.intercept,
+            rvalue=res.rvalue,
+            pvalue=res.pvalue,
+            stderr=res.stderr,
+        )
+        return linreg
 
     def _t_inv(probability, degrees_freedom):
         """
@@ -77,16 +97,23 @@ def linregressfit(
 
         return stderr
 
-    # Align the time series to ensure they cover the same time period
-    ref_timeseries, obs_timeseries, n = adjust_timeseries(
-        ref_well.timeseries,
-        obs_well.timeseries,
-        time_equivalent,
-        calibration_period_start,
-        calibration_period_end,
+    # Groupby time equivalents with given offset
+    if ref_well.timeseries is None or obs_well.timeseries is None:
+        logger.critical("Missing time series data for for either ref or obs well")
+        return None
+
+    ref_timeseries, obs_timeseries, n = groupby_time_equivalents(
+        obs_well.timeseries.loc[tmin:tmax], ref_well.timeseries.loc[tmin:tmax], offset
     )
 
-    linreg = _get_linear_regression(ref_timeseries, obs_timeseries)
+    res = sp.stats.linregress(ref_timeseries, obs_timeseries)
+    linreg = LinRegResult(
+        slope=res.slope,
+        intercept=res.intercept,
+        rvalue=res.rvalue,
+        pvalue=res.pvalue,
+        stderr=res.stderr,
+    )
 
     stderr = compute_residual_std_error(
         ref_timeseries, obs_timeseries, linreg.slope, linreg.intercept, n
@@ -105,8 +132,19 @@ def linregressfit(
         stderr=stderr,
         pred_const=pred_const,
         p=p,
-        time_equivalent=time_equivalent,
-        calibration_period_start=calibration_period_start,
-        calibration_period_end=calibration_period_end,
+        offset=offset,
+        tmin=tmin,
+        tmax=tmax,
     )
     return fit_result
+
+
+def linregress_to_dict(fit_result):
+    linreg = fit_result.fit_method
+    return {
+        "slope": linreg.slope,
+        "intercept": linreg.intercept,
+        "rvalue": linreg.rvalue,
+        "pvalue": linreg.pvalue,
+        "stderr": linreg.stderr,
+    }
