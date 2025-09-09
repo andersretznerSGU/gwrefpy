@@ -10,7 +10,7 @@ from typing import Literal
 
 import pandas as pd
 
-from .fitresults import FitResultData, unpack_dict_fit_method
+from .fitresults import FitResultData, LinRegResult, unpack_dict_fit_method
 from .io.io import load, save
 from .methods.linregressfit import linregressfit
 from .plotter import Plotter
@@ -33,7 +33,46 @@ class Model(Plotter):
 
     def __str__(self):
         """String representation of the Model object."""
-        return f"Model(name={self.name}, wells={len(self.wells)})"
+        obs_count = len(self.obs_wells)
+        ref_count = len(self.ref_wells)
+        fits_count = len(self.fits)
+
+        lines = [
+            f"Model: {self.name}",
+            "=" * (7 + len(self.name)),
+            f"Wells: {len(self.wells)} total "
+            f"({obs_count} observation, {ref_count} reference)",
+            f"Fits: {fits_count}",
+        ]
+
+        if self.wells:
+            lines.append("")
+            lines.append("Wells:")
+            for well in self.wells:
+                well_type = "ref" if well.is_reference else "obs"
+                data_points = len(well.timeseries) if hasattr(well, "timeseries") else 0
+                lines.append(
+                    f"  • {well.name} ({well_type}) - {data_points} data points"
+                )
+
+        if self.fits:
+            lines.append("")
+            lines.append("Recent fits:")
+            for fit in self.fits[-3:]:  # Show last 3 fits
+                lines.append(
+                    f"  • {fit.obs_well.name} ~ {fit.ref_well.name}: "
+                    f"RMSE={fit.rmse:.4f}"
+                )
+            if len(self.fits) > 3:
+                lines.append(f"  ... and {len(self.fits) - 3} more")
+
+        return "\n".join(lines)
+
+    def __repr__(self):
+        """Concise representation of the Model object for debugging."""
+        return (
+            f"Model(name='{self.name}', wells={len(self.wells)}, fits={len(self.fits)})"
+        )
 
     # ======================== Well Management Methods ========================
 
@@ -42,10 +81,212 @@ class Model(Plotter):
         """List of observation wells in the model."""
         return [well for well in self.wells if not well.is_reference]
 
+    def obs_wells_summary(self) -> pd.DataFrame:
+        """
+        Get a summary DataFrame of observation wells in the model.
+
+        Returns
+        -------
+        pd.DataFrame
+            DataFrame with columns: name, data_points, start_date, end_date,
+            mean_level, latest_value, latest_date, latitude, longitude, elevation,
+            best_fit_ref_well, best_rmse
+        """
+        obs_wells = self.obs_wells
+        if not obs_wells:
+            return pd.DataFrame()
+
+        data = []
+        for well in obs_wells:
+            row = {
+                "name": well.name,
+                "well_type": "observation",
+                "data_points": len(well.timeseries)
+                if hasattr(well, "timeseries")
+                else 0,
+                "start_date": well.timeseries.index.min()
+                if hasattr(well, "timeseries") and len(well.timeseries) > 0
+                else None,
+                "end_date": well.timeseries.index.max()
+                if hasattr(well, "timeseries") and len(well.timeseries) > 0
+                else None,
+                "mean_level": well.timeseries.mean()
+                if hasattr(well, "timeseries") and len(well.timeseries) > 0
+                else None,
+                "latest_value": well.timeseries.iloc[-1]
+                if hasattr(well, "timeseries") and len(well.timeseries) > 0
+                else None,
+                "latest_date": well.timeseries.index[-1]
+                if hasattr(well, "timeseries") and len(well.timeseries) > 0
+                else None,
+                "latitude": well.latitude,
+                "longitude": well.longitude,
+                "elevation": well.elevation,
+            }
+
+            # Find best fit for this observation well
+            fits = self.get_fits(well)
+            if fits:
+                if isinstance(fits, list):
+                    best_fit = min(fits, key=lambda x: x.rmse)
+                else:
+                    best_fit = fits
+                row["best_fit_ref_well"] = best_fit.ref_well.name
+                row["best_rmse"] = best_fit.rmse
+            else:
+                row["best_fit_ref_well"] = None
+                row["best_rmse"] = None
+
+            data.append(row)
+
+        return pd.DataFrame(data)
+
     @property
     def ref_wells(self):
         """List of reference wells in the model."""
         return [well for well in self.wells if well.is_reference]
+
+    def ref_wells_summary(self) -> pd.DataFrame:
+        """
+        Get a summary DataFrame of reference wells in the model.
+
+        Returns
+        -------
+        pd.DataFrame
+            DataFrame with columns: name, data_points, start_date, end_date,
+            mean_level, latest_value, latest_date, latitude, longitude, elevation,
+            num_fits, avg_rmse
+        """
+        ref_wells = self.ref_wells
+        if not ref_wells:
+            return pd.DataFrame()
+
+        data = []
+        for well in ref_wells:
+            row = {
+                "name": well.name,
+                "well_type": "reference",
+                "data_points": (
+                    len(well.timeseries) if hasattr(well, "timeseries") else 0
+                ),
+                "start_date": (
+                    well.timeseries.index.min()
+                    if hasattr(well, "timeseries") and len(well.timeseries) > 0
+                    else None
+                ),
+                "end_date": (
+                    well.timeseries.index.max()
+                    if hasattr(well, "timeseries") and len(well.timeseries) > 0
+                    else None
+                ),
+                "mean_level": (
+                    well.timeseries.mean()
+                    if hasattr(well, "timeseries") and len(well.timeseries) > 0
+                    else None
+                ),
+                "latest_value": (
+                    well.timeseries.iloc[-1]
+                    if hasattr(well, "timeseries") and len(well.timeseries) > 0
+                    else None
+                ),
+                "latest_date": (
+                    well.timeseries.index[-1]
+                    if hasattr(well, "timeseries") and len(well.timeseries) > 0
+                    else None
+                ),
+                "latitude": well.latitude,
+                "longitude": well.longitude,
+                "elevation": well.elevation,
+            }
+
+            # Find all fits using this reference well
+            fits = self.get_fits(well)
+            if fits:
+                if isinstance(fits, list):
+                    row["num_fits"] = len(fits)
+                    row["avg_rmse"] = sum(fit.rmse for fit in fits) / len(fits)
+                else:
+                    row["num_fits"] = 1
+                    row["avg_rmse"] = fits.rmse
+            else:
+                row["num_fits"] = 0
+                row["avg_rmse"] = None
+
+            data.append(row)
+
+        return pd.DataFrame(data)
+
+    def wells_summary(self) -> pd.DataFrame:
+        """
+        Get a combined summary DataFrame of all wells in the model.
+
+        Returns
+        -------
+        pd.DataFrame
+            Combined DataFrame with both observation and reference wells,
+            including all columns from both summary types
+        """
+        obs_df = self.obs_wells_summary()
+        ref_df = self.ref_wells_summary()
+
+        if obs_df.empty and ref_df.empty:
+            return pd.DataFrame()
+        elif obs_df.empty:
+            return ref_df
+        elif ref_df.empty:
+            return obs_df
+        else:
+            # Combine both DataFrames
+            return pd.concat([obs_df, ref_df], ignore_index=True)
+
+    def fits_summary(self) -> pd.DataFrame:
+        """
+        Get a summary DataFrame of all fit results in the model.
+
+        Returns
+        -------
+        pd.DataFrame
+            DataFrame with common columns (ref_well_name, obs_well_name, method,
+            rmse, etc.) and method-specific columns with appropriate prefixes
+            (e.g., linreg_slope, linreg_intercept)
+        """
+        if not self.fits:
+            return pd.DataFrame()
+
+        data = []
+        for fit in self.fits:
+            # Common columns from FitResultData attributes
+            row = {
+                "ref_well_name": fit.ref_well.name,
+                "obs_well_name": fit.obs_well.name,
+                "method": fit.fit_method.__class__.__name__,
+                "rmse": fit.rmse,
+                "n_points": fit.n,
+                "stderr": fit.stderr,
+                "confidence_level": fit.p,
+                "calibration_start": fit.tmin,
+                "calibration_end": fit.tmax,
+                "time_offset": str(fit.offset),
+                "t_a": fit.t_a,
+                "pred_const": fit.pred_const,
+            }
+
+            # Method-specific columns with prefixes
+            if isinstance(fit.fit_method, LinRegResult):
+                row.update(
+                    {
+                        "linreg_slope": fit.fit_method.slope,
+                        "linreg_intercept": fit.fit_method.intercept,
+                        "linreg_rvalue": fit.fit_method.rvalue,
+                        "linreg_pvalue": fit.fit_method.pvalue,
+                        "linreg_stderr": fit.fit_method.stderr,
+                    }
+                )
+            # Future fitting methods would be added here as elif branches
+
+            data.append(row)
+
+        return pd.DataFrame(data)
 
     @property
     def well_names(self):
@@ -150,6 +391,31 @@ class Model(Plotter):
 
     # ============================== Fit methods ==============================
 
+    def _display_result(self, result: FitResultData):
+        """
+        Display fit result appropriately based on environment.
+
+        In Jupyter notebooks, rely on the automatic HTML display of the return value.
+        In other environments, print the text representation.
+        """
+        try:
+            # Check if we're in a Jupyter environment
+            from IPython.core.getipython import get_ipython
+
+            ipython = get_ipython()
+            if (
+                ipython is not None
+                and ipython.__class__.__name__ == "ZMQInteractiveShell"
+            ):
+                # We're in Jupyter - don't print, let the return value display
+                return
+        except ImportError:
+            # IPython not available, definitely not in Jupyter
+            pass
+
+        # Not in Jupyter or IPython not available, use regular print
+        print(result)
+
     def _resolve_wells(self, wells: Well | list[Well] | str | list[str]) -> list[Well]:
         """
         Resolve well names to Well objects using get_wells().
@@ -193,6 +459,7 @@ class Model(Plotter):
         method: Literal["linearregression"] = "linearregression",
         tmin: pd.Timestamp | str | None = None,
         tmax: pd.Timestamp | str | None = None,
+        report: bool = True,
     ) -> FitResultData | list[FitResultData]:
         """
         Fit reference well(s) to observation well(s) using regression.
@@ -219,6 +486,8 @@ class Model(Plotter):
             Minimum time for calibration period.
         tmax: pd.Timestamp | str | None = None
             Maximum time for calibration period.
+        report: bool, optional
+            Whether to print fit results summary (default is True).
 
         Returns
         -------
@@ -245,6 +514,8 @@ class Model(Plotter):
                 f"Fitting model '{self.name}' using reference well "
                 f"'{ref_wells[0].name}' and observation well '{obs_wells[0].name}'."
             )
+            if report:
+                self._display_result(result)
             return result
 
         # Validate that lists have the same length
@@ -265,6 +536,8 @@ class Model(Plotter):
                 f"Fitting model '{self.name}' using reference well '{ref_w.name}' "
                 f"and observation well '{obs_w.name}'."
             )
+            if report:
+                self._display_result(result)
 
         return results
 

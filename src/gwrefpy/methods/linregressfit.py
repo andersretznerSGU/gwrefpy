@@ -43,36 +43,6 @@ def linregressfit(
         A `FitResultData` object containing the results of the linear regression fit.
     """
 
-    def _get_linear_regression(timeseries_ref, timeseries_obs):
-        """
-        Perform linear regression on the given data points.
-
-        Parameters
-        ----------
-        timeseries_ref : pd.Series
-            A pandas Series with reference well time series data.
-        timeseries_obs : pd.Series
-            A pandas Series with observation well time series data.
-
-        Returns
-        -------
-        linreg : LinRegResult
-            An object containing the slope, intercept, r-value, p-value,
-            and standard error of the regression line.
-        """
-        # Calculate the slope and intercept using scipy's linregress
-        res = sp.stats.linregress(timeseries_ref, timeseries_obs)
-
-        # Create and return a LinRegResult object with the regression results
-        linreg = LinRegResult(
-            slope=res.slope,
-            intercept=res.intercept,
-            rvalue=res.rvalue,
-            pvalue=res.pvalue,
-            stderr=res.stderr,
-        )
-        return linreg
-
     def _t_inv(probability, degrees_freedom):
         """
         Mimics Excel's T.INV function.
