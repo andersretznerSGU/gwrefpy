@@ -9,6 +9,9 @@ wheels/
 # virtual environments
 .venv
 
+# logfiles
+*.log
+
 # ruff
 .ruff_cache/
 
