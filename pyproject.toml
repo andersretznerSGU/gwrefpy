@@ -3,6 +3,7 @@ name = "gwrefpy"
 version = "0.1.0"
 description = "A python implementation of the Akvifär reference method for detecting deviations in groundwater level time series."
 readme = "README.md"
+license = "MIT"
 authors = [
     { name = "Anders Retzner", email = "anders.retzner@gmail.com" },
     { name = "Erik Toller" },
