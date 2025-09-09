@@ -33,6 +33,7 @@ Uninstall the package:
     :caption: Contents:
 
     user_guide
+    tutorials/index
     apidocs
     about
     index

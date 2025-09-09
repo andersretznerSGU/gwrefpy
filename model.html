@@ -32,6 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
   
   <!-- So that users can add custom icons -->
   <script src="_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
@@ -131,6 +132,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="user_guide.html">
     User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="tutorials/index.html">
+    Tutorials
   </a>
 </li>
 
@@ -243,6 +251,13 @@
 </li>
 
 
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="tutorials/index.html">
+    Tutorials
+  </a>
+</li>
+
+
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="apidocs.html">
     API Reference
@@ -303,9 +318,7 @@
 
 <li class="toctree-l1"><a class="reference internal" href="well.html">Well</a></li>
 <li class="toctree-l1"><a class="reference internal" href="constants.html">Constants</a></li>
-<li class="toctree-l1"><a class="reference internal" href="io.html">IO</a></li>
-
-
+<li class="toctree-l1"><a class="reference internal" href="io.html">I/O Module</a></li>
 </ul>
 </div>
 </nav></div>
@@ -372,8 +385,8 @@
 </section>
 <dl class="py class">
 <dt class="sig sig-object py" id="src.gwrefpy.model.Model">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.gwrefpy.model.</span></span><span class="sig-name descname"><span class="pre">Model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/gwrefpy/model.html#Model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.gwrefpy.model.Model" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.gwrefpy.model.</span></span><span class="sig-name descname"><span class="pre">Model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/gwrefpy/model.html#Model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.gwrefpy.model.Model" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Plotter</span></code></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="src.gwrefpy.model.Model.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/gwrefpy/model.html#Model.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.gwrefpy.model.Model.__init__" title="Link to this definition">#</a></dt>
@@ -381,11 +394,11 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="src.gwrefpy.model.Model.add_well">
-<span class="sig-name descname"><span class="pre">add_well</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">well</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/gwrefpy/model.html#Model.add_well"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.gwrefpy.model.Model.add_well" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">add_well</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">well</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="well.html#src.gwrefpy.well.Well" title="src.gwrefpy.well.Well"><span class="pre">Well</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="well.html#src.gwrefpy.well.Well" title="src.gwrefpy.well.Well"><span class="pre">Well</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/gwrefpy/model.html#Model.add_well"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.gwrefpy.model.Model.add_well" title="Link to this definition">#</a></dt>
 <dd><p>Add a well or a list of wells to the model.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>well</strong> (<a class="reference internal" href="well.html#src.gwrefpy.well.Well" title="src.gwrefpy.well.Well"><em>Well</em></a><em> or </em><em>list</em><em> of </em><em>WellBase</em>) – The well or list of wells to add to the model.</p>
+<dd class="field-odd"><p><strong>well</strong> (<a class="reference internal" href="well.html#src.gwrefpy.well.Well" title="src.gwrefpy.well.Well"><em>Well</em></a><em> or </em><em>list</em><em> of </em><em>Wells</em>) – The well or list of wells to add to the model.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>This method modifies the model in place.</p>
@@ -398,48 +411,139 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="src.gwrefpy.model.Model.best_fit">
-<span class="sig-name descname"><span class="pre">best_fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ref_well</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obs_well</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/gwrefpy/model.html#Model.best_fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.gwrefpy.model.Model.best_fit" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">best_fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obs_well</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="well.html#src.gwrefpy.well.Well" title="src.gwrefpy.well.Well"><span class="pre">Well</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_wells</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="well.html#src.gwrefpy.well.Well" title="src.gwrefpy.well.Well"><span class="pre">Well</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'linearregression'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'linearregression'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">FitResultData</span></span></span><a class="reference internal" href="_modules/src/gwrefpy/model.html#Model.best_fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.gwrefpy.model.Model.best_fit" title="Link to this definition">#</a></dt>
 <dd><p>Find the best fit for the model using the provided wells.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>ref_well</strong> (<a class="reference internal" href="well.html#src.gwrefpy.well.Well" title="src.gwrefpy.well.Well"><em>Well</em></a><em> or </em><em>list</em><em> of </em><a class="reference internal" href="well.html#src.gwrefpy.well.Well" title="src.gwrefpy.well.Well"><em>Well</em></a><em> or </em><em>None</em><em>, </em><em>optional</em>) – The reference well to use for fitting (default is None).</p></li>
-<li><p><strong>obs_well</strong> (<a class="reference internal" href="well.html#src.gwrefpy.well.Well" title="src.gwrefpy.well.Well"><em>Well</em></a><em> or </em><em>list</em><em> of </em><a class="reference internal" href="well.html#src.gwrefpy.well.Well" title="src.gwrefpy.well.Well"><em>Well</em></a><em> or </em><em>None</em><em>, </em><em>optional</em>) – The observation well to use for fitting (default is None).</p></li>
+<li><p><strong>obs_well</strong> (<a class="reference internal" href="well.html#src.gwrefpy.well.Well" title="src.gwrefpy.well.Well"><em>Well</em></a><em> or </em><em>list</em><em> of </em><a class="reference internal" href="well.html#src.gwrefpy.well.Well" title="src.gwrefpy.well.Well"><em>Well</em></a><em> or </em><em>None</em><em>, </em><em>optional</em>) – The observation well to use for fitting.</p></li>
+<li><p><strong>ref_wells</strong> (<a class="reference internal" href="well.html#src.gwrefpy.well.Well" title="src.gwrefpy.well.Well"><em>Well</em></a><em> or </em><em>list</em><em> of </em><a class="reference internal" href="well.html#src.gwrefpy.well.Well" title="src.gwrefpy.well.Well"><em>Well</em></a><em> or </em><em>None</em><em>, </em><em>optional</em>) – The reference wells to test. If None, all reference wells in the
+model will be used (default is None).</p></li>
+<li><p><strong>method</strong> (<em>Literal</em><em>[</em><em>&quot;linearregression&quot;</em><em>]</em>) – Method with which to perform regression. Currently only supports
+linear regression.</p></li>
+<li><p><strong>**kwargs</strong> – Keyword arguments to pass to the fitting method. For example, you can use
+<cite>offset</cite>, <cite>p</cite>, <cite>tmin</cite>, and <cite>tmax</cite> to control</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>This method modifies the model in place.</p>
+<dd class="field-even"><p>Returns the best fit for the given observation well.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>None</p>
+<dd class="field-odd"><p>FitResultData</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="src.gwrefpy.model.Model.fit">
-<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ref_well</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obs_well</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/gwrefpy/model.html#Model.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.gwrefpy.model.Model.fit" title="Link to this definition">#</a></dt>
-<dd><p>Fit the model using a reference well and an observation well.</p>
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obs_well</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="well.html#src.gwrefpy.well.Well" title="src.gwrefpy.well.Well"><span class="pre">Well</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="well.html#src.gwrefpy.well.Well" title="src.gwrefpy.well.Well"><span class="pre">Well</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_well</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="well.html#src.gwrefpy.well.Well" title="src.gwrefpy.well.Well"><span class="pre">Well</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="well.html#src.gwrefpy.well.Well" title="src.gwrefpy.well.Well"><span class="pre">Well</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DateOffset</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Timedelta</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.95</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'linearregression'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'linearregression'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmin</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Timestamp</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmax</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Timestamp</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">report</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">FitResultData</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">FitResultData</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/src/gwrefpy/model.html#Model.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.gwrefpy.model.Model.fit" title="Link to this definition">#</a></dt>
+<dd><p>Fit reference well(s) to observation well(s) using regression.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>ref_well</strong> (<a class="reference internal" href="well.html#src.gwrefpy.well.Well" title="src.gwrefpy.well.Well"><em>Well</em></a>) – The reference well to use for fitting.</p></li>
-<li><p><strong>obs_well</strong> (<a class="reference internal" href="well.html#src.gwrefpy.well.Well" title="src.gwrefpy.well.Well"><em>Well</em></a>) – The observation well to use for fitting.</p></li>
+<li><p><strong>obs_well</strong> (<a class="reference internal" href="well.html#src.gwrefpy.well.Well" title="src.gwrefpy.well.Well"><em>Well</em></a><em> | </em><em>list</em><em>[</em><a class="reference internal" href="well.html#src.gwrefpy.well.Well" title="src.gwrefpy.well.Well"><em>Well</em></a><em>] </em><em>| </em><em>str</em><em> | </em><em>list</em><em>[</em><em>str</em><em>]</em>) – The observation well(s) to use for fitting. Can be Well objects,
+well names (strings), or lists of either. If a list is provided,
+each well will be paired with the corresponding reference well by index.</p></li>
+<li><p><strong>ref_well</strong> (<a class="reference internal" href="well.html#src.gwrefpy.well.Well" title="src.gwrefpy.well.Well"><em>Well</em></a><em> | </em><em>list</em><em>[</em><a class="reference internal" href="well.html#src.gwrefpy.well.Well" title="src.gwrefpy.well.Well"><em>Well</em></a><em>] </em><em>| </em><em>str</em><em> | </em><em>list</em><em>[</em><em>str</em><em>]</em>) – The reference well(s) to use for fitting. Can be Well objects,
+well names (strings), or lists of either. If a list is provided,
+each well will be paired with the corresponding observation well by index.</p></li>
+<li><p><strong>offset</strong> (<em>pd.DateOffset</em><em> | </em><em>pd.Timedelta</em><em> | </em><em>str</em>) – The offset to apply to the time series when grouping within time
+equivalents.</p></li>
+<li><p><strong>p</strong> (<em>float</em><em>, </em><em>optional</em>) – The confidence level for the fit (default is 0.95).</p></li>
+<li><p><strong>method</strong> (<em>Literal</em><em>[</em><em>&quot;linearregression&quot;</em><em>]</em>) – Method with which to perform regression. Currently only supports
+linear regression.</p></li>
+<li><p><strong>tmin</strong> (<em>pd.Timestamp</em><em> | </em><em>str</em><em> | </em><em>None = None</em>) – Minimum time for calibration period.</p></li>
+<li><p><strong>tmax</strong> (<em>pd.Timestamp</em><em> | </em><em>str</em><em> | </em><em>None = None</em>) – Maximum time for calibration period.</p></li>
+<li><p><strong>report</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to print fit results summary (default is True).</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>This method modifies the model in place.</p>
+<dd class="field-even"><p>If single wells are provided, returns a single FitResultData object.
+If lists of wells are provided, returns a list of FitResultData objects
+for each obs_well/ref_well pair.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>None</p>
+<dd class="field-odd"><p>FitResultData | list[FitResultData]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If lists are provided but have different lengths.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.gwrefpy.model.Model.fits_summary">
+<span class="sig-name descname"><span class="pre">fits_summary</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="_modules/src/gwrefpy/model.html#Model.fits_summary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.gwrefpy.model.Model.fits_summary" title="Link to this definition">#</a></dt>
+<dd><p>Get a summary DataFrame of all fit results in the model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>DataFrame with common columns (ref_well_name, obs_well_name, method,
+rmse, etc.) and method-specific columns with appropriate prefixes
+(e.g., linreg_slope, linreg_intercept)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.gwrefpy.model.Model.get_fits">
+<span class="sig-name descname"><span class="pre">get_fits</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">well</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="well.html#src.gwrefpy.well.Well" title="src.gwrefpy.well.Well"><span class="pre">Well</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">FitResultData</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">FitResultData</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="_modules/src/gwrefpy/model.html#Model.get_fits"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.gwrefpy.model.Model.get_fits" title="Link to this definition">#</a></dt>
+<dd><p>Get all fit results involving a specific well.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>well</strong> (<a class="reference internal" href="well.html#src.gwrefpy.well.Well" title="src.gwrefpy.well.Well"><em>Well</em></a><em> | </em><em>str</em>) – The well to check.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of fit results involving the specified well.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[FitResultData] | FitResultData | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.gwrefpy.model.Model.get_wells">
+<span class="sig-name descname"><span class="pre">get_wells</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="well.html#src.gwrefpy.well.Well" title="src.gwrefpy.well.Well"><span class="pre">Well</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="well.html#src.gwrefpy.well.Well" title="src.gwrefpy.well.Well"><span class="pre">Well</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/src/gwrefpy/model.html#Model.get_wells"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.gwrefpy.model.Model.get_wells" title="Link to this definition">#</a></dt>
+<dd><p>Get wells from the model by their names.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>names</strong> (<em>list</em><em> of </em><em>str</em><em> or </em><em>str</em>) – The name or list of names of the wells to retrieve.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The well or list of wells with the specified names.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="well.html#src.gwrefpy.well.Well" title="src.gwrefpy.well.Well">Well</a> | list[<a class="reference internal" href="well.html#src.gwrefpy.well.Well" title="src.gwrefpy.well.Well">Well</a>]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If any of the specified well names are not found in the model.</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="src.gwrefpy.model.Model.obs_wells">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">obs_wells</span></span><a class="headerlink" href="#src.gwrefpy.model.Model.obs_wells" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">obs_wells</span></span><a class="headerlink" href="#src.gwrefpy.model.Model.obs_wells" title="Link to this definition">#</a></dt>
 <dd><p>List of observation wells in the model.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.gwrefpy.model.Model.obs_wells_summary">
+<span class="sig-name descname"><span class="pre">obs_wells_summary</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="_modules/src/gwrefpy/model.html#Model.obs_wells_summary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.gwrefpy.model.Model.obs_wells_summary" title="Link to this definition">#</a></dt>
+<dd><p>Get a summary DataFrame of observation wells in the model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>DataFrame with columns: name, data_points, start_date, end_date,
+mean_level, latest_value, latest_date, latitude, longitude, elevation,
+best_fit_ref_well, best_rmse</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>pd.DataFrame</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -461,8 +565,24 @@
 
 <dl class="py property">
 <dt class="sig sig-object py" id="src.gwrefpy.model.Model.ref_wells">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ref_wells</span></span><a class="headerlink" href="#src.gwrefpy.model.Model.ref_wells" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ref_wells</span></span><a class="headerlink" href="#src.gwrefpy.model.Model.ref_wells" title="Link to this definition">#</a></dt>
 <dd><p>List of reference wells in the model.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.gwrefpy.model.Model.ref_wells_summary">
+<span class="sig-name descname"><span class="pre">ref_wells_summary</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="_modules/src/gwrefpy/model.html#Model.ref_wells_summary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.gwrefpy.model.Model.ref_wells_summary" title="Link to this definition">#</a></dt>
+<dd><p>Get a summary DataFrame of reference wells in the model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>DataFrame with columns: name, data_points, start_date, end_date,
+mean_level, latest_value, latest_date, latitude, longitude, elevation,
+num_fits, avg_rmse</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>pd.DataFrame</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -472,7 +592,8 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>filename</strong> (<em>str</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – The name of the file where the model will be saved. The path can be included.</p></li>
+<li><p><strong>filename</strong> (<em>str</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – The name of the file where the model will be saved. The path can be
+included.</p></li>
 <li><p><strong>overwrite</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to overwrite the file if it already exists (default is False).</p></li>
 </ul>
 </dd>
@@ -508,7 +629,7 @@
 <dd class="field-odd"><p><strong>data</strong> (<em>dict</em>) – A dictionary representation of the model.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>This method modifies the model in place.</p>
+<dd class="field-even"><p>This method adds wells, fits, and properties to the model.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>None</p>
@@ -518,8 +639,23 @@
 
 <dl class="py property">
 <dt class="sig sig-object py" id="src.gwrefpy.model.Model.well_names">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">well_names</span></span><a class="headerlink" href="#src.gwrefpy.model.Model.well_names" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">well_names</span></span><a class="headerlink" href="#src.gwrefpy.model.Model.well_names" title="Link to this definition">#</a></dt>
 <dd><p>List of all well names in the model.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.gwrefpy.model.Model.wells_summary">
+<span class="sig-name descname"><span class="pre">wells_summary</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="_modules/src/gwrefpy/model.html#Model.wells_summary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.gwrefpy.model.Model.wells_summary" title="Link to this definition">#</a></dt>
+<dd><p>Get a combined summary DataFrame of all wells in the model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Combined DataFrame with both observation and reference wells,
+including all columns from both summary types</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>pd.DataFrame</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -578,13 +714,19 @@
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#src.gwrefpy.model.Model.add_well"><code class="docutils literal notranslate"><span class="pre">Model.add_well()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#src.gwrefpy.model.Model.best_fit"><code class="docutils literal notranslate"><span class="pre">Model.best_fit()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#src.gwrefpy.model.Model.fit"><code class="docutils literal notranslate"><span class="pre">Model.fit()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#src.gwrefpy.model.Model.fits_summary"><code class="docutils literal notranslate"><span class="pre">Model.fits_summary()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#src.gwrefpy.model.Model.get_fits"><code class="docutils literal notranslate"><span class="pre">Model.get_fits()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#src.gwrefpy.model.Model.get_wells"><code class="docutils literal notranslate"><span class="pre">Model.get_wells()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#src.gwrefpy.model.Model.obs_wells"><code class="docutils literal notranslate"><span class="pre">Model.obs_wells</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#src.gwrefpy.model.Model.obs_wells_summary"><code class="docutils literal notranslate"><span class="pre">Model.obs_wells_summary()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#src.gwrefpy.model.Model.open_project"><code class="docutils literal notranslate"><span class="pre">Model.open_project()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#src.gwrefpy.model.Model.ref_wells"><code class="docutils literal notranslate"><span class="pre">Model.ref_wells</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#src.gwrefpy.model.Model.ref_wells_summary"><code class="docutils literal notranslate"><span class="pre">Model.ref_wells_summary()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#src.gwrefpy.model.Model.save_project"><code class="docutils literal notranslate"><span class="pre">Model.save_project()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#src.gwrefpy.model.Model.to_dict"><code class="docutils literal notranslate"><span class="pre">Model.to_dict()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#src.gwrefpy.model.Model.unpack_dict"><code class="docutils literal notranslate"><span class="pre">Model.unpack_dict()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#src.gwrefpy.model.Model.well_names"><code class="docutils literal notranslate"><span class="pre">Model.well_names</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#src.gwrefpy.model.Model.wells_summary"><code class="docutils literal notranslate"><span class="pre">Model.wells_summary()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -624,7 +766,7 @@
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
     <br/>
   </p>
 </div>

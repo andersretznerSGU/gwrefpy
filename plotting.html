@@ -32,6 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
   
   <!-- So that users can add custom icons -->
   <script src="_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
@@ -48,7 +49,7 @@
     <link rel="author" title="About these documents" href="about.html" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="API Reference" href="apidocs.html" />
+    <link rel="next" title="Tutorials" href="tutorials/index.html" />
     <link rel="prev" title="User guide" href="user_guide.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -131,6 +132,13 @@
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="user_guide.html">
     User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="tutorials/index.html">
+    Tutorials
   </a>
 </li>
 
@@ -239,6 +247,13 @@
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="user_guide.html">
     User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="tutorials/index.html">
+    Tutorials
   </a>
 </li>
 
@@ -362,24 +377,40 @@
                   
   <section id="plotting">
 <h1>Plotting<a class="headerlink" href="#plotting" title="Link to this heading">#</a></h1>
-<p>The gwrefpy package has several plotting capabilities to visualize groundwaer data. Below are some examples of how to use these plotting functions.</p>
+<p>The gwrefpy package has several plotting capabilities to visualize groundwater data. Below are some examples of how to use these plotting functions.</p>
+<figure class="align-center" id="id1">
+<img alt="Example plot" src="_static/figures/plot_example.png" />
+<figcaption>
+<p><span class="caption-text">Example plot generated with gwrefpy.</span><a class="headerlink" href="#id1" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
 <section id="setting-plotting-style">
 <h2>Setting plotting style<a class="headerlink" href="#setting-plotting-style" title="Link to this heading">#</a></h2>
-<p>You can set the indivudual plotting syles of each well object by assigning the plotting attributes to that object. The available attributes are: <code class="docutils literal notranslate"><span class="pre">color</span></code>, <code class="docutils literal notranslate"><span class="pre">linestyle</span></code>, <code class="docutils literal notranslate"><span class="pre">linewidth</span></code>, <code class="docutils literal notranslate"><span class="pre">label</span></code>, <code class="docutils literal notranslate"><span class="pre">alpha</span></code>, <code class="docutils literal notranslate"><span class="pre">marker</span></code>, and <code class="docutils literal notranslate"><span class="pre">markersize</span></code></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">gwrefpy</span>
+<p>You can set the individual plotting styles of each well object by assigning the plotting attributes to that object. The available attributes with their defaults are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">color</span> <span class="pre">=</span> <span class="pre">None</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">alpha</span> <span class="pre">=</span> <span class="pre">1.0</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">linestyle</span> <span class="pre">=</span> <span class="pre">None</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">linewidth</span> <span class="pre">=</span> <span class="pre">1.0</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">marker</span> <span class="pre">=</span> <span class="pre">None</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">markersize</span> <span class="pre">=</span> <span class="pre">6</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">marker_visible</span> <span class="pre">=</span> <span class="pre">False</span></code></p></li>
+</ul>
+<p>The attributes can be set when initializing the well object or by using the <code class="docutils literal notranslate"><span class="pre">set_kwargs()</span></code> method after the object has been created.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">gwrefpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gr</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
-<span class="c1"># Create the model</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">gwrefpy</span><span class="o">.</span><span class="n">Model</span><span class="p">()</span>
-<span class="n">well1</span> <span class="o">=</span> <span class="n">gwrefpy</span><span class="o">.</span><span class="n">Well</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;Well 1&#39;</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">)</span>
+<span class="c1"># Create the well object</span>
+<span class="n">well1</span> <span class="o">=</span> <span class="n">gr</span><span class="o">.</span><span class="n">Well</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;Well 1&#39;</span><span class="p">,</span> <span class="n">is_reference</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 
-<span class="c1"># The plotting atribute can either be set in the well initialization or after</span>
+<span class="c1"># Changing the plotting style after creation</span>
 <span class="n">well1</span><span class="o">.</span><span class="n">set_kwargs</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
-
-<span class="c1"># Plot the well with default style</span>
-<span class="n">model</span><span class="o">.</span><span class="n">plot_wells</span><span class="p">(</span><span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
+</section>
+<section id="plotting-kwargs">
+<h2>Plotting kwargs<a class="headerlink" href="#plotting-kwargs" title="Link to this heading">#</a></h2>
+<p>The plotting functions in gwrefpy accept additional keyword arguments (kwargs) that can be used to customize the appearance of the plots. These kwargs are passed directly to the underlying matplotlib functions. Currently kwargs are passed to the following functions: <code class="docutils literal notranslate"><span class="pre">plt.subplot()</span></code> and <code class="docutils literal notranslate"><span class="pre">plt.savefig()</span></code>.</p>
 </section>
 </section>
 
@@ -403,11 +434,11 @@
       </div>
     </a>
     <a class="right-next"
-       href="apidocs.html"
+       href="tutorials/index.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">API Reference</p>
+        <p class="prev-next-title">Tutorials</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -431,6 +462,7 @@
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-plotting-style">Setting plotting style</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plotting-kwargs">Plotting kwargs</a></li>
 </ul>
   </nav></div>
 
@@ -467,7 +499,7 @@
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
     <br/>
   </p>
 </div>

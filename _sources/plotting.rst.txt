@@ -1,23 +1,42 @@
 Plotting
 ========
 
-The gwrefpy package has several plotting capabilities to visualize groundwaer data. Below are some examples of how to use these plotting functions.
+The gwrefpy package has several plotting capabilities to visualize groundwater data. Below are some examples of how to use these plotting functions.
+
+.. figure:: _static/figures/plot_example.png
+   :alt: Example plot
+   :align: center
+
+   Example plot generated with gwrefpy.
+
 
 Setting plotting style
 ----------------------
-You can set the indivudual plotting syles of each well object by assigning the plotting attributes to that object. The available attributes are: ``color``, ``linestyle``, ``linewidth``, ``label``, ``alpha``, ``marker``, and ``markersize``
+You can set the individual plotting styles of each well object by assigning the plotting attributes to that object. The available attributes with their defaults are:
+
+- ``color = None``
+- ``alpha = 1.0``
+- ``linestyle = None``
+- ``linewidth = 1.0``
+- ``marker = None``
+- ``markersize = 6``
+- ``marker_visible = False``
+
+The attributes can be set when initializing the well object or by using the ``set_kwargs()`` method after the object has been created.
 
 .. code-block:: python
 
-    import gwrefpy
+    import gwrefpy as gr
     import matplotlib.pyplot as plt
 
-    # Create the model
-    model = gwrefpy.Model()
-    well1 = gwrefpy.Well(name='Well 1', x=0, y=0, depth=100, model=model)
+    # Create the well object
+    well1 = gr.Well(name='Well 1', is_reference=True, markersize=10)
 
-    # The plotting atribute can either be set in the well initialization or after
+    # Changing the plotting style after creation
     well1.set_kwargs(color='blue', linestyle='--')
 
-    # Plot the well with default style
-    model.plot_wells(show=True)
+
+Plotting kwargs
+---------------
+The plotting functions in gwrefpy accept additional keyword arguments (kwargs) that can be used to customize the appearance of the plots. These kwargs are passed directly to the underlying matplotlib functions. Currently kwargs are passed to the following functions: ``plt.subplot()`` and ``plt.savefig()``.
+
