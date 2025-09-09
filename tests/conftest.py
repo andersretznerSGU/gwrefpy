@@ -1,19 +1,34 @@
-from pathlib import Path
-
+import numpy as np
 import pandas as pd
 import pytest
 
 from gwrefpy import Model, Well
 
-THIS_DIR = Path(__file__).resolve().parent
-TEST_PATH = THIS_DIR / "test_lagga2.csv"
-assert TEST_PATH.exists(), f"Test file {TEST_PATH} does not exist."
-
 
 @pytest.fixture()
 def timeseries() -> pd.Series:
-    """Fixture for loading a timeseries for testing."""
-    return pd.read_csv(TEST_PATH, parse_dates=True, index_col=0).squeeze()
+    """Fixture for generating a sinusoidal timeseries for testing."""
+    # Generate 334 days of data starting from 2024-10-01 (matching original data length)
+    start_date = pd.Timestamp("2024-10-01")
+    dates = pd.date_range(start=start_date, periods=334, freq="D")
+
+    # Generate sinusoidal data with some variation (similar to groundwater patterns)
+    # Base level around 25, with seasonal variation and some noise
+    t = np.arange(334)
+    base_level = 25.0
+    seasonal_amplitude = 2.0
+    seasonal_period = 365.25  # days per year
+    trend = 0.0001 * t  # slight upward trend
+    noise = 0.05 * np.random.RandomState(42).randn(334)  # reproducible noise
+
+    values = (
+        base_level
+        + seasonal_amplitude * np.sin(2 * np.pi * t / seasonal_period)
+        + trend
+        + noise
+    )
+
+    return pd.Series(values, index=dates, name="lagga2")
 
 
 @pytest.fixture()
