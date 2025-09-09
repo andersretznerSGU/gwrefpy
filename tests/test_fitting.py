@@ -1,3 +1,5 @@
+import pytest
+
 from gwrefpy import Well
 from gwrefpy.fitresults import FitResultData
 
@@ -44,3 +46,53 @@ def test_strandangers_model_best_fit_by_objects(strandangers_model) -> None:
 
     model_fits = strandangers_model.get_fits(obs)
     assert len(model_fits) == 2
+
+
+def test_strandangers_model_fit_multiple_wells(strandangers_model) -> None:
+    # Create additional wells for testing list functionality
+    [obs, ref] = strandangers_model.get_wells(["obs", "ref"])
+
+    # Create second observation well
+    ts_obs2 = obs.timeseries + 1.0
+    obs2 = Well("obs2", is_reference=False, timeseries=ts_obs2)
+    strandangers_model.add_well(obs2)
+
+    # Create second reference well
+    ts_ref2 = ref.timeseries + 0.5
+    ref2 = Well("ref2", is_reference=True, timeseries=ts_ref2)
+    strandangers_model.add_well(ref2)
+
+    # Test fitting with lists of wells
+    results = strandangers_model.fit([obs, obs2], [ref, ref2], offset="3.5D")
+
+    # Verify we get a list of results
+    assert isinstance(results, list)
+    assert len(results) == 2
+
+    # Verify each result is a FitResultData instance
+    for result in results:
+        assert isinstance(result, FitResultData)
+        assert result.offset == "3.5D"
+
+    # Verify the correct pairings
+    assert results[0].obs_well == obs
+    assert results[0].ref_well == ref
+    assert results[1].obs_well == obs2
+    assert results[1].ref_well == ref2
+
+    # Verify results were added to model fits
+    assert len(strandangers_model.fits) >= 2
+
+
+def test_strandangers_model_fit_mismatched_lists(strandangers_model) -> None:
+    # Test error handling for mismatched list lengths
+    [obs, ref] = strandangers_model.get_wells(["obs", "ref"])
+
+    # Create second observation well
+    ts_obs2 = obs.timeseries + 1.0
+    obs2 = Well("obs2", is_reference=False, timeseries=ts_obs2)
+    strandangers_model.add_well(obs2)
+
+    # Try to fit with mismatched list lengths (should raise ValueError)
+    with pytest.raises(ValueError):
+        strandangers_model.fit([obs, obs2], [ref], offset="3.5D")
