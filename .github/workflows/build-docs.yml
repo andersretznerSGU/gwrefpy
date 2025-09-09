@@ -38,14 +38,16 @@ jobs:
         run: echo Everything is working so far!
 
       - name: Install dependencies
-        run: uv sync --all-groups
+        run: uv sync --group dev
       - name: Build HTML
         run: |
           cd docs/
           make html
-      - name: Run ghp-import
-        run: |
-          ghp-import -n -p -f docs/_build/html
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/_build/html
 
       # Runs a set of commands using the runners shell
       - name: End message
