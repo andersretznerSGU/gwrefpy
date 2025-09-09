@@ -23,3 +23,6 @@ wheels/
 
 # AI
 CLAUDE.md
+
+# documentation builds
+docs/_build/
