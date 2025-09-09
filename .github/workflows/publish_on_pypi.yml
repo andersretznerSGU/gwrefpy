@@ -12,7 +12,8 @@ jobs:
     if: github.event_name == 'pull_request'
     
     permissions:
-      id-token: write  # For trusted publishing to TestPyPI
+      id-token: write        # For trusted publishing to TestPyPI
+      pull-requests: write   # For commenting on PRs
     
     steps:
     - uses: actions/checkout@v4
