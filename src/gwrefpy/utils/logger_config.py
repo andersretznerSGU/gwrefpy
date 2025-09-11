@@ -3,7 +3,7 @@ import logging.config
 # Configure logging
 LOGGING_CONFIG = {
     "version": 1,
-    "disable_existing_loggers": True,
+    # "disable_existing_loggers": True,
     "formatters": {
         "standard": {"format": "%(asctime)s [%(levelname)s] %(name)s: %(message)s"},
         "minimal": {"format": "%(message)s"},
@@ -40,7 +40,10 @@ def set_log_level(level: str) -> None:
     numeric_level = getattr(logging, level.upper(), None)
     if not isinstance(numeric_level, int):
         raise ValueError(f"Invalid log level: {level}")
-    logging.getLogger("gwrefpy").setLevel(numeric_level)
+    logging.getLogger().setLevel(numeric_level)
+    # Also set the level for all handlers
+    for handler in logging.getLogger().handlers:
+        handler.setLevel(numeric_level)
     logger.info(f"Log level set to {level}")
 
 

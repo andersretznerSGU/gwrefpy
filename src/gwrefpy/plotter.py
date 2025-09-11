@@ -23,15 +23,16 @@ logger = logging.getLogger(__name__)
 class Plotter:
     def __init__(self):
         self.wells = None
-        self.cnt_colors = 0
-        self.cnt_linestyles = 0
-        self.cnt_markers = 0
-        self.plot_style = None
-        self.color_style = None
-        self.xmin = None
-        self.xmax = None
-        self.ymin = None
-        self.ymax = None
+        self._cnt_colors = 0
+        self._cnt_linestyles = 0
+        self._cnt_markers = 0
+        self._plot_style = None
+        self._color_theme = None
+        self._offset_text = None
+        self._xmin = None
+        self._xmax = None
+        self._ymin = None
+        self._ymax = None
 
         self.fits = []
 
@@ -42,10 +43,11 @@ class Plotter:
         xlabel: str = "Time",
         ylabel: str = "Measurement",
         plot_style: str = "fancy",
-        color_style: str = "color",
+        color_theme: str = "color",
         save_path: str | None = None,
         num: int = 6,
         plot_separately: bool = False,
+        offset_text: dict[str, float] = None,
         **kwargs,
     ):
         """
@@ -64,7 +66,7 @@ class Plotter:
             The label for the y-axis.
         plot_style : str
             The style of the plot. Options are "fancy" or "scientific".
-        color_style : str
+        color_theme : str
             The color style of the plot. Options are "color" or "monochrome".
         save_path : str | None
             If provided, the plot will be saved to this path. If the plot_separately
@@ -73,6 +75,10 @@ class Plotter:
             Number of ticks on the x-axis (default is 6).
         plot_separately : bool
             If True, each well will be plotted in a separate figure. Default is False.
+        offset_text : dict[str, float]
+            A dictionary containing well names as keys and vertical offset values as
+            values. This is used to offset the text labels for specific wells to
+            avoid overlap. Default is None, which means no offset.
         **kwargs : dict
             Additional keyword arguments for customization. See the documentation of
             Matplotlib's `plt.subplots` and `plt.savefig` for more details.
@@ -105,7 +111,7 @@ class Plotter:
             wells = [wells]
 
         # Validate and store the plot styles
-        self._validate_plot_styles(plot_style, color_style)
+        self._validate_plot_styles(plot_style, color_theme, offset_text)
 
         # Get the figsize
         figsize = kwargs.pop("figsize", (10, 6))
@@ -118,7 +124,7 @@ class Plotter:
                 ax.set_title(title, **tfont)
                 ax.set_xlabel(xlabel, **afont)
                 ax.set_ylabel(ylabel, **afont)
-                logger.info(f"Plotting well: {w.name}")
+                logger.debug(f"Plotting well: {w.name}")
                 self._set_plot_attributes(w)
                 self._plot_well(w, ax)
                 self._plot_settings(ax, num)
@@ -142,7 +148,7 @@ class Plotter:
         ax.set_xlabel(xlabel, **afont)
         ax.set_ylabel(ylabel, **afont)
         for w in wells:
-            logger.info(f"Plotting well: {w.name}")
+            logger.debug(f"Plotting well: {w.name}")
             self._set_plot_attributes(w)
             self._plot_well(w, ax)
         self._plot_settings(ax, num)
@@ -162,10 +168,11 @@ class Plotter:
         mark_outliers: bool = True,
         show_initiation_period: bool = False,
         plot_style: str = "fancy",
-        color_style: str = "color",
+        color_theme: str = "color",
         save_path: str | None = None,
         num: int = 6,
         plot_separately: bool = False,
+        offset_text: dict[str, float] = None,
         **kwargs,
     ):
         """
@@ -188,7 +195,7 @@ class Plotter:
             If True, the initiation period will be shaded on the plot. Default is False.
         plot_style : str
             The style of the plot. Options are "fancy" or "scientific".
-        color_style : str
+        color_theme : str
             The color style of the plot. Options are "color" or "monochrome".
         save_path : str | None
             If provided, the plot will be saved to this path. If the plot_separately
@@ -198,6 +205,10 @@ class Plotter:
             Number of ticks on the x-axis (default is 6).
         plot_separately : bool
             If True, each fit will be plotted in a separate figure. Default is False.
+        offset_text : dict[str, float]
+            A dictionary containing well names as keys and vertical offset values as
+            values. This is used to offset the text labels for specific wells to
+            avoid overlap. Default is None, which means no offset.
         **kwargs : dict
             Additional keyword arguments for customization. See the documentation of
             Matplotlib's `plt.subplots` and `plt.savefig` for more details.
@@ -234,7 +245,7 @@ class Plotter:
             fits = [fits]
 
         # Validate and store the plot styles
-        self._validate_plot_styles(plot_style, color_style)
+        self._validate_plot_styles(plot_style, color_theme, offset_text)
 
         # Get the figsize
         figsize = kwargs.pop("figsize", (10, 6))
@@ -247,7 +258,7 @@ class Plotter:
                 ax.set_title(title, **tfont)
                 ax.set_xlabel(xlabel, **afont)
                 ax.set_ylabel(ylabel, **afont)
-                logger.info(f"Plotting fit: {fit.obs_well.name} ~ {fit.ref_well.name}")
+                logger.debug(f"Plotting fit: {fit.obs_well.name} ~ {fit.ref_well.name}")
                 self._set_plot_attributes(fit.obs_well)
                 self._set_plot_attributes(fit.ref_well)
                 self._plot_well(fit.obs_well, ax)
@@ -281,7 +292,7 @@ class Plotter:
         ax.set_xlabel(xlabel, **afont)
         ax.set_ylabel(ylabel, **afont)
         for fit in fits:
-            logger.info(f"Plotting fit: {fit.obs_well.name} ~ {fit.ref_well.name}")
+            logger.debug(f"Plotting fit: {fit.obs_well.name} ~ {fit.ref_well.name}")
             self._set_plot_attributes(fit.obs_well)
             self._set_plot_attributes(fit.ref_well)
             self._plot_well(fit.obs_well, ax)
@@ -300,18 +311,33 @@ class Plotter:
 
         return fig, ax
 
-    def _validate_plot_styles(self, plot_style, color_style):
+    def _validate_plot_styles(self, plot_style, color_theme, offset_text):
         # Store the plot style
         if plot_style not in ["fancy", "scientific"]:
             logger.error("Invalid plot_style. Must be 'fancy' or 'scientific'.")
             raise ValueError("plot_style must be 'fancy' or 'scientific'")
-        self.plot_style = plot_style
+        self._plot_style = plot_style
 
         # Store the color style
-        if color_style not in ["color", "monochrome"]:
-            logger.error("Invalid color_style. Must be 'color' or 'monochrome'.")
-            raise ValueError("color_style must be 'color' or 'monochrome'")
-        self.color_style = color_style
+        if color_theme not in ["color", "monochrome"]:
+            logger.error("Invalid color_theme. Must be 'color' or 'monochrome'.")
+            raise ValueError("color_theme must be 'color' or 'monochrome'")
+        if self._color_theme is not None and self._color_theme != color_theme:
+            logger.warning(
+                "Color theme has changed from "
+                f"'{self._color_theme}' to '{color_theme}'. "
+                "Plot attributes will be reset and reassigned."
+            )
+            self._cnt_colors = 0
+            self._cnt_linestyles = 0
+            self._cnt_markers = 0
+            for well in self.wells:
+                well.color = None
+                well.linestyle = None
+                well.marker = None
+        self._color_theme = color_theme
+
+        self._offset_text = offset_text
 
     def _plot_well(self, well, ax):
         """Plot the time series data for a single well."""
@@ -327,11 +353,17 @@ class Plotter:
             markersize=well.markersize,
         )
         self._update_axis_limits(well)
-        if self.plot_style == "fancy":
+        if self._plot_style == "fancy":
+            well_name = f" {well.name}"
+            offset = (
+                self._offset_text.get(well.name, 0.0)
+                if (self._offset_text is not None)
+                else 0.0
+            )
             ax.text(
                 well.timeseries.index[-1],
-                well.timeseries.values[-1],
-                f" {well.name}",
+                well.timeseries.values[-1] + offset,
+                well_name,
                 color=well.color,
                 horizontalalignment="left",
                 verticalalignment="center",
@@ -357,7 +389,7 @@ class Plotter:
                 alpha=0.2,
                 label=None,
             )
-        logger.info(f"Plotting fit for well: {well.name}")
+        logger.debug(f"Plotting fit for well: {well.name}")
 
     def _plot_outliers(self, well, ax):
         """Mark outliers on the plot for a single well."""
@@ -366,7 +398,7 @@ class Plotter:
             fit = fit[0]
         outliers = fit.fit_outliers()
         well_outliers = well.timeseries[outliers]
-        edgecolor = "red" if self.color_style == "color" else "black"
+        edgecolor = "red" if self._color_theme == "color" else "black"
         if well_outliers is not None and not well_outliers.empty:
             ax.scatter(
                 well_outliers.index,
@@ -378,7 +410,7 @@ class Plotter:
                 label=None,
                 zorder=500,
             )
-            logger.info(f"Marking outliers for well: {well.name}")
+            logger.debug(f"Marking outliers for well: {well.name}")
 
     @staticmethod
     def _plot_initiation_period(fit, ax):
@@ -393,28 +425,28 @@ class Plotter:
                 zorder=0,
                 hatch="xx",
             )
-            logger.info(f"Shading initiation period for fit: {fit.obs_well.name}")
+            logger.debug(f"Shading initiation period for fit: {fit.obs_well.name}")
 
     def _set_plot_attributes(self, well):
         """Set default plot attributes for a well if not already set."""
         # Set default plot attributes if not already set
         if well.color is None:
-            cnt = self.cnt_colors
-            if self.color_style == "monochrome":
+            cnt = self._cnt_colors
+            if self._color_theme == "monochrome":
                 well.color = DEFAULT_MONOCHROME_COLORS[
                     cnt % len(DEFAULT_MONOCHROME_COLORS)
                 ]
             else:
                 well.color = DEFAULT_COLORS[cnt % len(DEFAULT_COLORS)]
-            self.cnt_colors += 1
+            self._cnt_colors += 1
         if well.linestyle is None:
-            cnt = self.cnt_linestyles
+            cnt = self._cnt_linestyles
             well.linestyle = DEFAULT_LINE_STYLES[cnt % len(DEFAULT_LINE_STYLES)]
-            self.cnt_linestyles += 1
+            self._cnt_linestyles += 1
         if well.marker is None:
-            cnt = self.cnt_markers
+            cnt = self._cnt_markers
             well.marker = DEFAULT_MARKER_STYLES[cnt % len(DEFAULT_MARKER_STYLES)]
-            self.cnt_markers += 1
+            self._cnt_markers += 1
         if well.markersize is None:
             well.markersize = 6
         if well.alpha is None:
@@ -422,27 +454,27 @@ class Plotter:
 
     def _update_axis_limits(self, well):
         """Update the axis limits based on the well's time series data."""
-        if self.xmin is None or well.timeseries.index.min() < self.xmin:
-            self.xmin = well.timeseries.index.min()
-        if self.xmax is None or well.timeseries.index.max() > self.xmax:
-            self.xmax = well.timeseries.index.max()
-        if self.ymin is None or well.timeseries.min() < self.ymin:
-            self.ymin = well.timeseries.min()
-        if self.ymax is None or well.timeseries.max() > self.ymax:
-            self.ymax = well.timeseries.max()
+        if self._xmin is None or well.timeseries.index.min() < self._xmin:
+            self._xmin = well.timeseries.index.min()
+        if self._xmax is None or well.timeseries.index.max() > self._xmax:
+            self._xmax = well.timeseries.index.max()
+        if self._ymin is None or well.timeseries.min() < self._ymin:
+            self._ymin = well.timeseries.min()
+        if self._ymax is None or well.timeseries.max() > self._ymax:
+            self._ymax = well.timeseries.max()
 
     def _plot_settings(self, ax, num):
         """Apply final plot settings based on the selected style."""
-        if self.plot_style == "fancy":
+        if self._plot_style == "fancy":
             self._plot_settings_fancy(ax)
-        elif self.plot_style == "scientific":
+        elif self._plot_style == "scientific":
             self._plot_settings_scientific(ax)
 
         # limit x axis to data range
-        ax.set_xlim(left=self.xmin, right=self.xmax)
+        ax.set_xlim(left=self._xmin, right=self._xmax)
 
         # Set ticks font
-        xticks = np.linspace(date2num(self.xmin), date2num(self.xmax), num=num)
+        xticks = np.linspace(date2num(self._xmin), date2num(self._xmax), num=num)
         xlabels = [f"{num2date(tick):%Y-%m-%d}" for tick in xticks]
         yticks = ax.get_yticks()
         ylabels = [item.get_text() for item in ax.get_yticklabels()]
@@ -470,7 +502,7 @@ class Plotter:
         # Only show ticks on the left and bottom spines
         ax.yaxis.set_ticks_position("left")
         ax.xaxis.set_ticks_position("bottom")
-        ax.spines["bottom"].set_bounds(date2num(self.xmin), date2num(self.xmax))
+        ax.spines["bottom"].set_bounds(date2num(self._xmin), date2num(self._xmax))
 
         # Add grid lines
         ax.grid(

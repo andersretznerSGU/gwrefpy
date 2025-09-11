@@ -46,7 +46,7 @@ def save(filename, data, overwrite=False):
 
     with open(filename, "w") as file:
         json.dump(data, file, indent=4)
-    logger.info(f"Object saved to {filename}")
+    logger.debug(f"Object saved to {filename}")
     return
 
 
@@ -71,8 +71,16 @@ def load(filename):
         logger.error(f"Unsupported file extension: {ext}. Expected '.gwref'.")
         raise ValueError(f"Unsupported file extension: {ext}. Expected '.gwref'.")
 
+    if not os.path.exists(filename):
+        # Check if it is in the package examples directory
+        if path.exists(path.join(path.dirname(__file__), "..", "examples", filename)):
+            filename = path.join(path.dirname(__file__), "..", "examples", filename)
+        else:
+            logger.error(f"The file {filename} does not exist.")
+            raise FileNotFoundError(f"The file {filename} does not exist.")
+
     with open(filename) as file:
         data = json.load(file)
 
-    logger.info(f"Object loaded from {filename}")
+    logger.debug(f"Object loaded from {filename}")
     return data
