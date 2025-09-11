@@ -39,15 +39,15 @@ def save(filename, data, overwrite=False):
     if os.path.exists(f"{filename}") and not overwrite:
         # If the file exists and overwrite is False, log a warning and return
         logger.warning(
-            f"The file {filename} already exists. To overwrite the existing file"
+            f"The file '{filename}' already exists. To overwrite the existing file"
             f" set the argument 'overwrite' to True."
         )
-        return
+        return False
 
     with open(filename, "w") as file:
         json.dump(data, file, indent=4)
-    logger.debug(f"Object saved to {filename}")
-    return
+
+    return True
 
 
 def load(filename):

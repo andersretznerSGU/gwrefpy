@@ -327,7 +327,6 @@ class Model(Plotter):
             logger.debug(f"Added {len(well)} wells to model '{self.name}'.")
         else:
             self._add_well(well)
-            logger.debug(f"Added one well to model '{self.name}'.")
 
     def _add_well(self, well):
         """
@@ -422,6 +421,7 @@ class Model(Plotter):
                 and ipython.__class__.__name__ == "ZMQInteractiveShell"
             ):
                 # We're in Jupyter - don't print, let the return value display
+                logger.debug(result)  # Log at debug level instead of printing
                 return
         except ImportError:
             # IPython not available, definitely not in Jupyter
@@ -824,8 +824,9 @@ class Model(Plotter):
             filename = f"{self.name}.gwref"
 
         # Save the model dictionary to a file
-        save(filename, model_dict, overwrite=overwrite)
-        logger.info(f"Model '{self.name}' saved to '{filename}'.")
+        saved = save(filename, model_dict, overwrite=overwrite)
+        if saved:
+            logger.info(f"Model '{self.name}' saved to '{filename}'.")
 
     def open_project(self, filepath):
         """
