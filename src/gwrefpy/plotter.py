@@ -15,6 +15,7 @@ from .constants import (
     tifont,
 )
 from .fitresults import FitResultData
+from .well import Well
 
 logger = logging.getLogger(__name__)
 
@@ -34,6 +35,124 @@ class Plotter:
 
         self.fits = []
 
+    def plot_wells(
+        self,
+        wells: Well | list[Well] = None,
+        title: str = "Wells Plot",
+        xlabel: str = "Time",
+        ylabel: str = "Measurement",
+        plot_style: str = "fancy",
+        color_style: str = "color",
+        save_path: str | None = None,
+        num: int = 6,
+        plot_separately: bool = False,
+        **kwargs,
+    ):
+        """
+        This method plots the time series data for all fits in the model.
+
+        Parameters
+        ----------
+        wells : Well | list[Well]
+            A Well instance or a list of Well instances containing the wells to be
+            plotted. If None, all wells will be plotted.
+        title : str
+            The title of the plot.
+        xlabel : str
+            The label for the x-axis.
+        ylabel : str
+            The label for the y-axis.
+        plot_style : str
+            The style of the plot. Options are "fancy" or "scientific".
+        color_style : str
+            The color style of the plot. Options are "color" or "monochrome".
+        save_path : str | None
+            If provided, the plot will be saved to this path. If the plot_separately
+            parameter is True, the well name will be appended to the file name.
+        num : int
+            Number of ticks on the x-axis (default is 6).
+        plot_separately : bool
+            If True, each well will be plotted in a separate figure. Default is False.
+        **kwargs : dict
+            Additional keyword arguments for customization. See the documentation of
+            Matplotlib's `plt.subplots` and `plt.savefig` for more details.
+            Common kwargs include:
+
+            - figsize (tuple): Size of the figure (width, height) in inches.
+            - dpi (int): Dots per inch for the saved figure.
+
+        Returns
+        -------
+        fig : matplotlib.figure.Figure
+            The figure object containing the plot.
+        ax : matplotlib.axes.Axes
+            The axes object of the plot.
+        """
+        if wells is not None and not (
+            isinstance(wells, Well)
+            or (isinstance(wells, list) and all(isinstance(w, Well) for w in wells))
+        ):
+            logger.error(
+                "fits must be a Well instance or a list of FitResultData instances"
+            )
+            raise TypeError(
+                "fits must be a Well instance or a list of FitResultData instances"
+            )
+
+        if wells is None:
+            wells = self.wells
+        elif isinstance(wells, Well):
+            wells = [wells]
+
+        # Validate and store the plot styles
+        self._validate_plot_styles(plot_style, color_style)
+
+        # Get the figsize
+        figsize = kwargs.pop("figsize", (10, 6))
+
+        # Create the plot/s
+        if plot_separately:
+            figs, axs = [], []
+            for w in wells:
+                fig, ax = plt.subplots(figsize=figsize, **kwargs)
+                ax.set_title(title, **tfont)
+                ax.set_xlabel(xlabel, **afont)
+                ax.set_ylabel(ylabel, **afont)
+                logger.info(f"Plotting well: {w.name}")
+                self._set_plot_attributes(w)
+                self._plot_well(w, ax)
+                self._plot_settings(ax, num)
+
+                if save_path is not None:
+                    path_parts = save_path.rsplit(".", 1)
+                    if len(path_parts) == 2:
+                        save_path_well = f"{path_parts[0]}_{w.name}.{path_parts[1]}"
+                    else:
+                        save_path_well = f"{save_path}_{w.name}.png"
+                    plt.savefig(save_path_well, **kwargs)
+                    logger.info(f"Plot saved to {save_path_well}")
+
+                figs.append(fig)
+                axs.append(ax)
+            return figs, axs
+
+        # Plot all wells in a single figure
+        fig, ax = plt.subplots(figsize=figsize, **kwargs)
+        ax.set_title(title, **tfont)
+        ax.set_xlabel(xlabel, **afont)
+        ax.set_ylabel(ylabel, **afont)
+        for w in wells:
+            logger.info(f"Plotting well: {w.name}")
+            self._set_plot_attributes(w)
+            self._plot_well(w, ax)
+        self._plot_settings(ax, num)
+
+        if save_path is not None:
+            plt.savefig(save_path, **kwargs)
+            logger.info(f"Plot saved to {save_path}")
+
+        return fig, ax
+
     def plot_fits(
         self,
         fits: FitResultData | list[FitResultData] = None,
@@ -41,15 +160,16 @@ class Plotter:
         xlabel: str = "Time",
         ylabel: str = "Measurement",
         mark_outliers: bool = True,
+        show_initiation_period: bool = False,
         plot_style: str = "fancy",
         color_style: str = "color",
         save_path: str | None = None,
         num: int = 6,
+        plot_separately: bool = False,
         **kwargs,
     ):
         """
-        This method plots the time series data for all wells in the model.
-        It also overlays the fitted models if available.
+        This method plots the time series data for all fits in the model.
 
         Parameters
         ----------
@@ -64,14 +184,20 @@ class Plotter:
             The label for the y-axis.
         mark_outliers : bool
             If True, outliers will be marked on the plot.
+        show_initiation_period : bool
+            If True, the initiation period will be shaded on the plot. Default is False.
         plot_style : str
             The style of the plot. Options are "fancy" or "scientific".
         color_style : str
             The color style of the plot. Options are "color" or "monochrome".
         save_path : str | None
-            If provided, the plot will be saved to this path.
+            If provided, the plot will be saved to this path. If the plot_separately
+            parameter is True, the fit's observation well name will be appended to the
+            file name.
         num : int
             Number of ticks on the x-axis (default is 6).
+        plot_separately : bool
+            If True, each fit will be plotted in a separate figure. Default is False.
         **kwargs : dict
             Additional keyword arguments for customization. See the documentation of
             Matplotlib's `plt.subplots` and `plt.savefig` for more details.
@@ -107,19 +233,49 @@ class Plotter:
         elif isinstance(fits, FitResultData):
             fits = [fits]
 
-        # Store the plot style
-        if plot_style not in ["fancy", "scientific"]:
-            logger.error("Invalid plot_style. Must be 'fancy' or 'scientific'.")
-            raise ValueError("plot_style must be 'fancy' or 'scientific'")
-        self.plot_style = plot_style
+        # Validate and store the plot styles
+        self._validate_plot_styles(plot_style, color_style)
 
-        if color_style not in ["color", "monochrome"]:
-            logger.error("Invalid color_style. Must be 'color' or 'monochrome'.")
-            raise ValueError("color_style must be 'color' or 'monochrome'")
-        self.color_style = color_style
-
-        # Create the plot
+        # Get the figsize
         figsize = kwargs.pop("figsize", (10, 6))
+
+        # Create the plot/s
+        if plot_separately:
+            figs, axs = [], []
+            for fit in fits:
+                fig, ax = plt.subplots(figsize=figsize, **kwargs)
+                ax.set_title(title, **tfont)
+                ax.set_xlabel(xlabel, **afont)
+                ax.set_ylabel(ylabel, **afont)
+                logger.info(f"Plotting fit: {fit.obs_well.name} ~ {fit.ref_well.name}")
+                self._set_plot_attributes(fit.obs_well)
+                self._set_plot_attributes(fit.ref_well)
+                self._plot_well(fit.obs_well, ax)
+                self._plot_fit(fit.obs_well, ax)
+                self._plot_well(fit.ref_well, ax)
+                if mark_outliers:
+                    self._plot_outliers(fit.obs_well, ax)
+                if show_initiation_period:
+                    self._plot_initiation_period(fit, ax)
+
+                self._plot_settings(ax, num)
+
+                if save_path is not None:
+                    path_parts = save_path.rsplit(".", 1)
+                    if len(path_parts) == 2:
+                        save_path_fit = (
+                            f"{path_parts[0]}_{fit.obs_well.name}.{path_parts[1]}"
+                        )
+                    else:
+                        save_path_fit = f"{save_path}_{fit.obs_well.name}.png"
+                    plt.savefig(save_path_fit, **kwargs)
+                    logger.info(f"Plot saved to {save_path_fit}")
+
+                figs.append(fig)
+                axs.append(ax)
+            return figs, axs
+
+        # Plot all fits in a single figure
         fig, ax = plt.subplots(figsize=figsize, **kwargs)
         ax.set_title(title, **tfont)
         ax.set_xlabel(xlabel, **afont)
@@ -129,16 +285,33 @@ class Plotter:
             self._set_plot_attributes(fit.obs_well)
             self._set_plot_attributes(fit.ref_well)
             self._plot_well(fit.obs_well, ax)
+            self._plot_fit(fit.obs_well, ax)
             self._plot_well(fit.ref_well, ax)
             if mark_outliers:
-                self._mark_outliers(fit.obs_well, ax)
-        self._plot_settings(ax, num, **kwargs)
+                self._plot_outliers(fit.obs_well, ax)
+            if show_initiation_period:
+                self._plot_initiation_period(fit, ax)
+
+        self._plot_settings(ax, num)
 
         if save_path is not None:
             plt.savefig(save_path, **kwargs)
             logger.info(f"Plot saved to {save_path}")
 
         return fig, ax
+
+    def _validate_plot_styles(self, plot_style, color_style):
+        # Store the plot style
+        if plot_style not in ["fancy", "scientific"]:
+            logger.error("Invalid plot_style. Must be 'fancy' or 'scientific'.")
+            raise ValueError("plot_style must be 'fancy' or 'scientific'")
+        self.plot_style = plot_style
+
+        # Store the color style
+        if color_style not in ["color", "monochrome"]:
+            logger.error("Invalid color_style. Must be 'color' or 'monochrome'.")
+            raise ValueError("color_style must be 'color' or 'monochrome'")
+        self.color_style = color_style
 
     def _plot_well(self, well, ax):
         """Plot the time series data for a single well."""
@@ -164,8 +337,6 @@ class Plotter:
                 verticalalignment="center",
                 **lfont,
             )
-        if well.is_reference is False:
-            self._plot_fit(well, ax)
 
     def _plot_fit(self, well, ax):
         """Plot the fitted model for a single well."""
@@ -188,7 +359,7 @@ class Plotter:
             )
         logger.info(f"Plotting fit for well: {well.name}")
 
-    def _mark_outliers(self, well, ax):
+    def _plot_outliers(self, well, ax):
         """Mark outliers on the plot for a single well."""
         fit = self.get_fits(well)
         if isinstance(fit, list):
@@ -208,6 +379,21 @@ class Plotter:
                 zorder=500,
             )
             logger.info(f"Marking outliers for well: {well.name}")
+
+    @staticmethod
+    def _plot_initiation_period(fit, ax):
+        """Shade the initiation period on the plot for a single fit."""
+        if fit.tmin is not None:
+            ax.axvspan(
+                fit.tmin,
+                fit.tmax,
+                color="#E0E0E0",
+                alpha=0.3,
+                label="Initiation Period",
+                zorder=0,
+                hatch="xx",
+            )
+            logger.info(f"Shading initiation period for fit: {fit.obs_well.name}")
 
     def _set_plot_attributes(self, well):
         """Set default plot attributes for a well if not already set."""
@@ -298,7 +484,8 @@ class Plotter:
             visible=True, which="minor", color="#E8E8E8", linestyle=":", linewidth=0.5
         )
 
-    def _plot_settings_scientific(self, ax):
+    @staticmethod
+    def _plot_settings_scientific(ax):
         """Apply scientific plot settings."""
         # Add grid lines
         ax.grid(
