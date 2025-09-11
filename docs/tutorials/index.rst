@@ -8,6 +8,7 @@ This section contains step-by-step tutorials to help you get started with gwrefp
    :titlesonly:
 
    quickstart.ipynb
+   plotting.ipynb
 
 Quickstart Tutorial
 ------------------
