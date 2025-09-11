@@ -137,6 +137,7 @@ class Plotter:
         xlabel: str = "Time",
         ylabel: str = "Measurement",
         mark_outliers: bool = True,
+        show_initiation_period: bool = False,
         plot_style: str = "fancy",
         color_style: str = "color",
         save_path: str | None = None,
@@ -159,6 +160,8 @@ class Plotter:
             The label for the y-axis.
         mark_outliers : bool
             If True, outliers will be marked on the plot.
+        show_initiation_period : bool
+            If True, the initiation period will be shaded on the plot. Default is False.
         plot_style : str
             The style of the plot. Options are "fancy" or "scientific".
         color_style : str
@@ -227,7 +230,10 @@ class Plotter:
             self._plot_fit(fit.obs_well, ax)
             self._plot_well(fit.ref_well, ax)
             if mark_outliers:
-                self._mark_outliers(fit.obs_well, ax)
+                self._plot_outliers(fit.obs_well, ax)
+            if show_initiation_period:
+                self._plot_initiation_period(fit, ax)
+
         self._plot_settings(ax, num, **kwargs)
 
         if save_path is not None:
@@ -282,7 +288,7 @@ class Plotter:
             )
         logger.info(f"Plotting fit for well: {well.name}")
 
-    def _mark_outliers(self, well, ax):
+    def _plot_outliers(self, well, ax):
         """Mark outliers on the plot for a single well."""
         fit = self.get_fits(well)
         if isinstance(fit, list):
@@ -302,6 +308,20 @@ class Plotter:
                 zorder=500,
             )
             logger.info(f"Marking outliers for well: {well.name}")
+
+    def _plot_initiation_period(self, fit, ax):
+        """Shade the initiation period on the plot for a single fit."""
+        if fit.tmin is not None:
+            ax.axvspan(
+                fit.tmin,
+                fit.tmax,
+                color="#E0E0E0",
+                alpha=0.3,
+                label="Initiation Period",
+                zorder=0,
+                hatch="xx",
+            )
+            logger.info(f"Shading initiation period for fit: {fit.obs_well.name}")
 
     def _set_plot_attributes(self, well):
         """Set default plot attributes for a well if not already set."""
