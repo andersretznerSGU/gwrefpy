@@ -36,7 +36,7 @@ LOGGING_CONFIG = {
 logging.config.dictConfig(LOGGING_CONFIG)
 
 logger = logging.getLogger(__name__)
-logger.info("Logging is configured.")
+logger.debug("Logging is configured.")
 
 
 def set_log_level(level: str) -> None:

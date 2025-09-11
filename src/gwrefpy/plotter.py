@@ -15,6 +15,7 @@ from .constants import (
     tifont,
 )
 from .fitresults import FitResultData
+from .well import Well
 
 logger = logging.getLogger(__name__)
 
@@ -34,6 +35,101 @@ class Plotter:
 
         self.fits = []
 
+    def plot_wells(
+        self,
+        wells: Well | list[Well] = None,
+        title: str = "Wells Plot",
+        xlabel: str = "Time",
+        ylabel: str = "Measurement",
+        plot_style: str = "fancy",
+        color_style: str = "color",
+        save_path: str | None = None,
+        num: int = 6,
+        **kwargs,
+    ):
+        """
+        This method plots the time series data for all fits in the model.
+
+        Parameters
+        ----------
+        fits : FitResultData | list[FitResultData]
+            A FitResultData instance or a list of FitResultData instances
+            containing the fit results to be plotted. If None, all fits will be plotted.
+        title : str
+            The title of the plot.
+        xlabel : str
+            The label for the x-axis.
+        ylabel : str
+            The label for the y-axis.
+        plot_style : str
+            The style of the plot. Options are "fancy" or "scientific".
+        color_style : str
+            The color style of the plot. Options are "color" or "monochrome".
+        save_path : str | None
+            If provided, the plot will be saved to this path.
+        num : int
+            Number of ticks on the x-axis (default is 6).
+        **kwargs : dict
+            Additional keyword arguments for customization. See the documentation of
+            Matplotlib's `plt.subplots` and `plt.savefig` for more details.
+            Common kwargs include:
+
+            - figsize (tuple): Size of the figure (width, height) in inches.
+            - dpi (int): Dots per inch for the saved figure.
+
+        Returns
+        -------
+        fig : matplotlib.figure.Figure
+            The figure object containing the plot.
+        ax : matplotlib.axes.Axes
+            The axes object of the plot.
+        """
+        if wells is not None and not (
+            isinstance(wells, Well)
+            or (isinstance(wells, list) and all(isinstance(w, Well) for w in wells))
+        ):
+            logger.error(
+                "fits must be a FitResultData instance or a list of "
+                "FitResultData instances"
+            )
+            raise TypeError(
+                "fits must be a FitResultData instance or a list of "
+                "FitResultData instances"
+            )
+        if wells is None:
+            wells = self.wells
+        elif isinstance(wells, Well):
+            wells = [wells]
+
+        # Store the plot style
+        if plot_style not in ["fancy", "scientific"]:
+            logger.error("Invalid plot_style. Must be 'fancy' or 'scientific'.")
+            raise ValueError("plot_style must be 'fancy' or 'scientific'")
+        self.plot_style = plot_style
+
+        if color_style not in ["color", "monochrome"]:
+            logger.error("Invalid color_style. Must be 'color' or 'monochrome'.")
+            raise ValueError("color_style must be 'color' or 'monochrome'")
+        self.color_style = color_style
+
+        # Create the plot
+        figsize = kwargs.pop("figsize", (10, 6))
+        fig, ax = plt.subplots(figsize=figsize, **kwargs)
+        ax.set_title(title, **tfont)
+        ax.set_xlabel(xlabel, **afont)
+        ax.set_ylabel(ylabel, **afont)
+        for w in wells:
+            logger.info(f"Plotting well: {w.name}")
+            self._set_plot_attributes(w)
+            self._plot_well(w, ax)
+        self._plot_settings(ax, num, **kwargs)
+
+        if save_path is not None:
+            plt.savefig(save_path, **kwargs)
+            logger.info(f"Plot saved to {save_path}")
+
+        return fig, ax
+
     def plot_fits(
         self,
         fits: FitResultData | list[FitResultData] = None,
@@ -48,8 +144,7 @@ class Plotter:
         **kwargs,
     ):
         """
-        This method plots the time series data for all wells in the model.
-        It also overlays the fitted models if available.
+        This method plots the time series data for all fits in the model.
 
         Parameters
         ----------
@@ -129,6 +224,7 @@ class Plotter:
             self._set_plot_attributes(fit.obs_well)
             self._set_plot_attributes(fit.ref_well)
             self._plot_well(fit.obs_well, ax)
+            self._plot_fit(fit.obs_well, ax)
             self._plot_well(fit.ref_well, ax)
             if mark_outliers:
                 self._mark_outliers(fit.obs_well, ax)
@@ -164,8 +260,6 @@ class Plotter:
                 verticalalignment="center",
                 **lfont,
             )
-        if well.is_reference is False:
-            self._plot_fit(well, ax)
 
     def _plot_fit(self, well, ax):
         """Plot the fitted model for a single well."""
