@@ -67,7 +67,9 @@ def test_plot_wells_plot_style_validation(timeseries):
     plotter = Plotter()
     well = Well("Test Well", is_reference=True, timeseries=timeseries)
 
-    with pytest.raises(ValueError, match="plot_style must be 'fancy' or 'scientific'"):
+    with pytest.raises(
+        ValueError, match="plot_style must be 'fancy', 'scientific', or None"
+    ):
         plotter.plot_wells(well, plot_style="invalid_style")
 
 
@@ -76,7 +78,9 @@ def test_plot_wells_color_style_validation(timeseries):
     plotter = Plotter()
     well = Well("Test Well", is_reference=True, timeseries=timeseries)
 
-    with pytest.raises(ValueError, match="color_style must be 'color' or 'monochrome'"):
+    with pytest.raises(
+        ValueError, match="color_style must be 'color', 'monochrome', or None"
+    ):
         plotter.plot_wells(well, color_style="invalid_color")
 
 
@@ -98,6 +102,30 @@ def test_plot_wells_monochrome_style(timeseries):
     well = Well("Test Well", is_reference=True, timeseries=timeseries)
 
     fig, ax = plotter.plot_wells(well, color_style="monochrome")
+
+    assert isinstance(fig, Figure)
+    assert isinstance(ax, Axes)
+    plt.close(fig)
+
+
+def test_plot_wells_none_style(timeseries):
+    """Test that plot_style=None uses matplotlib defaults."""
+    plotter = Plotter()
+    well = Well("Test Well", is_reference=True, timeseries=timeseries)
+
+    fig, ax = plotter.plot_wells(well, plot_style=None)
+
+    assert isinstance(fig, Figure)
+    assert isinstance(ax, Axes)
+    plt.close(fig)
+
+
+def test_plot_wells_none_color_style(timeseries):
+    """Test that color_style=None uses matplotlib defaults."""
+    plotter = Plotter()
+    well = Well("Test Well", is_reference=True, timeseries=timeseries)
+
+    fig, ax = plotter.plot_wells(well, color_style=None)
 
     assert isinstance(fig, Figure)
     assert isinstance(ax, Axes)

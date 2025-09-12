@@ -1,10 +1,10 @@
 import logging
 
 import matplotlib.pyplot as plt
-from matplotlib.figure import Figure
-from matplotlib.axes import Axes
 import numpy as np
+from matplotlib.axes import Axes
 from matplotlib.dates import date2num, num2date
+from matplotlib.figure import Figure
 
 from .constants import (
     DEFAULT_COLORS,
@@ -43,8 +43,8 @@ class Plotter:
         title: str = "Wells Plot",
         xlabel: str = "Time",
         ylabel: str = "Measurement",
-        plot_style: str = "fancy",
-        color_style: str = "color",
+        plot_style: str | None = None,
+        color_style: str | None = None,
         save_path: str | None = None,
         num: int = 6,
         plot_separately: bool = False,
@@ -64,10 +64,12 @@ class Plotter:
             The label for the x-axis.
         ylabel : str
             The label for the y-axis.
-        plot_style : str
-            The style of the plot. Options are "fancy" or "scientific".
-        color_style : str
-            The color style of the plot. Options are "color" or "monochrome".
+        plot_style : str | None
+            The style of the plot. Options are "fancy", "scientific", or None.
+            If None, uses matplotlib defaults without custom styling.
+        color_style : str | None
+            The color style of the plot. Options are "color", "monochrome", or None.
+            If None, uses matplotlib defaults without custom colors.
         save_path : str | None
             If provided, the plot will be saved to this path. If the plot_separately
             parameter is True, the well name will be appended to the file name.
@@ -117,9 +119,7 @@ class Plotter:
             figs, axs = [], []
             for w in wells:
                 fig, ax = plt.subplots(figsize=figsize, **kwargs)
-                ax.set_title(title, **tfont)
-                ax.set_xlabel(xlabel, **afont)
-                ax.set_ylabel(ylabel, **afont)
+                self._set_plot_labels(ax, title, xlabel, ylabel)
                 logger.info(f"Plotting well: {w.name}")
                 self._set_plot_attributes(w)
                 self._plot_well(w, ax)
@@ -140,9 +140,7 @@ class Plotter:
 
         # Plot all wells in a single figure
         fig, ax = plt.subplots(figsize=figsize, **kwargs)
-        ax.set_title(title, **tfont)
-        ax.set_xlabel(xlabel, **afont)
-        ax.set_ylabel(ylabel, **afont)
+        self._set_plot_labels(ax, title, xlabel, ylabel)
         for w in wells:
             logger.info(f"Plotting well: {w.name}")
             self._set_plot_attributes(w)
@@ -163,8 +161,8 @@ class Plotter:
         ylabel: str = "Measurement",
         mark_outliers: bool = True,
         show_initiation_period: bool = False,
-        plot_style: str = "fancy",
-        color_style: str = "color",
+        plot_style: str | None = None,
+        color_style: str | None = None,
         save_path: str | None = None,
         num: int = 6,
         plot_separately: bool = False,
@@ -188,10 +186,12 @@ class Plotter:
             If True, outliers will be marked on the plot.
         show_initiation_period : bool
             If True, the initiation period will be shaded on the plot. Default is False.
-        plot_style : str
-            The style of the plot. Options are "fancy" or "scientific".
-        color_style : str
-            The color style of the plot. Options are "color" or "monochrome".
+        plot_style : str | None
+            The style of the plot. Options are "fancy", "scientific", or None.
+            If None, uses matplotlib defaults without custom styling.
+        color_style : str | None
+            The color style of the plot. Options are "color", "monochrome", or None.
+            If None, uses matplotlib defaults without custom colors.
         save_path : str | None
             If provided, the plot will be saved to this path. If the plot_separately
             parameter is True, the fit's observation well name will be appended to the
@@ -246,9 +246,7 @@ class Plotter:
             figs, axs = [], []
             for fit in fits:
                 fig, ax = plt.subplots(figsize=figsize, **kwargs)
-                ax.set_title(title, **tfont)
-                ax.set_xlabel(xlabel, **afont)
-                ax.set_ylabel(ylabel, **afont)
+                self._set_plot_labels(ax, title, xlabel, ylabel)
                 logger.info(f"Plotting fit: {fit.obs_well.name} ~ {fit.ref_well.name}")
                 self._set_plot_attributes(fit.obs_well)
                 self._set_plot_attributes(fit.ref_well)
@@ -279,9 +277,7 @@ class Plotter:
 
         # Plot all fits in a single figure
         fig, ax = plt.subplots(figsize=figsize, **kwargs)
-        ax.set_title(title, **tfont)
-        ax.set_xlabel(xlabel, **afont)
-        ax.set_ylabel(ylabel, **afont)
+        self._set_plot_labels(ax, title, xlabel, ylabel)
         for fit in fits:
             logger.info(f"Plotting fit: {fit.obs_well.name} ~ {fit.ref_well.name}")
             self._set_plot_attributes(fit.obs_well)
@@ -302,17 +298,28 @@ class Plotter:
 
         return fig, ax
 
+    def _set_plot_labels(self, ax, title, xlabel, ylabel):
+        """Set plot labels with conditional font styling."""
+        if self.plot_style is not None:
+            ax.set_title(title, **tfont)
+            ax.set_xlabel(xlabel, **afont)
+            ax.set_ylabel(ylabel, **afont)
+        else:
+            ax.set_title(title)
+            ax.set_xlabel(xlabel)
+            ax.set_ylabel(ylabel)
+
     def _validate_plot_styles(self, plot_style, color_style):
         # Store the plot style
-        if plot_style not in ["fancy", "scientific"]:
-            logger.error("Invalid plot_style. Must be 'fancy' or 'scientific'.")
-            raise ValueError("plot_style must be 'fancy' or 'scientific'")
+        if plot_style not in ["fancy", "scientific", None]:
+            logger.error("Invalid plot_style. Must be 'fancy', 'scientific', or None.")
+            raise ValueError("plot_style must be 'fancy', 'scientific', or None")
         self.plot_style = plot_style
 
         # Store the color style
-        if color_style not in ["color", "monochrome"]:
-            logger.error("Invalid color_style. Must be 'color' or 'monochrome'.")
-            raise ValueError("color_style must be 'color' or 'monochrome'")
+        if color_style not in ["color", "monochrome", None]:
+            logger.error("Invalid color_style. Must be 'color', 'monochrome', or None.")
+            raise ValueError("color_style must be 'color', 'monochrome', or None")
         self.color_style = color_style
 
     def _plot_well(self, well, ax):
@@ -368,7 +375,10 @@ class Plotter:
             fit = fit[0]
         outliers = fit.fit_outliers()
         well_outliers = well.timeseries[outliers]
-        edgecolor = "red" if self.color_style == "color" else "black"
+        if self.color_style is None:
+            edgecolor = "red"  # Use matplotlib default
+        else:
+            edgecolor = "red" if self.color_style == "color" else "black"
         if well_outliers is not None and not well_outliers.empty:
             ax.scatter(
                 well_outliers.index,
@@ -400,7 +410,7 @@ class Plotter:
     def _set_plot_attributes(self, well):
         """Set default plot attributes for a well if not already set."""
         # Set default plot attributes if not already set
-        if well.color is None:
+        if well.color is None and self.color_style is not None:
             cnt = self.cnt_colors
             if self.color_style == "monochrome":
                 well.color = DEFAULT_MONOCHROME_COLORS[
@@ -439,25 +449,30 @@ class Plotter:
             self._plot_settings_fancy(ax)
         elif self.plot_style == "scientific":
             self._plot_settings_scientific(ax)
+        elif self.plot_style is None:
+            # Skip custom styling, use matplotlib defaults
+            pass
 
         # limit x axis to data range
         ax.set_xlim(left=self.xmin, right=self.xmax)
 
-        # Set ticks font
-        xticks = np.linspace(date2num(self.xmin), date2num(self.xmax), num=num)
-        xlabels = [f"{num2date(tick):%Y-%m-%d}" for tick in xticks]
-        yticks = ax.get_yticks()
-        ylabels = [item.get_text() for item in ax.get_yticklabels()]
-        ax.set_xticks(xticks)
-        ax.set_yticks(yticks)
-        ax.set_xticklabels(xlabels, **tifont)
-        ax.set_yticklabels(ylabels, **tifont)
+        # Apply custom formatting only if plot_style is not None
+        if self.plot_style is not None:
+            # Set ticks font
+            xticks = np.linspace(date2num(self.xmin), date2num(self.xmax), num=num)
+            xlabels = [f"{num2date(tick):%Y-%m-%d}" for tick in xticks]
+            yticks = ax.get_yticks()
+            ylabels = [item.get_text() for item in ax.get_yticklabels()]
+            ax.set_xticks(xticks)
+            ax.set_yticks(yticks)
+            ax.set_xticklabels(xlabels, **tifont)
+            ax.set_yticklabels(ylabels, **tifont)
 
-        # Set font sizes and styles
-        ax.title.set_fontsize(16)
-        ax.xaxis.label.set_fontsize(14)
-        ax.yaxis.label.set_fontsize(14)
-        ax.tick_params(axis="both", which="major", labelsize=12)
+            # Set font sizes and styles
+            ax.title.set_fontsize(16)
+            ax.xaxis.label.set_fontsize(14)
+            ax.yaxis.label.set_fontsize(14)
+            ax.tick_params(axis="both", which="major", labelsize=12)
 
         # Tight layout
         plt.tight_layout()
