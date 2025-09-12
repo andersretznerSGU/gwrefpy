@@ -163,3 +163,38 @@ def test_plot_wells_custom_figsize(timeseries):
     assert fig.get_size_inches()[0] == figsize[0]
     assert fig.get_size_inches()[1] == figsize[1]
     plt.close(fig)
+
+
+def test_plot_wells_with_existing_axes(timeseries):
+    """Test that plot_wells works with an existing matplotlib Axes object."""
+    plotter = Plotter()
+    well = Well("Test Well", is_reference=True, timeseries=timeseries)
+
+    # Create figure and axes manually
+    fig, ax = plt.subplots()
+
+    # Plot on the existing axes
+    returned_fig, returned_ax = plotter.plot_wells(well, ax=ax)
+
+    # Should return the same figure and axes
+    assert returned_fig is fig
+    assert returned_ax is ax
+    assert isinstance(returned_fig, Figure)
+    assert isinstance(returned_ax, Axes)
+
+    plt.close(fig)
+
+
+def test_plot_wells_ax_with_plot_separately_raises_error(timeseries):
+    """Test that using ax parameter with plot_separately=True raises ValueError."""
+    plotter = Plotter()
+    well = Well("Test Well", is_reference=True, timeseries=timeseries)
+
+    fig, ax = plt.subplots()
+
+    with pytest.raises(
+        ValueError, match="ax parameter cannot be used with plot_separately=True"
+    ):
+        plotter.plot_wells(well, ax=ax, plot_separately=True)
+
+    plt.close(fig)

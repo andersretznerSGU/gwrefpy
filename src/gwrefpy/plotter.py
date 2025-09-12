@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.axes import Axes
 from matplotlib.dates import date2num, num2date
-from matplotlib.figure import Figure
+from matplotlib.figure import Figure, SubFigure
 
 from .constants import (
     DEFAULT_COLORS,
@@ -48,8 +48,9 @@ class Plotter:
         save_path: str | None = None,
         num: int = 6,
         plot_separately: bool = False,
+        ax: Axes | None = None,
         **kwargs,
-    ) -> tuple[Figure, Axes] | tuple[list[Figure], list[Axes]]:
+    ) -> tuple[Figure | SubFigure, Axes] | tuple[list[Figure], list[Axes]]:
         """
         This method plots the time series data for all fits in the model.
 
@@ -77,6 +78,10 @@ class Plotter:
             Number of ticks on the x-axis (default is 6).
         plot_separately : bool
             If True, each well will be plotted in a separate figure. Default is False.
+        ax : matplotlib.axes.Axes | None
+            Optional matplotlib Axes object to plot on. If provided, the plot will be
+            drawn on this axes instead of creating a new figure. Not compatible with
+            plot_separately=True.
         **kwargs : dict
             Additional keyword arguments for customization. See the documentation of
             Matplotlib's `plt.subplots` and `plt.savefig` for more details.
@@ -102,6 +107,11 @@ class Plotter:
             raise TypeError(
                 "fits must be a Well instance or a list of FitResultData instances"
             )
+
+        # Validate ax parameter compatibility
+        if ax is not None and plot_separately:
+            logger.error("ax parameter cannot be used with plot_separately=True")
+            raise ValueError("ax parameter cannot be used with plot_separately=True")
 
         if wells is None:
             wells = self.wells
@@ -139,17 +149,36 @@ class Plotter:
             return figs, axs
 
         # Plot all wells in a single figure
-        fig, ax = plt.subplots(figsize=figsize, **kwargs)
-        self._set_plot_labels(ax, title, xlabel, ylabel)
-        for w in wells:
-            logger.info(f"Plotting well: {w.name}")
-            self._set_plot_attributes(w)
-            self._plot_well(w, ax)
-        self._plot_settings(ax, num)
+        if ax is not None:
+            # Use provided axes
+            fig = ax.figure
+            self._set_plot_labels(ax, title, xlabel, ylabel)
+            for w in wells:
+                logger.info(f"Plotting well: {w.name}")
+                self._set_plot_attributes(w)
+                self._plot_well(w, ax)
+            self._plot_settings(ax, num)
 
-        if save_path is not None:
-            plt.savefig(save_path, **kwargs)
-            logger.info(f"Plot saved to {save_path}")
+            if save_path is not None:
+                # Handle both Figure and SubFigure cases
+                if hasattr(fig, "savefig"):
+                    fig.savefig(save_path, **kwargs)
+                else:
+                    plt.savefig(save_path, **kwargs)
+                logger.info(f"Plot saved to {save_path}")
+        else:
+            # Create new figure and axes
+            fig, ax = plt.subplots(figsize=figsize, **kwargs)
+            self._set_plot_labels(ax, title, xlabel, ylabel)
+            for w in wells:
+                logger.info(f"Plotting well: {w.name}")
+                self._set_plot_attributes(w)
+                self._plot_well(w, ax)
+            self._plot_settings(ax, num)
+
+            if save_path is not None:
+                plt.savefig(save_path, **kwargs)
+                logger.info(f"Plot saved to {save_path}")
 
         return fig, ax
 
@@ -166,8 +195,9 @@ class Plotter:
         save_path: str | None = None,
         num: int = 6,
         plot_separately: bool = False,
+        ax: Axes | None = None,
         **kwargs,
-    ) -> tuple[Figure, Axes] | tuple[list[Figure], list[Axes]]:
+    ) -> tuple[Figure | SubFigure, Axes] | tuple[list[Figure], list[Axes]]:
         """
         This method plots the time series data for all fits in the model.
 
@@ -200,6 +230,10 @@ class Plotter:
             Number of ticks on the x-axis (default is 6).
         plot_separately : bool
             If True, each fit will be plotted in a separate figure. Default is False.
+        ax : matplotlib.axes.Axes | None
+            Optional matplotlib Axes object to plot on. If provided, the plot will be
+            drawn on this axes instead of creating a new figure. Not compatible with
+            plot_separately=True.
         **kwargs : dict
             Additional keyword arguments for customization. See the documentation of
             Matplotlib's `plt.subplots` and `plt.savefig` for more details.
@@ -230,6 +264,12 @@ class Plotter:
                 "fits must be a FitResultData instance or a list of "
                 "FitResultData instances"
             )
+
+        # Validate ax parameter compatibility
+        if ax is not None and plot_separately:
+            logger.error("ax parameter cannot be used with plot_separately=True")
+            raise ValueError("ax parameter cannot be used with plot_separately=True")
+
         if fits is None:
             fits = self.fits
         elif isinstance(fits, FitResultData):
@@ -276,25 +316,52 @@ class Plotter:
             return figs, axs
 
         # Plot all fits in a single figure
-        fig, ax = plt.subplots(figsize=figsize, **kwargs)
-        self._set_plot_labels(ax, title, xlabel, ylabel)
-        for fit in fits:
-            logger.info(f"Plotting fit: {fit.obs_well.name} ~ {fit.ref_well.name}")
-            self._set_plot_attributes(fit.obs_well)
-            self._set_plot_attributes(fit.ref_well)
-            self._plot_well(fit.obs_well, ax)
-            self._plot_fit(fit.obs_well, ax)
-            self._plot_well(fit.ref_well, ax)
-            if mark_outliers:
-                self._plot_outliers(fit.obs_well, ax)
-            if show_initiation_period:
-                self._plot_initiation_period(fit, ax)
+        if ax is not None:
+            # Use provided axes
+            fig = ax.figure
+            self._set_plot_labels(ax, title, xlabel, ylabel)
+            for fit in fits:
+                logger.info(f"Plotting fit: {fit.obs_well.name} ~ {fit.ref_well.name}")
+                self._set_plot_attributes(fit.obs_well)
+                self._set_plot_attributes(fit.ref_well)
+                self._plot_well(fit.obs_well, ax)
+                self._plot_fit(fit.obs_well, ax)
+                self._plot_well(fit.ref_well, ax)
+                if mark_outliers:
+                    self._plot_outliers(fit.obs_well, ax)
+                if show_initiation_period:
+                    self._plot_initiation_period(fit, ax)
 
-        self._plot_settings(ax, num)
+            self._plot_settings(ax, num)
 
-        if save_path is not None:
-            plt.savefig(save_path, **kwargs)
-            logger.info(f"Plot saved to {save_path}")
+            if save_path is not None:
+                # Handle both Figure and SubFigure cases
+                if hasattr(fig, "savefig"):
+                    fig.savefig(save_path, **kwargs)
+                else:
+                    plt.savefig(save_path, **kwargs)
+                logger.info(f"Plot saved to {save_path}")
+        else:
+            # Create new figure and axes
+            fig, ax = plt.subplots(figsize=figsize, **kwargs)
+            self._set_plot_labels(ax, title, xlabel, ylabel)
+            for fit in fits:
+                logger.info(f"Plotting fit: {fit.obs_well.name} ~ {fit.ref_well.name}")
+                self._set_plot_attributes(fit.obs_well)
+                self._set_plot_attributes(fit.ref_well)
+                self._plot_well(fit.obs_well, ax)
+                self._plot_fit(fit.obs_well, ax)
+                self._plot_well(fit.ref_well, ax)
+                if mark_outliers:
+                    self._plot_outliers(fit.obs_well, ax)
+                if show_initiation_period:
+                    self._plot_initiation_period(fit, ax)
+
+            self._plot_settings(ax, num)
+
+            if save_path is not None:
+                plt.savefig(save_path, **kwargs)
+                logger.info(f"Plot saved to {save_path}")
 
         return fig, ax
 
