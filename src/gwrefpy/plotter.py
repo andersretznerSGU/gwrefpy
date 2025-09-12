@@ -1,6 +1,8 @@
 import logging
 
 import matplotlib.pyplot as plt
+from matplotlib.figure import Figure
+from matplotlib.axes import Axes
 import numpy as np
 from matplotlib.dates import date2num, num2date
 
@@ -47,7 +49,7 @@ class Plotter:
         num: int = 6,
         plot_separately: bool = False,
         **kwargs,
-    ):
+    ) -> tuple[Figure, Axes] | tuple[list[Figure], list[Axes]]:
         """
         This method plots the time series data for all fits in the model.
 
@@ -167,7 +169,7 @@ class Plotter:
         num: int = 6,
         plot_separately: bool = False,
         **kwargs,
-    ):
+    ) -> tuple[Figure, Axes] | tuple[list[Figure], list[Axes]]:
         """
         This method plots the time series data for all fits in the model.
 
