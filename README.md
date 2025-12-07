@@ -35,7 +35,7 @@ pip install gwrefpy
 
 ## Documentation
 
-See the [documentation](https://andersretznersgu.github.io/gwrefpy/) for more information on how to use `gwrefpy`.
+See the [documentation](https://sgfsweden.github.io/gwrefpy/) for more information on how to use `gwrefpy`.
 
 ## Contributing
 
