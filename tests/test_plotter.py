@@ -33,6 +33,16 @@ def test_plot_wells_with_list_of_wells(timeseries):
     plt.close(fig)
 
 
+def test_plot_fits(strandangers_model) -> None:
+    """Test that plot_fits works."""
+    fit = strandangers_model.best_fit(strandangers_model.obs_wells[0], offset="3.5D")
+
+    fig, ax = strandangers_model.plot_fits(fit)
+    assert isinstance(fig, Figure)
+    assert isinstance(ax, Axes)
+    plt.close(fig)
+
+
 def test_plot_wells_separate_figures(timeseries):
     """Test that plot_separately=True returns lists of figures and axes."""
     plotter = Plotter()
