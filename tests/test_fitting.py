@@ -308,6 +308,45 @@ def test_fit_result_confidence_bounds_relationship(strandangers_model) -> None:
     ).all()  # Allow for small floating point errors
 
 
+def test_fit_result_test_fit(strandangers_model) -> None:
+    # Test the test_fit method
+    [obs, ref] = strandangers_model.get_wells(["obs", "ref"])
+
+    # Perform a fit
+    fit_result = strandangers_model.fit(obs, ref, offset="4D")
+
+    # Get the statistical test result
+    stderr, rmse = fit_result.test_fit(ref.timeseries, offset="4D")
+
+    # Verify the test, allow for small floating point errors
+    assert abs(fit_result.rmse - rmse) < 1e-10
+    assert abs(fit_result.stderr - stderr) < 1e-10
+    result = strandangers_model.fit(
+        obs_well="obs", ref_well="ref", offset="3.5D", method="npolyfit"
+    )
+
+    # Get the statistical test result
+    stderr_nploy, rmse_npoly = result.test_fit(ref.timeseries, offset="3.5D")
+
+    # Verify the test, allow for small floating point errors
+    assert abs(result.rmse - rmse_npoly) < 1e-10
+    assert abs(result.stderr - stderr_nploy) < 1e-10
+
+    # Test chebyshev method
+    result_chebyshev = strandangers_model.fit(
+        obs_well="obs", ref_well="ref", offset="3.5D", method="chebyshev", degree=5
+    )
+
+    # Get the statistical test result
+    stderr_chebyshev, rmse_chebyshev = result_chebyshev.test_fit(
+        ref.timeseries, offset="3.5D"
+    )
+
+    # Verify the test, allow for small floating point errors
+    assert abs(result_chebyshev.rmse - rmse_chebyshev) < 1e-10
+    assert abs(result_chebyshev.stderr - stderr_chebyshev) < 1e-10
+
+
 def test_fit_with_aggregation_parameter(strandangers_model):
     """Test that the aggregation parameter can be used in fit method."""
     # Test with 'min' aggregation method
