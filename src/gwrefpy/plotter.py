@@ -321,7 +321,7 @@ class Plotter:
                 self._set_plot_attributes(fit.obs_well)
                 self._set_plot_attributes(fit.ref_well)
                 self._plot_well(fit.obs_well, ax)
-                self._plot_fit(fit.obs_well, ax)
+                self._plot_fit(fits, fit.obs_well, ax)
                 if plot_ref_well:
                     self._plot_well(fit.ref_well, ax)
                 if mark_outliers:
@@ -356,7 +356,7 @@ class Plotter:
                 self._set_plot_attributes(fit.obs_well)
                 self._set_plot_attributes(fit.ref_well)
                 self._plot_well(fit.obs_well, ax)
-                self._plot_fit(fit.obs_well, ax)
+                self._plot_fit(fits, fit.obs_well, ax)
                 if plot_ref_well:
                     self._plot_well(fit.ref_well, ax)
                 if mark_outliers:
@@ -383,7 +383,7 @@ class Plotter:
                 self._set_plot_attributes(fit.obs_well)
                 self._set_plot_attributes(fit.ref_well)
                 self._plot_well(fit.obs_well, ax)
-                self._plot_fit(fit.obs_well, ax)
+                self._plot_fit(fits, fit.obs_well, ax)
                 if plot_ref_well:
                     self._plot_well(fit.ref_well, ax)
                 if mark_outliers:
@@ -402,7 +402,7 @@ class Plotter:
 
     def plot_fitmethod(
         self,
-        fits: FitResultData | list[FitResultData] = None,
+        fits: FitResultData | list[FitResultData] | None = None,
         title: str = "Fit Method Plot",
         xlabel: str = "Hydraulic Head Reference Well",
         ylabel: str = "Hydraulic Head Observation Well",
@@ -699,16 +699,20 @@ class Plotter:
             s=6,  # markersize is in points, s is in points^2
         )
 
-    def _plot_fit(self, well, ax):
+    def _plot_fit(
+        self, fits: FitResultData | list[FitResultData], well: Well, ax: Axes
+    ):
         """Plot the fitted model for a single well."""
-        fits = self.get_fits(well)
         if isinstance(fits, list) is False:
-            fits = [fits]
-        for fit in fits:
+            resolved_fits = [fits]
+        else:
+            resolved_fits = fits  # type: list[FitResultData]
+
+        for fit in resolved_fits:
             pred_const = fit.pred_const
             fit_timeseries = fit.fit_timeseries()
             x = fit_timeseries.index
-            y = fit_timeseries.values
+            y = fit_timeseries.to_numpy()
             ax.plot(x, y, linestyle="-", color=well.color, alpha=0.2, label=None)
             ax.fill_between(
                 x,
