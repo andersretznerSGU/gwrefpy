@@ -943,3 +943,23 @@ class Plotter:
 
     def get_fits(self, well):
         raise NotImplementedError("Subclasses should implement this method.")
+
+
+class _FitPlotter(Plotter):
+    """Internal helper class for plotting a single FitResultData."""
+
+    def __init__(self, fit: FitResultData):
+        super().__init__()
+        self._fit = fit
+        self.fits = [fit]
+        self.wells = [fit.obs_well, fit.ref_well]
+
+    def get_fits(self, well):
+        """Return the fit if the well is part of it."""
+        if isinstance(well, str):
+            if well == self._fit.obs_well.name or well == self._fit.ref_well.name:
+                return self._fit
+            return None
+        if self._fit.has_well(well):
+            return self._fit
+        return None
