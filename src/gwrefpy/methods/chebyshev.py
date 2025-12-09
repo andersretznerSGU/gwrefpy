@@ -23,7 +23,7 @@ def chebyshevfit(
     aggregation="mean",
 ) -> FitResultData:
     """
-    Perform Nth degree polynomial fit between reference and observation well time
+    Perform Chebyshev polynomial fit between reference and observation well time
     series.
 
     Parameters
@@ -51,7 +51,12 @@ def chebyshevfit(
     Returns
     -------
     fit_result : FitResultData
-        A `FitResultData` object containing the results of the polynomial fit.
+        A `FitResultData` object containing the results of the Chebyshev polynomial fit.
+
+    References
+    ----------
+    .. [1] numpy.polynomial.chebyshev.chebfit documentation:
+       https://numpy.org/doc/stable/reference/generated/numpy.polynomial.chebyshev.chebfit.html
     """
 
     # Groupby time equivalents with given offset

@@ -11,7 +11,7 @@ If you haven't installed the package yet, you can do so using pip:
 
     pip install gwrefpy
 
-or if you want to install the full version with all optional dependencies:
+or if you want to install the full version with all optional dependencies (`jupyter notebook`):
 
 .. code-block:: console
 

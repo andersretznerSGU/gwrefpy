@@ -49,6 +49,11 @@ def linregressfit(
     -------
     fit_result : FitResultData
         A `FitResultData` object containing the results of the linear regression fit.
+
+    References
+    ----------
+    .. [1] scipy.stats.linregress documentation:
+       https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.linregress.html
     """
 
     # Groupby time equivalents with given offset

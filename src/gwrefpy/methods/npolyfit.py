@@ -52,6 +52,11 @@ def npolyfit(
     -------
     fit_result : FitResultData
         A `FitResultData` object containing the results of the polynomial fit.
+
+    References
+    ----------
+    .. [1] numpy.polyfit documentation:
+       https://numpy.org/doc/stable/reference/generated/numpy.polyfit.html
     """
 
     # Groupby time equivalents with given offset
