@@ -571,6 +571,8 @@ class FitResultData:
         num: int = 6,
         ax: Axes | None = None,
         offset_text: dict[str, float] | None = None,
+        tmin: str | pd.Timestamp | None = None,
+        tmax: str | pd.Timestamp | None = None,
         **kwargs,
     ) -> tuple[Figure | SubFigure, Axes]:
         """
@@ -605,6 +607,14 @@ class FitResultData:
             Optional existing Axes to plot on.
         offset_text : dict[str, float] | None
             Vertical offset for text labels.
+        tmin : str | pd.Timestamp | None
+            Minimum time for the plot. If provided, the time series will be sliced
+            to only show data from this time onwards. Can be a string like "2021-01-01"
+            or a pd.Timestamp. Default is None (no minimum time limit).
+        tmax : str | pd.Timestamp | None
+            Maximum time for the plot. If provided, the time series will be sliced
+            to only show data up to this time. Can be a string like "2021-01-01"
+            or a pd.Timestamp. Default is None (no maximum time limit).
         **kwargs : dict
             Additional matplotlib kwargs (e.g., figsize, dpi).
 
@@ -632,6 +642,8 @@ class FitResultData:
             plot_separately=False,
             ax=ax,
             offset_text=offset_text,
+            tmin=tmin,
+            tmax=tmax,
             **kwargs,
         )
         return cast(tuple[Figure | SubFigure, Axes], result)
