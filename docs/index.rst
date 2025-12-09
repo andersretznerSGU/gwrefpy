@@ -1,7 +1,7 @@
 gwrefpy
 =======
 
-A Python package for detection of deviations in groudwater time series.
+A Python package for detection of deviations in groundwater time series.
 
 .. grid::
 
