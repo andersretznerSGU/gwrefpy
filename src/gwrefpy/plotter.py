@@ -325,6 +325,12 @@ class Plotter:
         self._plot_tmin = tmin
         self._plot_tmax = tmax
 
+        # Reset axis limits for fresh calculation based on sliced data
+        self._xmin = None
+        self._xmax = None
+        self._ymin = None
+        self._ymax = None
+
         # Get the figsize
         figsize = kwargs.pop("figsize", (10, 6))
 
