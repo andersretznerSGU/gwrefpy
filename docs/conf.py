@@ -61,7 +61,7 @@ html_theme_options = {
     "icon_links": [
         {
             "name": "GitHub",
-            "url": "https://github.com/andersretznerSGU/gwrefpy",  # required
+            "url": "https://github.com/sgfsweden/gwrefpy",  # required
             "icon": "https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg",
             "type": "url",
         }

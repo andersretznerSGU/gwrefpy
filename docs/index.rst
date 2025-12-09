@@ -1,7 +1,7 @@
 gwrefpy
 =======
 
-``gwrefpy`` is an open source Python implementation of the Akvifär reference method for detecting deviations in groundwater level time series. The method is described in detail in `Strandanger (2024) <https://svenskageotekniskaforeningen.se/wp-content/uploads/Publikationer/SGF_Rapporter/2024_2_Akvifars_refmetod.pdf)>`_.
+A Python package for detection of deviations in groudwater time series.
 
 .. grid::
 
