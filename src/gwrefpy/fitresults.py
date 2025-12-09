@@ -1,7 +1,10 @@
 import uuid
+from typing import cast
 
 import numpy as np
 import pandas as pd
+from matplotlib.axes import Axes
+from matplotlib.figure import Figure, SubFigure
 
 from .methods.common import compute_residual_std_error
 from .methods.timeseries import groupby_time_equivalents
@@ -620,6 +623,97 @@ class FitResultData:
             False otherwise.
         """
         return self.ref_well == well or self.obs_well == well
+
+    def plot(
+        self,
+        title: str = "",
+        xlabel: str = "Time",
+        ylabel: str = "Measurements",
+        mark_outliers: bool = True,
+        show_initiation_period: bool = False,
+        plot_ref_well: bool = False,
+        plot_style: str | None = None,
+        color_style: str | None = None,
+        save_path: str | None = None,
+        num: int = 6,
+        ax: Axes | None = None,
+        offset_text: dict[str, float] | None = None,
+        tmin: str | pd.Timestamp | None = None,
+        tmax: str | pd.Timestamp | None = None,
+        **kwargs,
+    ) -> tuple[Figure | SubFigure, Axes]:
+        """
+        Plot this fit result.
+
+        This is a convenience method that delegates to Plotter.plot_fits().
+        See Plotter.plot_fits() for full parameter documentation.
+
+        Parameters
+        ----------
+        title : str
+            The title of the plot.
+        xlabel : str
+            The label for the x-axis.
+        ylabel : str
+            The label for the y-axis.
+        mark_outliers : bool
+            If True, outliers will be marked on the plot.
+        show_initiation_period : bool
+            If True, the initiation period will be shaded.
+        plot_ref_well : bool
+            If True, the reference well data will be plotted.
+        plot_style : str | None
+            Style of the plot ("fancy", "scientific", or None).
+        color_style : str | None
+            Color style ("color", "monochrome", or None).
+        save_path : str | None
+            If provided, the plot will be saved to this path.
+        num : int
+            Number of ticks on the x-axis.
+        ax : matplotlib.axes.Axes | None
+            Optional existing Axes to plot on.
+        offset_text : dict[str, float] | None
+            Vertical offset for text labels.
+        tmin : str | pd.Timestamp | None
+            Minimum time for the plot. If provided, the time series will be sliced
+            to only show data from this time onwards. Can be a string like "2021-01-01"
+            or a pd.Timestamp. Default is None (no minimum time limit).
+        tmax : str | pd.Timestamp | None
+            Maximum time for the plot. If provided, the time series will be sliced
+            to only show data up to this time. Can be a string like "2021-01-01"
+            or a pd.Timestamp. Default is None (no maximum time limit).
+        **kwargs : dict
+            Additional matplotlib kwargs (e.g., figsize, dpi).
+
+        Returns
+        -------
+        tuple[Figure | SubFigure, Axes]
+            The figure and axes objects.
+        """
+        from .plotter import _FitPlotter
+
+        plotter = _FitPlotter(self)
+        # plot_separately=False ensures return type is tuple[Figure | SubFigure, Axes]
+        result = plotter.plot_fits(
+            fits=self,
+            title=title,
+            xlabel=xlabel,
+            ylabel=ylabel,
+            mark_outliers=mark_outliers,
+            show_initiation_period=show_initiation_period,
+            plot_ref_well=plot_ref_well,
+            plot_style=plot_style,
+            color_style=color_style,
+            save_path=save_path,
+            num=num,
+            plot_separately=False,
+            ax=ax,
+            offset_text=offset_text,
+            tmin=tmin,
+            tmax=tmax,
+            **kwargs,
+        )
+        return cast(tuple[Figure | SubFigure, Axes], result)
 
     def _to_dict(self) -> dict:
         """
