@@ -17,6 +17,12 @@ or if you want to install the full version with all optional dependencies (`jupy
 
     pip install gwrefpy[recommended]
 
+Currently the optional dependencies include:
+
+- ``notebook``: for running Jupyter notebooks
+- ``sgu-client``: for accessing the Geological Survey of Sweden groundwater API
+
+
 If you already have the package installed, make sure to update it to the latest version:
 
 .. code-block:: console
@@ -35,3 +41,4 @@ If you already have the package installed, make sure to update it to the latest 
    5_io.ipynb
    6_logging.ipynb
    7_fitting_methods.ipynb
+   8_using_sgu_wells.ipynb

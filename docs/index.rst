@@ -15,7 +15,7 @@ A Python package for detection of deviations in groundwater time series.
         :link: tutorials/index
         :link-type: doc
 
-        Some tutorials on how to use th epackage.
+        Some tutorials on how to use the package.
 
     .. grid-item-card:: API Reference
         :link: apidocs
@@ -35,7 +35,7 @@ A Python package for detection of deviations in groundwater time series.
         :link: about/keyconcepts
         :link-type: doc
 
-        Key concepts behind ``gwrefpy`` and the Akvifär reference method.
+        Key concepts behind ``gwrefpy``.
 
     .. grid-item-card:: GitHub Repository
         :link: https://github.com/andersretznerSGU/gwrefpy
