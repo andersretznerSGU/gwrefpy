@@ -14,7 +14,7 @@
   <a href="https://github.com/sgfsweden/gwrefpy"><img src="https://img.shields.io/github/stars/sgfsweden/gwrefpy?style=social" alt="GitHub stars"></a>
 </p>
 
-A Python package for detection of deviations in groudwater time series.
+A Python package for detection of deviations in groundwater time series.
 
 ## Features
 
