@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=71d9d8e6"></script>
+    <script src="../_static/documentation_options.js?v=6c02275b"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -204,7 +204,7 @@
           
           
           
-          <a href="https://github.com/andersretznerSGU/gwrefpy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg" class="icon-link-image" alt="GitHub"/></a>
+          <a href="https://github.com/sgfsweden/gwrefpy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg" class="icon-link-image" alt="GitHub"/></a>
         </li>
 </ul></div>
       
@@ -310,7 +310,7 @@
           
           
           
-          <a href="https://github.com/andersretznerSGU/gwrefpy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg" class="icon-link-image" alt="GitHub"/></a>
+          <a href="https://github.com/sgfsweden/gwrefpy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg" class="icon-link-image" alt="GitHub"/></a>
         </li>
 </ul></div>
         
@@ -342,6 +342,7 @@
 
 
 
+<li class="toctree-l1"><a class="reference internal" href="8_using_sgu_wells.html">Using SGU wells</a></li>
 </ul>
 </div>
 </nav></div>
@@ -407,10 +408,15 @@
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">pip install gwrefpy</span>
 </pre></div>
 </div>
-<p>or if you want to install the full version with all optional dependencies:</p>
+<p>or if you want to install the full version with all optional dependencies (<cite>jupyter notebook</cite>):</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">pip install gwrefpy[recommended]</span>
 </pre></div>
 </div>
+<p>Currently the optional dependencies include:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">notebook</span></code>: for running Jupyter notebooks</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sgu-client</span></code>: for accessing the Geological Survey of Sweden groundwater API</p></li>
+</ul>
 <p>If you already have the package installed, make sure to update it to the latest version:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">pip install gwrefpy --upgrade</span>
 </pre></div>

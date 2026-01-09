@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=71d9d8e6"></script>
+    <script src="../_static/documentation_options.js?v=6c02275b"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -202,7 +202,7 @@
           
           
           
-          <a href="https://github.com/andersretznerSGU/gwrefpy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg" class="icon-link-image" alt="GitHub"/></a>
+          <a href="https://github.com/sgfsweden/gwrefpy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg" class="icon-link-image" alt="GitHub"/></a>
         </li>
 </ul></div>
       
@@ -308,7 +308,7 @@
           
           
           
-          <a href="https://github.com/andersretznerSGU/gwrefpy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg" class="icon-link-image" alt="GitHub"/></a>
+          <a href="https://github.com/sgfsweden/gwrefpy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg" class="icon-link-image" alt="GitHub"/></a>
         </li>
 </ul></div>
         
@@ -340,6 +340,7 @@
 
 
 
+<li class="toctree-l1"><a class="reference internal" href="8_using_sgu_wells.html">Using SGU wells</a></li>
 </ul>
 </div>
 </nav></div>
@@ -483,7 +484,7 @@
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Help on method fit in module gwrefpy.fitbase:
 
-fit(obs_well: gwrefpy.well.Well | list[gwrefpy.well.Well] | str | list[str], ref_well: gwrefpy.well.Well | list[gwrefpy.well.Well] | str | list[str], offset: pandas._libs.tslibs.offsets.DateOffset | pandas._libs.tslibs.timedeltas.Timedelta | str, aggregation: Literal[&#39;mean&#39;, &#39;median&#39;, &#39;min&#39;, &#39;max&#39;] = &#39;mean&#39;, p: float = 0.95, method: Literal[&#39;linearregression&#39;, &#39;npolyfit&#39;, &#39;chebyshev&#39;] = &#39;linearregression&#39;, tmin: pandas._libs.tslibs.timestamps.Timestamp | str | None = None, tmax: pandas._libs.tslibs.timestamps.Timestamp | str | None = None, report: bool = True, **kwargs) -&gt; gwrefpy.fitresults.FitResultData | list[gwrefpy.fitresults.FitResultData] method of gwrefpy.model.Model instance
+fit(obs_well: gwrefpy.well.Well | list[gwrefpy.well.Well] | str | list[str], ref_well: gwrefpy.well.Well | list[gwrefpy.well.Well] | str | list[str], offset: pandas._libs.tslibs.offsets.DateOffset | pandas._libs.tslibs.timedeltas.Timedelta | str, aggregation: Literal[&#39;mean&#39;, &#39;median&#39;, &#39;min&#39;, &#39;max&#39;] = &#39;mean&#39;, p: float = 0.95, method: Literal[&#39;linearregression&#39;, &#39;npolyfit&#39;, &#39;chebyshev&#39;] = &#39;linearregression&#39;, tmin: pandas._libs.tslibs.timestamps.Timestamp | str | None = None, tmax: pandas._libs.tslibs.timestamps.Timestamp | str | None = None, name: str | list[str] | None = None, report: bool = True, **kwargs) -&gt; gwrefpy.fitresults.FitResultData | list[gwrefpy.fitresults.FitResultData] method of gwrefpy.model.Model instance
     Fit reference well(s) to observation well(s) using regression.
     
     Parameters
@@ -511,6 +512,10 @@ fit(obs_well: gwrefpy.well.Well | list[gwrefpy.well.Well] | str | list[str], ref
         Minimum time for calibration period.
     tmax: pd.Timestamp | str | None = None
         Maximum time for calibration period.
+    name : str | list[str] | None, optional
+        An optional name or list of names for the fit result(s). If lists of
+        wells are provided, the name list must match in length. If None,
+        default names will be assigned.
     report: bool, optional
         Whether to print fit results summary (default is True).
     **kwargs
@@ -626,14 +631,24 @@ fit(obs_well: gwrefpy.well.Well | list[gwrefpy.well.Well] | str | list[str], ref
                 </div></div>
 </div>
 <p>By default when calling <code class="docutils literal notranslate"><span class="pre">fit()</span></code>, a summary of the fitted regression is displayed as seen above.</p>
-<p>Calling <code class="docutils literal notranslate"><span class="pre">fit()</span></code> results in a <code class="docutils literal notranslate"><span class="pre">FitResultData</span></code> object being created and stored in the model instance’s <code class="docutils literal notranslate"><span class="pre">fits</span></code> attribute. Let’s plot the resulting fit to verify everything is OK. We use the <code class="docutils literal notranslate"><span class="pre">plot_fitmethod()</span></code> method and pass all available fits knowing it will only contain the fit we just created.</p>
+<p>Calling <code class="docutils literal notranslate"><span class="pre">fit()</span></code> results in a <code class="docutils literal notranslate"><span class="pre">FitResultData</span></code> object being created and stored in the model instance’s <code class="docutils literal notranslate"><span class="pre">fits</span></code> attribute. Let’s plot the resulting fit to verify everything is OK. We use the <code class="docutils literal notranslate"><span class="pre">plot_fitmethod()</span></code> method and pass all available fits knowing it will only contain the fit we just created. We also evaluate the fit performance by testing it against the reference well data using the <code class="docutils literal notranslate"><span class="pre">test_fit()</span></code> method. Here, we specify the same offset and use the tmin equal to the calibration period end.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">plot_fitmethod</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">fits</span><span class="p">)</span>
+<span class="n">fit</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fits</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># we know we only have one fit, so this will be a single object</span>
+<span class="n">stderr</span><span class="p">,</span> <span class="n">rmse</span> <span class="o">=</span> <span class="n">fit</span><span class="o">.</span><span class="n">test_fit</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">ref_wells</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">timeseries</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="s2">&quot;0D&quot;</span><span class="p">,</span> <span class="n">tmin</span><span class="o">=</span><span class="s2">&quot;2022&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Fit performance on reference well data after calibration period:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Standard error: </span><span class="si">{</span><span class="n">stderr</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;RMSE: </span><span class="si">{</span><span class="n">rmse</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Fit performance on reference well data after calibration period:
+Standard error: 0.416
+RMSE: 0.446
+</pre></div>
+</div>
 <img alt="../_images/3656beda7366be8c028c1a28dbdef101fc55d494a69602fd85b42e304002d851.png" src="../_images/3656beda7366be8c028c1a28dbdef101fc55d494a69602fd85b42e304002d851.png" />
 </div>
 </div>
