@@ -14,7 +14,7 @@
   <a href="https://github.com/sgfsweden/gwrefpy"><img src="https://img.shields.io/github/stars/sgfsweden/gwrefpy?style=social" alt="GitHub stars"></a>
 </p>
 
-A Python implementation of the Akvifär reference method for detecting deviations in groundwater level time series.
+A Python package for detection of deviations in groundwater time series.
 
 ## Features
 
@@ -35,14 +35,14 @@ pip install gwrefpy
 
 ## Documentation
 
-See the [documentation](https://andersretznersgu.github.io/gwrefpy/) for more information on how to use `gwrefpy`.
+See the [documentation](https://sgfsweden.github.io/gwrefpy/) for more information on how to use `gwrefpy`.
 
 ## Contributing
 
 Contributions are welcome! File an issue or submit a pull request on GitHub. We recommend `uv` for development.
 
 ```bash
-git clone https://github.com/andersretznersgu/gwrefpy.git
+git clone https://github.com/sgfsweden/gwrefpy.git
 cd gwrefpy
 
 uv sync --all-groups

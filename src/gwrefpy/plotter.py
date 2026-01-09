@@ -2,6 +2,7 @@ import logging
 
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 from matplotlib.axes import Axes
 from matplotlib.dates import date2num, num2date
 from matplotlib.figure import Figure, SubFigure
@@ -40,6 +41,8 @@ class Plotter:
         self._xmax = None
         self._ymin = None
         self._ymax = None
+        self._plot_tmin = None
+        self._plot_tmax = None
 
         self.fits = []
 
@@ -220,6 +223,8 @@ class Plotter:
         plot_separately: bool = False,
         ax: Axes | None = None,
         offset_text: dict[str, float] | None = None,
+        tmin: str | pd.Timestamp | None = None,
+        tmax: str | pd.Timestamp | None = None,
         **kwargs,
     ) -> tuple[Figure | SubFigure, Axes] | tuple[list[Figure], list[Axes]]:
         """
@@ -264,6 +269,14 @@ class Plotter:
             A dictionary containing well names as keys and vertical offset values as
             values. This is used to offset the text labels for specific wells to
             avoid overlap. Default is None, which means no offset.
+        tmin : str | pd.Timestamp | None
+            Minimum time for the plot. If provided, the time series will be sliced
+            to only show data from this time onwards. Can be a string like "2021-01-01"
+            or a pd.Timestamp. Default is None (no minimum time limit).
+        tmax : str | pd.Timestamp | None
+            Maximum time for the plot. If provided, the time series will be sliced
+            to only show data up to this time. Can be a string like "2021-01-01"
+            or a pd.Timestamp. Default is None (no maximum time limit).
         **kwargs : dict
             Additional keyword arguments for customization. See the documentation of
             Matplotlib's `plt.subplots` and `plt.savefig` for more details.
@@ -308,6 +321,16 @@ class Plotter:
         # Validate and store the plot styles
         self._validate_plot_styles(plot_style, color_style, offset_text)
 
+        # Store time bounds for slicing
+        self._plot_tmin = tmin
+        self._plot_tmax = tmax
+
+        # Reset axis limits for fresh calculation based on sliced data
+        self._xmin = None
+        self._xmax = None
+        self._ymin = None
+        self._ymax = None
+
         # Get the figsize
         figsize = kwargs.pop("figsize", (10, 6))
 
@@ -321,7 +344,7 @@ class Plotter:
                 self._set_plot_attributes(fit.obs_well)
                 self._set_plot_attributes(fit.ref_well)
                 self._plot_well(fit.obs_well, ax)
-                self._plot_fit(fit.obs_well, ax)
+                self._plot_fit(fits, fit.obs_well, ax)
                 if plot_ref_well:
                     self._plot_well(fit.ref_well, ax)
                 if mark_outliers:
@@ -356,7 +379,7 @@ class Plotter:
                 self._set_plot_attributes(fit.obs_well)
                 self._set_plot_attributes(fit.ref_well)
                 self._plot_well(fit.obs_well, ax)
-                self._plot_fit(fit.obs_well, ax)
+                self._plot_fit(fits, fit.obs_well, ax)
                 if plot_ref_well:
                     self._plot_well(fit.ref_well, ax)
                 if mark_outliers:
@@ -383,7 +406,7 @@ class Plotter:
                 self._set_plot_attributes(fit.obs_well)
                 self._set_plot_attributes(fit.ref_well)
                 self._plot_well(fit.obs_well, ax)
-                self._plot_fit(fit.obs_well, ax)
+                self._plot_fit(fits, fit.obs_well, ax)
                 if plot_ref_well:
                     self._plot_well(fit.ref_well, ax)
                 if mark_outliers:
@@ -402,7 +425,7 @@ class Plotter:
 
     def plot_fitmethod(
         self,
-        fits: FitResultData | list[FitResultData] = None,
+        fits: FitResultData | list[FitResultData] | None = None,
         title: str = "Fit Method Plot",
         xlabel: str = "Hydraulic Head Reference Well",
         ylabel: str = "Hydraulic Head Observation Well",
@@ -635,9 +658,10 @@ class Plotter:
 
     def _plot_well(self, well, ax):
         """Plot the time series data for a single well."""
+        ts = well.timeseries.loc[self._plot_tmin : self._plot_tmax]
         ax.plot(
-            well.timeseries.index,
-            well.timeseries.values,
+            ts.index,
+            ts.values,
             label=well.name,
             color=well.color,
             alpha=well.alpha,
@@ -654,8 +678,8 @@ class Plotter:
                 else 0.0
             )
             ax.text(
-                well.timeseries.index[-1],
-                well.timeseries.values[-1] + offset,
+                ts.index[-1],
+                ts.values[-1] + offset,
                 f" {well.name}",
                 color=well.color,
                 horizontalalignment="left",
@@ -699,16 +723,20 @@ class Plotter:
             s=6,  # markersize is in points, s is in points^2
         )
 
-    def _plot_fit(self, well, ax):
+    def _plot_fit(
+        self, fits: FitResultData | list[FitResultData], well: Well, ax: Axes
+    ):
         """Plot the fitted model for a single well."""
-        fits = self.get_fits(well)
         if isinstance(fits, list) is False:
-            fits = [fits]
-        for fit in fits:
+            resolved_fits = [fits]
+        else:
+            resolved_fits = fits  # type: list[FitResultData]
+
+        for fit in resolved_fits:
             pred_const = fit.pred_const
-            fit_timeseries = fit.fit_timeseries()
+            fit_timeseries = fit.fit_timeseries().loc[self._plot_tmin : self._plot_tmax]
             x = fit_timeseries.index
-            y = fit_timeseries.values
+            y = fit_timeseries.to_numpy()
             ax.plot(x, y, linestyle="-", color=well.color, alpha=0.2, label=None)
             ax.fill_between(
                 x,
@@ -797,7 +825,7 @@ class Plotter:
         if isinstance(fit, list):
             fit = fit[0]
         outliers = fit.fit_outliers()
-        well_outliers = well.timeseries[outliers]
+        well_outliers = well.timeseries[outliers].loc[self._plot_tmin : self._plot_tmax]
         if self._color_style is None:
             edgecolor = "red"  # Use matplotlib default
         else:
@@ -857,14 +885,15 @@ class Plotter:
 
     def _update_axis_limits(self, well):
         """Update the axis limits based on the well's time series data."""
-        if self._xmin is None or well.timeseries.index.min() < self._xmin:
-            self._xmin = well.timeseries.index.min()
-        if self._xmax is None or well.timeseries.index.max() > self._xmax:
-            self._xmax = well.timeseries.index.max()
-        if self._ymin is None or well.timeseries.min() < self._ymin:
-            self._ymin = well.timeseries.min()
-        if self._ymax is None or well.timeseries.max() > self._ymax:
-            self._ymax = well.timeseries.max()
+        ts = well.timeseries.loc[self._plot_tmin : self._plot_tmax]
+        if self._xmin is None or ts.index.min() < self._xmin:
+            self._xmin = ts.index.min()
+        if self._xmax is None or ts.index.max() > self._xmax:
+            self._xmax = ts.index.max()
+        if self._ymin is None or ts.min() < self._ymin:
+            self._ymin = ts.min()
+        if self._ymax is None or ts.max() > self._ymax:
+            self._ymax = ts.max()
 
     def _plot_settings(self, ax, num):
         """Apply final plot settings based on the selected style."""
@@ -943,3 +972,23 @@ class Plotter:
 
     def get_fits(self, well):
         raise NotImplementedError("Subclasses should implement this method.")
+
+
+class _FitPlotter(Plotter):
+    """Internal helper class for plotting a single FitResultData."""
+
+    def __init__(self, fit: FitResultData):
+        super().__init__()
+        self._fit = fit
+        self.fits = [fit]
+        self.wells = [fit.obs_well, fit.ref_well]
+
+    def get_fits(self, well):
+        """Return the fit if the well is part of it."""
+        if isinstance(well, str):
+            if well == self._fit.obs_well.name or well == self._fit.ref_well.name:
+                return self._fit
+            return None
+        if self._fit.has_well(well):
+            return self._fit
+        return None

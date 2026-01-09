@@ -14,7 +14,7 @@ sys.path.insert(0, os.path.abspath(".."))
 project = "gwrefpy"
 copyright = ""
 author = ""
-release = "0.3.2"
+release = "0.4.0"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -61,7 +61,7 @@ html_theme_options = {
     "icon_links": [
         {
             "name": "GitHub",
-            "url": "https://github.com/andersretznerSGU/gwrefpy",  # required
+            "url": "https://github.com/sgfsweden/gwrefpy",  # required
             "icon": "https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg",
             "type": "url",
         }
