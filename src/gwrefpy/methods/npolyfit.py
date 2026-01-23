@@ -22,6 +22,7 @@ def npolyfit(
     p=0.95,
     aggregation="mean",
     te_method="anchor",
+    shift: pd.Timedelta | str | None = None,
 ) -> FitResultData:
     """
     Perform Nth degree polynomial fit between reference and observation well time
@@ -51,6 +52,8 @@ def npolyfit(
     te_method : str, optional
         The time equivalent grouping method (default is "anchor"). Can be "anchor"
         or "consecutive".
+    shift : pd.Timedelta | str | None, optional
+        An optional time shift to apply to the observation well time series before fitting.
 
     Returns
     -------
@@ -68,8 +71,13 @@ def npolyfit(
         logger.critical("Missing time series data for for either ref or obs well")
         return None
 
+    if shift is not None:
+        obs_timeseries = obs_well.shift_timeseries(shift)
+    else:
+        obs_timeseries = obs_well.timeseries
+
     ref_timeseries, obs_timeseries, n = groupby_time_equivalents(
-        obs_well.timeseries.loc[tmin:tmax],
+        obs_timeseries.loc[tmin:tmax],
         ref_well.timeseries.loc[tmin:tmax],
         offset,
         aggregation,
