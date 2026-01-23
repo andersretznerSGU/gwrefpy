@@ -21,6 +21,7 @@ def linregressfit(
     name: str | None = None,
     p=0.95,
     aggregation="mean",
+    shift: pd.Timedelta | str | None = None,
 ):
     """
     Perform linear regression fit between reference and observation well time series.
@@ -44,6 +45,8 @@ def linregressfit(
     aggregation : str, optional
         The aggregation method to use when grouping data points within time
         equivalents (default is "mean"). Can be "mean", "median", "min", or "max".
+    shift : pd.Timedelta | str | None, optional
+        An optional time shift to apply to the observation well time series before fitting.
 
     Returns
     -------
@@ -60,9 +63,14 @@ def linregressfit(
     if ref_well.timeseries is None or obs_well.timeseries is None:
         logger.critical("Missing time series data for for either ref or obs well")
         return None
+    
+    if shift is not None:
+        obs_timeseries = obs_well.shift_timeseries(shift)
+    else:
+        obs_timeseries = obs_well.timeseries
 
     ref_timeseries, obs_timeseries, n = groupby_time_equivalents(
-        obs_well.timeseries.loc[tmin:tmax],
+        obs_timeseries.loc[tmin:tmax],
         ref_well.timeseries.loc[tmin:tmax],
         offset,
         aggregation,
