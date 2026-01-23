@@ -18,11 +18,11 @@ def linregressfit(
     offset: pd.DateOffset | pd.Timedelta | str,
     tmin: pd.Timestamp | str | None = None,
     tmax: pd.Timestamp | str | None = None,
+    shift: pd.Timedelta | str | None = None,
     name: str | None = None,
     p=0.95,
     aggregation="mean",
     te_method="anchor",
-    shift: pd.Timedelta | str | None = None,
 ):
     """
     Perform linear regression fit between reference and observation well time series.
@@ -39,6 +39,8 @@ def linregressfit(
         The minimum timestamp for the calibration period.
     tmax: pd.Timestamp | str | None = None
         The maximum timestamp for the calibration period.
+    shift : pd.Timedelta | str | None, optional
+        An optional time shift to apply to the observation well time series before fitting.
     name: str | None = None
         An optional name for the fit result.
     p : float, optional
@@ -49,8 +51,6 @@ def linregressfit(
     te_method : str, optional
         The time equivalent grouping method (default is "anchor"). Can be "anchor"
         or "consecutive".
-    shift : pd.Timedelta | str | None, optional
-        An optional time shift to apply to the observation well time series before fitting.
 
     Returns
     -------
