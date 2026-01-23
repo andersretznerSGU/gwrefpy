@@ -359,6 +359,7 @@ class FitResultData:
         te_method: str = "anchor",
         tmin: pd.Timestamp | str | None = None,
         tmax: pd.Timestamp | str | None = None,
+        shift: pd.Timedelta | str | None = None,
         name: str | None = None,
     ):
         """
@@ -378,6 +379,7 @@ class FitResultData:
         self.te_method = te_method
         self.tmin = tmin
         self.tmax = tmax
+        self.shift = shift
         self.name = name if name is not None else str(uuid.uuid4())
 
     def __str__(self):
@@ -404,6 +406,7 @@ class FitResultData:
             "",
             f"Calibration Period: {self.tmin} to {self.tmax}",
             f"Time Offset: {self.offset}",
+            f"Shift: {self.shift}",
             f"Aggregation Method: {self.aggregation}",
             f"Grouping Method: {self.te_method}",
         ]
@@ -453,6 +456,7 @@ class FitResultData:
                         <p>
                             Calibration Period: {self.tmin} to {self.tmax}<br>
                             Time Offset: {self.offset}<br>
+                            Shift: {self.shift}<br>
                             Aggregation Method: {self.aggregation}
                         </p>
                     </div>
@@ -536,9 +540,13 @@ class FitResultData:
         """
         if hasattr(self.fit_method, "fit_timeseries"):
             fitted_values = self.fit_timeseries()
+            if self.shift is not None:
+                obs_timeseries = self.obs_well.shift_timeseries(self.shift)
+            else:
+                obs_timeseries = self.obs_well.timeseries
             outliers = pd.Series(
-                abs(self.obs_well.timeseries - fitted_values) > self.pred_const,
-                index=self.obs_well.timeseries.index,
+                abs(obs_timeseries - fitted_values) > self.pred_const,
+                index=obs_timeseries.index,
             )
             return outliers
         else:

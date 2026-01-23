@@ -43,7 +43,8 @@ def npolyfit(
     tmax: pd.Timestamp | str | None = None
         The maximum timestamp for the calibration period.
     shift : pd.Timedelta | str | None, optional
-        An optional time shift to apply to the observation well time series before fitting.
+        An optional time shift to apply to the observation well time series before
+        fitting.
     name: str | None = None
         An optional name for the fit result.
     p : float, optional
@@ -127,6 +128,7 @@ def npolyfit(
         te_method=te_method,
         tmin=tmin,
         tmax=tmax,
+        shift=shift,
         name=name,
     )
     return fit_result

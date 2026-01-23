@@ -608,6 +608,7 @@ class Model(FitBase, Plotter):
                 te_method=fit_data.get("te_method", "anchor"),
                 tmin=float_to_datetime(fit_data.get("tmin", None)),
                 tmax=float_to_datetime(fit_data.get("tmax", None)),
+                shift=fit_data.get("shift", None),
                 name=fit_data.get("name", None),
             )
             self.fits.append(fit)
