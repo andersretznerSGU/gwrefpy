@@ -39,7 +39,8 @@ def linregressfit(
     tmax: pd.Timestamp | str | None = None
         The maximum timestamp for the calibration period.
     shift : pd.Timedelta | str | None, optional
-        An optional time shift to apply to the observation well time series before fitting.
+        An optional time shift to apply to the observation well time series before
+        fitting.
     name: str | None = None
         An optional name for the fit result.
     p : float, optional
@@ -63,7 +64,7 @@ def linregressfit(
     if ref_well.timeseries is None or obs_well.timeseries is None:
         logger.critical("Missing time series data for for either ref or obs well")
         return None
-    
+
     if shift is not None:
         obs_timeseries = obs_well.shift_timeseries(shift)
     else:
@@ -118,6 +119,7 @@ def linregressfit(
         aggregation=aggregation,
         tmin=tmin,
         tmax=tmax,
+        shift=shift,
         name=name,
     )
     return fit_result

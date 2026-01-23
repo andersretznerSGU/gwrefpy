@@ -64,7 +64,8 @@ class FitBase:
         tmax: pd.Timestamp | str | None = None
             Maximum time for calibration period.
         shift : pd.Timedelta | str | None, optional
-            An optional time shift to apply to the observation well time series before fitting.
+            An optional time shift to apply to the observation well time series before
+            fitting.
         name : str | list[str] | None, optional
             An optional name or list of names for the fit result(s). If lists of
             wells are provided, the name list must match in length. If None,
@@ -198,13 +199,31 @@ class FitBase:
             logger.debug("Using Nth degree polynomial fit method for fitting.")
             degree = kwargs.get("degree", 4)
             fit = npolyfit(
-                obs_well, ref_well, offset, degree, tmin, tmax, shift, name, p, aggregation
+                obs_well,
+                ref_well,
+                offset,
+                degree,
+                tmin,
+                tmax,
+                shift,
+                name,
+                p,
+                aggregation,
             )
         elif method == "chebyshev":
             logger.debug("Using Chebyshev polynomial fit method for fitting.")
             degree = kwargs.get("degree", 4)
             fit = chebyshevfit(
-                obs_well, ref_well, offset, degree, tmin, tmax, shift, name, p, aggregation
+                obs_well,
+                ref_well,
+                offset,
+                degree,
+                tmin,
+                tmax,
+                shift,
+                name,
+                p,
+                aggregation,
             )
         if fit is None:
             logger.error(f"Fitting method '{method}' is not implemented.")

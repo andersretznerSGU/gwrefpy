@@ -208,7 +208,7 @@ class Well:
         ----------
         shift : pd.Timedelta | str
             The time delta to shift the timeseries by.
-        
+
         Returns
         -------
         pd.Series
@@ -217,6 +217,8 @@ class Well:
         if self.timeseries is None:
             logger.error(f"Well {self.name} has no timeseries to shift.")
             raise ValueError(f"Well {self.name} has no timeseries to shift.")
+        if isinstance(shift, str):
+            shift = pd.Timedelta(shift)
         shifted_index = self.timeseries.index + shift
         shifted_timeseries = pd.Series(
             index=shifted_index,
