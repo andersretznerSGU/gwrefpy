@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=6c02275b"></script>
+    <script src="../_static/documentation_options.js?v=c87aa342"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -403,7 +403,7 @@
                   
   <section class="tex2jax_ignore mathjax_ignore" id="using-sgu-wells">
 <h1>Using SGU wells<a class="headerlink" href="#using-sgu-wells" title="Link to this heading">#</a></h1>
-<p>This notebook demonstrates the use of the python package <code class="docutils literal notranslate"><span class="pre">sgu-client</span></code> and how to integrate with <code class="docutils literal notranslate"><span class="pre">gwrefpy</span></code>. The package is installed along with <code class="docutils literal notranslate"><span class="pre">gwrefpy</span></code> if recommened add-ons are included: <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">&quot;gwrefpy[recommended]&quot;</span></code></p>
+<p>This notebook demonstrates the use of the python package <code class="docutils literal notranslate"><span class="pre">sgu-client</span></code> and how to integrate with <code class="docutils literal notranslate"><span class="pre">gwrefpy</span></code>. The package is installed along with <code class="docutils literal notranslate"><span class="pre">gwrefpy</span></code> if recommended add-ons are included: <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">&quot;gwrefpy[recommended]&quot;</span></code></p>
 <p>The Geological Survey of Sweden (SGU) serves an API for their groundwater monitoring network. A Python implementation of an API client has been developed in <a class="reference external" href="https://github.com/officialankan/sgu-client"><code class="docutils literal notranslate"><span class="pre">sgu-client</span></code></a> which makes getting observed groundwater levels from SGU into Python a breeze.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -421,15 +421,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">line</span> <span class="mi">2</span>
-<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="kn">import</span><span class="w"> </span><span class="nn">gwrefpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gr</span>
-<span class="ne">----&gt; </span><span class="mi">2</span> <span class="kn">from</span><span class="w"> </span><span class="nn">sgu_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">SGUClient</span>
-<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
-<span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
-
-<span class="ne">ModuleNotFoundError</span>: No module named &#39;sgu_client&#39;
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Log level set to ERROR
 </pre></div>
 </div>
 </div>
@@ -439,7 +431,7 @@
 <p>This basic example will show how to fetch observed groundwater levels. For more options, please refer to <a class="reference external" href="https://github.com/officialankan/sgu-client?tab=readme-ov-file#observed-groundwater-levels">these docs</a>.</p>
 <p>Below, we wrangle the data in two steps:</p>
 <ol class="arabic simple">
-<li><p>remove the UTC timezone from the fetched timeseries to achieve compatability with the example model we will load later,</p></li>
+<li><p>remove the UTC timezone from the fetched timeseries to achieve compatibility with the example model we will load later,</p></li>
 <li><p>resample to daily medians to align the frequency with that of the example model we will load later</p></li>
 </ol>
 <div class="cell docutils container">
@@ -455,7 +447,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/db1104870a0d449a9126285c0a804fb9ce66cb8e00efddb82a77e209e7e737cd.png" src="../_images/db1104870a0d449a9126285c0a804fb9ce66cb8e00efddb82a77e209e7e737cd.png" />
+<img alt="../_images/2a91f47c82b6b4f9dfab0c50b85d71cee8b3d23b2d74df041fb1057f4907241d.png" src="../_images/2a91f47c82b6b4f9dfab0c50b85d71cee8b3d23b2d74df041fb1057f4907241d.png" />
 </div>
 </div>
 </section>
@@ -556,8 +548,10 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2026-01-08 21:28:04,642 - gwrefpy.methods.linregressfit - WARNING - tmin is None, setting to min common time of both wells
-2026-01-08 21:28:04,643 - gwrefpy.methods.linregressfit - WARNING - tmax is None, setting to max common time of both wells
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2026-01-29 06:54:22,495 - gwrefpy.methods.linregressfit - WARNING - tmin is None, setting to min common time of both wells
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2026-01-29 06:54:22,496 - gwrefpy.methods.linregressfit - WARNING - tmax is None, setting to max common time of both wells
 </pre></div>
 </div>
 <div class="output text_html">
@@ -648,7 +642,7 @@
 <p>Below, we first get the metadata for the monitoring well <em>4_3</em> to retrieve its coordinates. We use that to get modeled groundwater levels at the site. Lastly, we get the observed levels which we will need for the fitting.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The example below assumes we are interested in modeled <strong>minor resources</strong> (i.e. shallow or fast responding groundwater systems). To use this in production, the user should make sure to now the modeling workflow and the associated uncertainties related to SGUs modeled groundwater levels.</p>
+<p>The example below assumes we are interested in modeled <strong>minor resources</strong> (i.e. shallow or fast responding groundwater systems). For real-world applications, users should familiarize themselves with SGU’s modeling methodology and the associated uncertainties of the modeled groundwater levels.</p>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -669,7 +663,7 @@
 </div>
 </div>
 </div>
-<p>Below, we create a model and add the observed levels as a observation well and the modeled levels as a reference well.</p>
+<p>Below, we create a model and add the observed levels as an observation well and the modeled levels as a reference well.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">gr</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="s2">&quot;modeled ref test&quot;</span><span class="p">)</span>
@@ -723,12 +717,12 @@
       <th>0</th>
       <td>obs</td>
       <td>observation</td>
-      <td>20123</td>
+      <td>20144</td>
       <td>1970-12-05</td>
-      <td>2026-01-07</td>
-      <td>150.006587</td>
-      <td>149.7</td>
-      <td>2026-01-07</td>
+      <td>2026-01-28</td>
+      <td>150.004634</td>
+      <td>149.734</td>
+      <td>2026-01-28</td>
       <td>None</td>
       <td>None</td>
       <td>None</td>
@@ -741,12 +735,12 @@
       <th>1</th>
       <td>ref</td>
       <td>reference</td>
-      <td>23745</td>
+      <td>23766</td>
       <td>1961-01-01</td>
-      <td>2026-01-04</td>
-      <td>49.698126</td>
-      <td>39.0</td>
-      <td>2026-01-04</td>
+      <td>2026-01-25</td>
+      <td>49.997896</td>
+      <td>38.000</td>
+      <td>2026-01-25</td>
       <td>None</td>
       <td>None</td>
       <td>None</td>
@@ -784,24 +778,58 @@
 <p class="expanded admonition-title">Hide code cell output</p>
 </summary>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2026-01-08 21:28:07,424 - gwrefpy.methods.npolyfit - WARNING - tmin is None, setting to min common time of both wells
-2026-01-08 21:28:07,439 - gwrefpy.methods.chebyshev - WARNING - tmin is None, setting to min common time of both wells
-2026-01-08 21:28:07,452 - gwrefpy.methods.npolyfit - WARNING - tmin is None, setting to min common time of both wells
-2026-01-08 21:28:07,465 - gwrefpy.methods.chebyshev - WARNING - tmin is None, setting to min common time of both wells
-2026-01-08 21:28:07,477 - gwrefpy.methods.npolyfit - WARNING - tmin is None, setting to min common time of both wells
-2026-01-08 21:28:07,490 - gwrefpy.methods.chebyshev - WARNING - tmin is None, setting to min common time of both wells
-2026-01-08 21:28:07,501 - gwrefpy.methods.npolyfit - WARNING - tmin is None, setting to min common time of both wells
-2026-01-08 21:28:07,514 - gwrefpy.methods.chebyshev - WARNING - tmin is None, setting to min common time of both wells
-2026-01-08 21:28:07,527 - gwrefpy.methods.npolyfit - WARNING - tmin is None, setting to min common time of both wells
-2026-01-08 21:28:07,540 - gwrefpy.methods.chebyshev - WARNING - tmin is None, setting to min common time of both wells
-2026-01-08 21:28:07,550 - gwrefpy.methods.npolyfit - WARNING - tmin is None, setting to min common time of both wells
-2026-01-08 21:28:07,573 - gwrefpy.methods.chebyshev - WARNING - tmin is None, setting to min common time of both wells
-2026-01-08 21:28:07,600 - gwrefpy.methods.npolyfit - WARNING - tmin is None, setting to min common time of both wells
-2026-01-08 21:28:07,613 - gwrefpy.methods.chebyshev - WARNING - tmin is None, setting to min common time of both wells
-2026-01-08 21:28:07,631 - gwrefpy.methods.npolyfit - WARNING - tmin is None, setting to min common time of both wells
-2026-01-08 21:28:07,645 - gwrefpy.methods.chebyshev - WARNING - tmin is None, setting to min common time of both wells
-2026-01-08 21:28:07,657 - gwrefpy.methods.npolyfit - WARNING - tmin is None, setting to min common time of both wells
-2026-01-08 21:28:07,667 - gwrefpy.methods.chebyshev - WARNING - tmin is None, setting to min common time of both wells
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2026-01-29 06:54:26,133 - gwrefpy.methods.npolyfit - WARNING - tmin is None, setting to min common time of both wells
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2026-01-29 06:54:26,140 - gwrefpy.methods.chebyshev - WARNING - tmin is None, setting to min common time of both wells
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2026-01-29 06:54:26,147 - gwrefpy.methods.npolyfit - WARNING - tmin is None, setting to min common time of both wells
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2026-01-29 06:54:26,154 - gwrefpy.methods.chebyshev - WARNING - tmin is None, setting to min common time of both wells
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2026-01-29 06:54:26,160 - gwrefpy.methods.npolyfit - WARNING - tmin is None, setting to min common time of both wells
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2026-01-29 06:54:26,167 - gwrefpy.methods.chebyshev - WARNING - tmin is None, setting to min common time of both wells
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2026-01-29 06:54:26,174 - gwrefpy.methods.npolyfit - WARNING - tmin is None, setting to min common time of both wells
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2026-01-29 06:54:26,182 - gwrefpy.methods.chebyshev - WARNING - tmin is None, setting to min common time of both wells
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2026-01-29 06:54:26,189 - gwrefpy.methods.npolyfit - WARNING - tmin is None, setting to min common time of both wells
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2026-01-29 06:54:26,196 - gwrefpy.methods.chebyshev - WARNING - tmin is None, setting to min common time of both wells
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2026-01-29 06:54:26,203 - gwrefpy.methods.npolyfit - WARNING - tmin is None, setting to min common time of both wells
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2026-01-29 06:54:26,210 - gwrefpy.methods.chebyshev - WARNING - tmin is None, setting to min common time of both wells
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2026-01-29 06:54:26,217 - gwrefpy.methods.npolyfit - WARNING - tmin is None, setting to min common time of both wells
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2026-01-29 06:54:26,224 - gwrefpy.methods.chebyshev - WARNING - tmin is None, setting to min common time of both wells
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2026-01-29 06:54:26,230 - gwrefpy.methods.npolyfit - WARNING - tmin is None, setting to min common time of both wells
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2026-01-29 06:54:26,237 - gwrefpy.methods.chebyshev - WARNING - tmin is None, setting to min common time of both wells
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2026-01-29 06:54:26,245 - gwrefpy.methods.npolyfit - WARNING - tmin is None, setting to min common time of both wells
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2026-01-29 06:54:26,252 - gwrefpy.methods.chebyshev - WARNING - tmin is None, setting to min common time of both wells
 </pre></div>
 </div>
 </div>
@@ -816,7 +844,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/a065e941066c9f69a770ab5d84ac98ae308ae12a1fffdf17ae481ca7283be2b4.png" src="../_images/a065e941066c9f69a770ab5d84ac98ae308ae12a1fffdf17ae481ca7283be2b4.png" />
+<img alt="../_images/bd1f46458dfe483547c2f700a2904e30193bd9debc6bfe5da59e47b57061727b.png" src="../_images/bd1f46458dfe483547c2f700a2904e30193bd9debc6bfe5da59e47b57061727b.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -826,7 +854,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/8dd0e9995464ff9acef898c1e25065563603bd48c35d8005bec2ba60f1738d58.png" src="../_images/8dd0e9995464ff9acef898c1e25065563603bd48c35d8005bec2ba60f1738d58.png" />
+<img alt="../_images/d6f6ef093402c38c4d56a0505f61aa1237ba6316821eb04959419edeb0a6f9eb.png" src="../_images/d6f6ef093402c38c4d56a0505f61aa1237ba6316821eb04959419edeb0a6f9eb.png" />
 </div>
 </div>
 <p>Looks like the number of outliers greatly increase after 2005?</p>
