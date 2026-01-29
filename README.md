@@ -18,10 +18,11 @@ A Python package for detection of deviations in groundwater time series.
 
 ## Features
 
+- Manage reference and observation wells with ease
 - Programmatically fit observation wells to reference wells
 - Visualize fits and deviations
 - Save your work, share and pick up later with a custom `.gwref` file format
-- More to come...
+- Review statistics on fits and deviations
 
 ## Installation
 

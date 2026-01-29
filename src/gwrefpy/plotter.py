@@ -905,8 +905,15 @@ class Plotter:
             # Skip custom styling, use matplotlib defaults
             pass
 
-        # limit x axis to data range
-        ax.set_xlim(left=self._xmin, right=self._xmax)
+        # limit x axis to data range if not tmax or tmin provided
+        if self._plot_tmax:
+            ax.set_xlim(right=pd.Timestamp(self._plot_tmax))
+        else:
+            ax.set_xlim(right=self._xmax)
+        if self._plot_tmin:
+            ax.set_xlim(left=pd.Timestamp(self._plot_tmin))
+        else:
+            ax.set_xlim(left=self._xmin)
 
         # Apply custom formatting only if plot_style is not None
         if self._plot_style is not None:

@@ -1,5 +1,5 @@
 __name__ = "gwrefpy"
-__version__ = "0.4.0"
+__version__ = "0.4.1"
 
 from .constants import print_constants
 from .methods.timeseries import analyze_offsets
