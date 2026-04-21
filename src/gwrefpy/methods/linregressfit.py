@@ -21,6 +21,7 @@ def linregressfit(
     name: str | None = None,
     p=0.95,
     aggregation="mean",
+    te_method="anchor",
 ):
     """
     Perform linear regression fit between reference and observation well time series.
@@ -44,6 +45,9 @@ def linregressfit(
     aggregation : str, optional
         The aggregation method to use when grouping data points within time
         equivalents (default is "mean"). Can be "mean", "median", "min", or "max".
+    te_method : str, optional
+        The time equivalent grouping method (default is "anchor"). Can be "anchor"
+        or "consecutive".
 
     Returns
     -------
@@ -66,6 +70,7 @@ def linregressfit(
         ref_well.timeseries.loc[tmin:tmax],
         offset,
         aggregation,
+        te_method,
     )
 
     res = sp.stats.linregress(ref_timeseries, obs_timeseries)
@@ -108,6 +113,7 @@ def linregressfit(
         p=p,
         offset=offset,
         aggregation=aggregation,
+        te_method=te_method,
         tmin=tmin,
         tmax=tmax,
         name=name,
