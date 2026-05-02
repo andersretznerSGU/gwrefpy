@@ -18,6 +18,7 @@ def npolyfit(
     degree: int,
     tmin: pd.Timestamp | str | None = None,
     tmax: pd.Timestamp | str | None = None,
+    shift: pd.Timedelta | str | None = None,
     name: str | None = None,
     p=0.95,
     aggregation="mean",
@@ -40,6 +41,9 @@ def npolyfit(
         The minimum timestamp for the calibration period.
     tmax: pd.Timestamp | str | None = None
         The maximum timestamp for the calibration period.
+    shift : pd.Timedelta | str | None, optional
+        An optional time shift to apply to the observation well time series before
+        fitting.
     name: str | None = None
         An optional name for the fit result.
     p : float, optional
@@ -64,8 +68,13 @@ def npolyfit(
         logger.critical("Missing time series data for for either ref or obs well")
         return None
 
+    if shift is not None:
+        obs_timeseries = obs_well.shift_timeseries(shift)
+    else:
+        obs_timeseries = obs_well.timeseries
+
     ref_timeseries, obs_timeseries, n = groupby_time_equivalents(
-        obs_well.timeseries.loc[tmin:tmax],
+        obs_timeseries.loc[tmin:tmax],
         ref_well.timeseries.loc[tmin:tmax],
         offset,
         aggregation,
@@ -113,6 +122,7 @@ def npolyfit(
         aggregation=aggregation,
         tmin=tmin,
         tmax=tmax,
+        shift=shift,
         name=name,
     )
     return fit_result
