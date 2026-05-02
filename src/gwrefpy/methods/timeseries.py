@@ -185,7 +185,7 @@ def analyze_offsets(
     for offset in offsets:
         _, _, n_pairs = groupby_time_equivalents(obs, ref, offset, method=method)
         data.append(n_pairs)
-        if isinstance(offset, (pd.DateOffset, pd.Timedelta)):
+        if isinstance(offset, pd.DateOffset | pd.Timedelta):
             idx.append(str(offset))
         else:
             idx.append(offset)
