@@ -22,6 +22,7 @@ def chebyshevfit(
     name: str | None = None,
     p=0.95,
     aggregation="mean",
+    te_method="anchor",
 ) -> FitResultData:
     """
     Perform Chebyshev polynomial fit between reference and observation well time
@@ -51,6 +52,9 @@ def chebyshevfit(
     aggregation : str, optional
         The aggregation method to use when grouping data points within time
         equivalents (default is "mean"). Can be "mean", "median", "min", or "max".
+    te_method : str, optional
+        The time equivalent grouping method (default is "anchor"). Can be "anchor"
+        or "consecutive".
 
     Returns
     -------
@@ -78,6 +82,7 @@ def chebyshevfit(
         ref_well.timeseries.loc[tmin:tmax],
         offset,
         aggregation,
+        te_method,
     )
 
     # Perform Nth degree polynomial fit
@@ -124,6 +129,7 @@ def chebyshevfit(
         p=p,
         offset=offset,
         aggregation=aggregation,
+        te_method=te_method,
         tmin=tmin,
         tmax=tmax,
         shift=shift,

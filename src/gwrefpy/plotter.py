@@ -698,6 +698,7 @@ class Plotter:
             fit.ref_well.timeseries,
             offset=fit.offset,
             aggregation=fit.aggregation,
+            method=fit.te_method,
         )
         ax.scatter(
             ref.values,
@@ -716,6 +717,7 @@ class Plotter:
             fit.ref_well.timeseries.loc[fit.tmin : fit.tmax],
             offset=fit.offset,
             aggregation=fit.aggregation,
+            method=fit.te_method,
         )
         ax.scatter(
             ref.values,

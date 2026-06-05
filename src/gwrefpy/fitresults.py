@@ -333,6 +333,8 @@ class FitResultData:
     aggregation: str
         The aggregation method used when grouping data points within time
         equivalents ("mean", "median", "min", or "max").
+    te_method: str
+        The time equivalent grouping method used ("anchor" or "consecutive").
     tmin: pd.Timestamp | str | None
         The minimum timestamp for the calibration period.
     tmax: pd.Timestamp | str | None
@@ -354,9 +356,10 @@ class FitResultData:
         p: float,
         offset: pd.DateOffset | pd.Timedelta | str,
         aggregation: str,
-        tmin: pd.Timestamp | str | None,
-        tmax: pd.Timestamp | str | None,
-        shift: pd.Timedelta | str | None,
+        te_method: str = "anchor",
+        tmin: pd.Timestamp | str | None = None,
+        tmax: pd.Timestamp | str | None = None,
+        shift: pd.Timedelta | str | None = None,
         name: str | None = None,
     ):
         """
@@ -373,6 +376,7 @@ class FitResultData:
         self.p = p
         self.offset = offset
         self.aggregation = aggregation
+        self.te_method = te_method
         self.tmin = tmin
         self.tmax = tmax
         self.shift = shift
@@ -404,6 +408,7 @@ class FitResultData:
             f"Time Offset: {self.offset}",
             f"Shift: {self.shift}",
             f"Aggregation Method: {self.aggregation}",
+            f"Grouping Method: {self.te_method}",
         ]
 
         return "\n".join(lines)
@@ -557,6 +562,7 @@ class FitResultData:
         tmin: pd.Timestamp | str | None = None,
         tmax: pd.Timestamp | str | None = None,
         aggregation="mean",
+        te_method="anchor",
     ) -> tuple[float, float]:
         """
         Test the fit method on a given reference series.
@@ -574,6 +580,9 @@ class FitResultData:
         aggregation : str, optional
             The aggregation method to use when grouping data points within time
             equivalents (default is "mean"). Can be "mean", "median", "min", or "max".
+        te_method : str, optional
+            The time equivalent grouping method (default is "anchor"). Can be "anchor"
+            or "consecutive".
 
         Returns
         -------
@@ -594,6 +603,7 @@ class FitResultData:
                 ref_series.loc[tmin:tmax],
                 offset,
                 aggregation,
+                te_method,
             )
 
             # Calculate fitted values and residuals
@@ -744,6 +754,7 @@ class FitResultData:
             "p": self.p,
             "offset": self.offset,
             "aggregation": self.aggregation,
+            "te_method": self.te_method,
             "tmin": datetime_to_float(self.tmin),
             "tmax": datetime_to_float(self.tmax),
             "name": self.name,
