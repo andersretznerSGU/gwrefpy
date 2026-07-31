@@ -6,10 +6,103 @@ import pandas as pd
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure, SubFigure
 
+from src.gwrefpy.methods.baseresults import ResultMethod
+
 from .methods.common import compute_residual_std_error
 from .methods.timeseries import groupby_time_equivalents
 from .utils.conversions import datetime_to_float
 from .well import Well
+
+
+class ChebyshevFitResult(ResultMethod):
+    """
+    This class contains the results of a Chebyshev polynomial fit.
+
+    Parameters
+    ----------
+    coefficients : np.ndarray[float]
+        The coefficients of the Chebyshev polynomial.
+    """
+
+    def __init__(self, coefficients: np.array):
+        self.coefficients = coefficients
+        self.degree = len(coefficients) - 1
+
+    def __str__(self):
+        return (
+            f"ChebyshevFitResult(degree={self.degree}, "
+            f"coefficients={self.coefficients})"
+        )
+
+    def __repr__(self):
+        return (
+            f"ChebyshevFitResult(degree={self.degree}, "
+            f"coefficients={self.coefficients})"
+        )
+
+    def fit_str(self):
+        fit_lines = [
+            f"{'Degree':<15} {self.degree:<12d} Degree of Chebyshev Polynomial Fit",
+            *[
+                f"{'Coefficient ' + str(i):<15} {coef:<12.4f} Chebyshev "
+                f"Polynomial Coefficient"
+                for i, coef in enumerate(self.coefficients)
+            ],
+        ]
+        return fit_lines
+
+    def html_fit_str(self):
+        return f"""
+                <tr>
+                    <td>Degree</td>
+                    <td>{self.degree}</td>
+                    <td>Degree of Chebyshev Polynomial Fit</td>
+                </tr>
+                {
+            "".join(
+                [
+                    f"<tr><td>Coefficient {i}</td>"
+                    f"<td>{coef:.4f}</td>"
+                    f"<td>Chebyshev Polynomial Coefficient</td>"
+                    f"</tr>"
+                    for i, coef in enumerate(self.coefficients)
+                ]
+            )
+        }
+                """
+
+    def fit_timeseries(self, timeseries: pd.Series) -> pd.Series:
+        """
+        Apply the Chebyshev polynomial fit to a given series.
+
+        Parameters
+        ----------
+        timeseries : pd.Series
+            The input series to apply the fit to.
+
+        Returns
+        -------
+        pd.Series
+            The fitted values based on the input series.
+        """
+        return timeseries.apply(
+            lambda x: np.polynomial.chebyshev.chebval(
+                x, self.coefficients, tensor=False
+            )
+        )
+
+    def to_dict(self) -> dict:
+        """
+        Convert the ChebyshevFitResult object to a dictionary.
+
+        Returns
+        -------
+        dict
+            A dictionary representation of the ChebyshevFitResult object.
+        """
+        return {
+            "coefficients": self.coefficients.tolist(),
+        }
 
 
 class LinRegResult:
@@ -206,97 +299,6 @@ class NPolyFitResult:
         -------
         dict
             A dictionary representation of the NPolyFitResult object.
-        """
-        return {
-            "coefficients": self.coefficients.tolist(),
-        }
-
-
-class ChebyshevFitResult:
-    """
-    This class contains the results of a Chebyshev polynomial fit.
-
-    Parameters
-    ----------
-    coefficients : np.ndarray[float]
-        The coefficients of the Chebyshev polynomial.
-    """
-
-    def __init__(self, coefficients: np.array):
-        self.coefficients = coefficients
-        self.degree = len(coefficients) - 1
-
-    def __str__(self):
-        return (
-            f"ChebyshevFitResult(degree={self.degree}, "
-            f"coefficients={self.coefficients})"
-        )
-
-    def __repr__(self):
-        return (
-            f"ChebyshevFitResult(degree={self.degree}, "
-            f"coefficients={self.coefficients})"
-        )
-
-    def fit_str(self):
-        fit_lines = [
-            f"{'Degree':<15} {self.degree:<12d} Degree of Chebyshev Polynomial Fit",
-            *[
-                f"{'Coefficient ' + str(i):<15} {coef:<12.4f} Chebyshev "
-                f"Polynomial Coefficient"
-                for i, coef in enumerate(self.coefficients)
-            ],
-        ]
-        return fit_lines
-
-    def html_fit_str(self):
-        return f"""
-                <tr>
-                    <td>Degree</td>
-                    <td>{self.degree}</td>
-                    <td>Degree of Chebyshev Polynomial Fit</td>
-                </tr>
-                {
-            "".join(
-                [
-                    f"<tr><td>Coefficient {i}</td>"
-                    f"<td>{coef:.4f}</td>"
-                    f"<td>Chebyshev Polynomial Coefficient</td>"
-                    f"</tr>"
-                    for i, coef in enumerate(self.coefficients)
-                ]
-            )
-        }
-                """
-
-    def fit_timeseries(self, timeseries: pd.Series) -> pd.Series:
-        """
-        Apply the Chebyshev polynomial fit to a given series.
-
-        Parameters
-        ----------
-        timeseries : pd.Series
-            The input series to apply the fit to.
-
-        Returns
-        -------
-        pd.Series
-            The fitted values based on the input series.
-        """
-        return timeseries.apply(
-            lambda x: np.polynomial.chebyshev.chebval(
-                x, self.coefficients, tensor=False
-            )
-        )
-
-    def to_dict(self) -> dict:
-        """
-        Convert the ChebyshevFitResult object to a dictionary.
-
-        Returns
-        -------
-        dict
-            A dictionary representation of the ChebyshevFitResult object.
         """
         return {
             "coefficients": self.coefficients.tolist(),
@@ -781,7 +783,7 @@ def _unpack_dict_fit_method(
 
     Returns
     -------
-    LinRegResult | NPolyFitResult | ChebyshevFitResult
+    LinRegResult | NPolyFitResult | Chebyshev
         The unpacked fitting method object.
     """
     fit_method_name = data.get("fit_method", None)
@@ -799,8 +801,8 @@ def _unpack_dict_fit_method(
         return NPolyFitResult(
             coefficients=np.array(npoly_data.get("coefficients", [])),
         )
-    elif fit_method_name == "ChebyshevFitResult":
-        chebyshev_data = data.get("ChebyshevFitResult", {})
+    elif fit_method_name == "Chebyshev":
+        chebyshev_data = data.get("Chebyshev", {})
         return ChebyshevFitResult(
             coefficients=np.array(chebyshev_data.get("coefficients", [])),
         )

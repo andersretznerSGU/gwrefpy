@@ -7,8 +7,37 @@ from ..fitresults import ChebyshevFitResult, FitResultData
 from ..methods.common import _get_gwrefs_stats, compute_residual_std_error
 from ..methods.timeseries import groupby_time_equivalents
 from ..well import Well
+from .basecompute import ComputeMethod
 
 logger = logging.getLogger(__name__)
+
+
+class Chebyshev(ComputeMethod):
+    """
+
+    This class implements the Chebyshev polynomial fitting method for groundwater
+
+    """
+
+    def compute_fit(common_kwargs: dict, fit_kwargs: dict) -> FitResultData:
+        """
+        Compute the Chebyshev polynomial fit using the provided common and fit
+        keyword arguments.
+
+        Parameters
+        ----------
+        common_kwargs : dict
+            A dictionary containing common keyword arguments for the fit.
+        fit_kwargs : dict
+            A dictionary containing specific keyword arguments for the fit.
+
+        Returns
+        -------
+        FitResultData
+            A `FitResultData` object containing the results of the Chebyshev
+            polynomial fit.
+        """
+        return chebyshevfit(**common_kwargs, **fit_kwargs)
 
 
 def chebyshevfit(

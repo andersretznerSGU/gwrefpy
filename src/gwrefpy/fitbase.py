@@ -3,8 +3,8 @@ from typing import Literal
 
 import pandas as pd
 
-from .fitresults import ChebyshevFitResult, FitResultData, LinRegResult, NPolyFitResult
-from .methods.chebyshev import chebyshevfit
+from .fitresults import FitResultData, LinRegResult, NPolyFitResult
+from .methods.chebyshev import Chebyshev
 from .methods.linregressfit import linregressfit
 from .methods.npolyfit import npolyfit
 from .well import Well
@@ -213,17 +213,19 @@ class FitBase:
         elif method == "chebyshev":
             logger.debug("Using Chebyshev polynomial fit method for fitting.")
             degree = kwargs.get("degree", 4)
-            fit = chebyshevfit(
-                obs_well,
-                ref_well,
-                offset,
-                degree,
-                tmin,
-                tmax,
-                shift,
-                name,
-                p,
-                aggregation,
+            fit = Chebyshev.compute_fit(
+                common_kwargs={
+                    "obs_well": obs_well,
+                    "ref_well": ref_well,
+                    "offset": offset,
+                    "tmin": tmin,
+                    "tmax": tmax,
+                    "shift": shift,
+                    "name": name,
+                    "p": p,
+                    "aggregation": aggregation,
+                },
+                fit_kwargs={"degree": degree},
             )
         if fit is None:
             logger.error(f"Fitting method '{method}' is not implemented.")
@@ -388,9 +390,7 @@ class FitBase:
             ]
         elif method == "chebyshev":
             fit_list = [
-                fit
-                for fit in fit_list
-                if isinstance(fit.fit_method, ChebyshevFitResult)
+                fit for fit in fit_list if isinstance(fit.fit_method, Chebyshev)
             ]
         return (
             fit_list
